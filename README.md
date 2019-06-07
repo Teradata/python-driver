@@ -120,6 +120,7 @@ The sample programs are coded with a fake Teradata Database hostname `whomooz`, 
 
 Program                     | Purpose
 --------------------------- | ---
+BatchInsert.py              | Demonstrates how to insert a batch of rows
 CharPadding.py              | Demonstrates the Teradata Database's _Character Export Width_ behavior
 DriverDatabaseVersion.py    | Displays the Teradata SQL Driver version and Teradata Database version
 ElicitFile.py               | Demonstrates C source file upload to create a User-Defined Function (UDF)
@@ -954,6 +955,9 @@ Request-Scope Function                                 | Effect
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`16.20.0.42`
+* PYDBAPI-65 sample program BatchInsert.py
 
 `16.20.0.41`
 * PYDBAPI-57 fetchmany may return "rows are closed" instead of empty result set
