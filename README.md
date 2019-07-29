@@ -23,6 +23,8 @@ Copyright 2019 Teradata. All Rights Reserved.
 * [Using the Teradata SQL Driver for Python](#Using)
 * [Connection Parameters](#ConnectionParameters)
 * [Stored Password Protection](#StoredPasswordProtection)
+* [Transaction Mode](#TransactionMode)
+* [Auto-Commit](#AutoCommit)
 * [Data Types](#DataTypes)
 * [Null Values](#NullValues)
 * [Character Export Width](#CharacterExportWidth)
@@ -122,6 +124,7 @@ Program                     | Purpose
 --------------------------- | ---
 BatchInsert.py              | Demonstrates how to insert a batch of rows
 CharPadding.py              | Demonstrates the Teradata Database's _Character Export Width_ behavior
+CommitRollback.py           | Demonstrates commit and rollback methods with auto-commit off.
 DriverDatabaseVersion.py    | Displays the Teradata SQL Driver version and Teradata Database version
 ElicitFile.py               | Demonstrates C source file upload to create a User-Defined Function (UDF)
 HelpSession.py              | Displays session information
@@ -375,6 +378,83 @@ The Teradata SQL Driver for Python verifies that the match values in the two fil
 Before decryption, the Teradata SQL Driver for Python calculates the MAC using the ciphertext, transformation name, and algorithm parameters if any, and verifies that the calculated MAC matches the expected MAC. The Teradata SQL Driver for Python raises an exception if the calculated MAC differs from the expected MAC, to indicate that either or both of the files may have been tampered with.
 
 Finally, the Teradata SQL Driver for Python uses the decrypted password to log on to the Teradata Database.
+
+<a name="TransactionMode"></a>
+
+### Transaction Mode
+
+The `tmode` connection parameter enables an application to specify the transaction mode for the connection.
+* `"tmode":"ANSI"` provides American National Standards Institute (ANSI) transaction semantics. This mode is recommended.
+* `"tmode":"TERA"` provides legacy Teradata transaction semantics. This mode is only recommended for legacy applications that require Teradata transaction semantics.
+* `"tmode":"DEFAULT"` provides the default transaction mode configured for the Teradata Database, which may be either ANSI or TERA mode. `"tmode":"DEFAULT"` is the default when the `tmode` connection parameter is omitted.
+
+While ANSI mode is generally recommended, please note that every application is different, and some applications may need to use TERA mode. The following differences between ANSI and TERA mode might affect a typical user or application:
+1. Silent truncation of inserted data occurs in TERA mode, but not ANSI mode. In ANSI mode, the Teradata Database returns an error instead of truncating data.
+2. Tables created in ANSI mode are `MULTISET` by default. Tables created in TERA mode are `SET` tables by default.
+3. For tables created in ANSI mode, character columns are `CASESPECIFIC` by default. For tables created in TERA mode, character columns are `NOT CASESPECIFIC` by default.
+4. In ANSI mode, character literals are `CASESPECIFIC`. In TERA mode, character literals are `NOT CASESPECIFIC`.
+
+The last two behavior differences, taken together, may cause character data comparisons (such as in `WHERE` clause conditions) to be case-insensitive in TERA mode, but case-sensitive in ANSI mode. This, in turn, can produce different query results in ANSI mode versus TERA mode. Comparing two `NOT CASESPECIFIC` expressions is case-insensitive regardless of mode, and comparing a `CASESPECIFIC` expression to another expression of any kind is case-sensitive regardless of mode. You may explicitly `CAST` an expression to be `CASESPECIFIC` or `NOT CASESPECIFIC` to obtain the character data comparison required by your application.
+
+The Teradata Database Reference / *SQL Request and Transaction Processing* recommends that ANSI mode be used for all new applications. The primary benefit of using ANSI mode is that inadvertent data truncation is avoided. In contrast, when using TERA mode, silent data truncation can occur when data is inserted, because silent data truncation is a feature of TERA mode.
+
+A drawback of using ANSI mode is that you can only call stored procedures that were created using ANSI mode, and you cannot call stored procedures that were created using TERA mode. It may not be possible to switch over to ANSI mode exclusively, because you may have some legacy applications that require TERA mode to work properly. You can work around this drawback by creating your stored procedures twice, in two different users/databases, once using ANSI mode, and once using TERA mode.
+
+Refer to the Teradata Database Reference / *SQL Request and Transaction Processing* for complete information regarding the differences between ANSI and TERA transaction modes.
+
+<a name="AutoCommit"></a>
+
+### Auto-Commit
+
+The Teradata SQL Driver for Python provides auto-commit on and off functionality for both ANSI and TERA mode.
+
+When a connection is first established, it begins with the default auto-commit setting, which is on. When auto-commit is on, the driver is solely responsible for managing transactions, and the driver commits each SQL request that is successfully executed. An application should not execute any transaction management SQL commands when auto-commit is on. An application should not call the `commit` method or the `rollback` method when auto-commit is on.
+
+An application can manage transactions itself by calling the `execute` method with the `teradata_nativesql` and `teradata_autocommit_off` escape functions to turn off auto-commit.
+
+    cur.execute("{fn teradata_nativesql}{fn teradata_autocommit_off}")
+
+When auto-commit is off, the driver leaves the current transaction open after each SQL request is executed, and the application is responsible for committing or rolling back the transaction by calling the `commit` or the `rollback` method, respectively.
+
+Auto-commit remains turned off until the application turns it back on.
+
+    cur.execute("{fn teradata_nativesql}{fn teradata_autocommit_on}")
+
+Best practices recommend that an application avoid executing database-vendor-specific transaction management commands such as `BT`, `ET`, `ABORT`, `COMMIT`, or `ROLLBACK`, because those kind of commands differ from one vendor to another. (They even differ between Teradata's two modes ANSI and TERA.) Instead, best practices recommend that an application only call the standard methods `commit` and `rollback` for transaction management.
+1. When auto-commit is on in ANSI mode, the driver automatically executes `COMMIT` after every successful SQL request.
+2. When auto-commit is off in ANSI mode, the driver does not automatically execute `COMMIT`. When the application calls the `commit` method, then the driver executes `COMMIT`.
+3. When auto-commit is on in TERA mode, the driver does not execute `BT` or `ET`, unless the application explicitly executes `BT` or `ET` commands itself, which is not recommended.
+4. When auto-commit is off in TERA mode, the driver executes `BT` before submitting the application's first SQL request of a new transaction. When the application calls the `commit` method, then the driver executes `ET` until the transaction is complete.
+
+As part of the wire protocol between the Teradata Database and Teradata client interface software (such as the Teradata SQL Driver for Python), each message transmitted from the Teradata Database to the client has a bit designated to indicate whether the session has a transaction in progress or not. Thus, the client interface software is kept informed as to whether the session has a transaction in progress or not.
+
+In TERA mode with auto-commit off, when the application uses the driver to execute a SQL request, if the session does not have a transaction in progress, then the driver automatically executes `BT` before executing the application's SQL request. Subsequently, in TERA mode with auto-commit off, when the application uses the driver to execute another SQL request, and the session already has a transaction in progress, then the driver has no need to execute `BT` before executing the application's SQL request.
+
+In TERA mode, `BT` and `ET` pairs can be nested, and the Teradata Database keeps track of the nesting level. The outermost `BT`/`ET` pair defines the transaction scope; inner `BT`/`ET` pairs have no effect on the transaction because the Teradata Database does not provide actual transaction nesting. To commit the transaction, `ET` commands must be repeatedly executed until the nesting is unwound. The Teradata wire protocol bit (mentioned earlier) indicates when the nesting is unwound and the transaction is complete. When the application calls the `commit` method in TERA mode, the driver repeatedly executes `ET` commands until the nesting is unwound and the transaction is complete.
+
+In rare cases, an application may not follow best practices and may explicitly execute transaction management commands. Such an application must turn off auto-commit before executing transaction management commands such as `BT`, `ET`, `ABORT`, `COMMIT`, or `ROLLBACK`. The application is responsible for executing the appropriate commands for the transaction mode in effect. TERA mode commands are `BT`, `ET`, and `ABORT`. ANSI mode commands are `COMMIT` and `ROLLBACK`. An application must take special care when opening a transaction in TERA mode with auto-commit off. In TERA mode with auto-commit off, when the application executes a SQL request, if the session does not have a transaction in progress, then the driver automatically executes `BT` before executing the application's SQL request. Therefore, the application should not begin a transaction by executing `BT`.
+
+    # TERA mode example showing undesirable BT/ET nesting
+    cur.execute("{fn teradata_nativesql}{fn teradata_autocommit_off}")
+    cur.execute("BT") # BT automatically executed by the driver before this, and produces a nested BT
+    cur.execute("insert into mytable1 values(1, 2)")
+    cur.execute("insert into mytable2 values(3, 4)")
+    cur.execute("ET") # unwind nesting
+    cur.execute("ET") # complete transaction
+
+    # TERA mode example showing how to avoid BT/ET nesting
+    cur.execute("{fn teradata_nativesql}{fn teradata_autocommit_off}")
+    cur.execute("insert into mytable1 values(1, 2)") # BT automatically executed by the driver before this
+    cur.execute("insert into mytable2 values(3, 4)")
+    cur.execute("ET") # complete transaction
+
+Please note that neither previous example shows best practices. Best practices recommend that an application only call the standard methods `commit` and `rollback` for transaction management.
+
+    # Example showing best practice
+    cur.execute("{fn teradata_nativesql}{fn teradata_autocommit_off}")
+    cur.execute("insert into mytable1 values(1, 2)")
+    cur.execute("insert into mytable2 values(3, 4)")
+    con.commit()
 
 <a name="DataTypes"></a>
 
@@ -698,7 +778,7 @@ Has no effect.
 
 `teradatasql.BINARY`
 
-Identifies a SQL `BLOB`, `BYTE`, or `VARBYTE` column as a binary data type when compared with the Cursor's description attribute. 
+Identifies a SQL `BLOB`, `BYTE`, or `VARBYTE` column as a binary data type when compared with the Cursor's description attribute.
 
 `.description[`*Column*`][1] == teradatasql.BINARY`
 
@@ -706,7 +786,7 @@ Identifies a SQL `BLOB`, `BYTE`, or `VARBYTE` column as a binary data type when 
 
 `teradatasql.DATETIME`
 
-Identifies a SQL `DATE`, `TIME`, `TIME WITH TIME ZONE`, `TIMESTAMP`, or `TIMESTAMP WITH TIME ZONE` column as a date/time data type when compared with the Cursor's description attribute. 
+Identifies a SQL `DATE`, `TIME`, `TIME WITH TIME ZONE`, `TIMESTAMP`, or `TIMESTAMP WITH TIME ZONE` column as a date/time data type when compared with the Cursor's description attribute.
 
 `.description[`*Column*`][1] == teradatasql.DATETIME`
 
@@ -956,13 +1036,169 @@ Request-Scope Function                                 | Effect
 
 ### Change Log
 
-`16.20.0.42`
-* PYDBAPI-65 sample program BatchInsert.py
+`16.20.0.43` - Jul 29, 2019
+* GOSQL-18 Auto-commit
+* PYDBAPI-61 commit and rollback methods
 
-`16.20.0.41`
+`16.20.0.42` - Jun 7, 2019
+* PYDBAPI-65 sample program `BatchInsert.py`
+
+`16.20.0.41` - Feb 14, 2019
 * PYDBAPI-57 fetchmany may return "rows are closed" instead of empty result set
 
-`16.20.0.40`
+`16.20.0.40` - Feb 8, 2019
 * GOSQL-11 JWT authentication method
 * GOSQL-16 tmode connection parameter
 * GOSQL-17 commit and rollback functions
+
+`16.20.0.39` - Oct 26, 2018
+* Sample program `StoredProc.py`
+
+`16.20.0.38` - Oct 25, 2018
+* PYDBAPI-56 Stored Procedure Dynamic Result Sets
+
+`16.20.0.37` - Oct 22, 2018
+* Documentation change
+
+`16.20.0.36` - Oct 22, 2018
+* GOSQL-5 Create/Replace Procedure MultiTSR protocol
+
+`16.20.0.35` - Oct 22, 2018
+* GOSQL-10 Stored Password Protection
+* PYDBAPI-28 Secure Password at rest
+* PYDBAPI-47 Port sample program TJEncryptPassword to Python
+
+`16.20.0.34` - Oct 15, 2018
+* Fix for sample program `TJEncryptPassword.py`
+
+`16.20.0.33` - Oct 12, 2018
+* Installation dependency pycryptodome
+
+`16.20.0.32` - Sep 19, 2018
+* Sample programs `LoadCSVFile.py` and `MetadataFromPrepare.py`
+* Escape function teradata_fake_result_sets
+
+`16.20.0.31` - Sep 19, 2018
+* Added function tracing
+
+`16.20.0.30` - Sep 14, 2018
+* PYDBAPI-12 Connectivity
+* PYDBAPI-33 Pandas library Interoperability
+* Moved samples directory
+
+`16.20.0.29` - Sep 14, 2018
+* Sample program `ElicitFile.py`
+
+`16.20.0.28` - Sep 13, 2018
+* Documentation change
+
+`16.20.0.27` - Sep 12, 2018
+* Documentation change
+
+`16.20.0.26` - Sep 11, 2018
+* PYDBAPI-8 Documentation
+* PYDBAPI-9 User Guide Content
+
+`16.20.0.25` - Sep 10, 2018
+* Documentation change
+
+`16.20.0.24` - Sep 6, 2018
+* PYDBAPI-54 Implement cursor rowcount attribute
+* PYDBAPI-55 Improved support for Python data types
+
+`16.20.0.23` - Aug 31, 2018
+* KeepResponse only for LOB locators
+
+`16.20.0.22` - Aug 30, 2018
+* Fixed NUMBER values
+
+`16.20.0.21` - Aug 29, 2018
+* Close orphaned rows
+
+`16.20.0.20` - Aug 28, 2018
+* decimal and datetime values
+
+`16.20.0.19` - Aug 22, 2018
+* timedelta bind values
+
+`16.20.0.18` - Aug 21, 2018
+* datetime.datetime bind values
+
+`16.20.0.17` - Aug 20, 2018
+* Version number in errors
+
+`16.20.0.16` - Aug 17, 2018
+* SLES 11 SP1 compatibility
+
+`16.20.0.15` - Aug 17, 2018
+* Documentation change
+
+`16.20.0.14` - Aug 10, 2018
+* Documentation change
+
+`16.20.0.13` - Aug 9, 2018
+* Documentation change
+
+`16.20.0.12` - Aug 9, 2018
+* PYDBAPI-10 User Guide Delivery and Viewability
+* PYDBAPI-11 Searchability
+
+`16.20.0.11` - Aug 8, 2018
+* Documentation change
+
+`16.20.0.10` - Aug 8, 2018
+* Documentation change
+
+`16.20.0.9` - Aug 7, 2018
+* Install documentation in teradatasql directory
+
+`16.20.0.8` - Aug 7, 2018
+* GOSQL-7 TDNEGO authentication method
+* PYDBAPI-42 Teradata Logon mechanism - TDNEGO
+
+`16.20.0.7` - Jul 30, 2018
+* GOSQL-8 Support parameter marker batch insert
+* PYDBAPI-45 Parameterized Batch Insertion using executeMany
+
+`16.20.0.6` - Jul 25, 2018
+* Thread safety for handle maps
+
+`16.20.0.5` - Jul 25, 2018
+* Removed atexit
+
+`16.20.0.4` - Jul 23, 2018
+* PYDBAPI-4 Provide Python Driver license file
+
+`16.20.0.3` - Jul 19, 2018
+* PYDBAPI-46 Accept subclasses of bytes, int, float, str as bind values
+
+`16.20.0.2` - Jul 19, 2018
+* Package attributes change
+
+`16.20.0.1` - Jul 18, 2018
+* Version number change
+
+`16.20.0.0` - Jul 18, 2018
+* GOSQL-1 Encrypted logon
+* GOSQL-2 LDAP and Kerberos authentication
+* GOSQL-3 Support for 1MB Rows
+* GOSQL-6 Elicit File protocol
+* PYDBAPI-1 Distribution
+* PYDBAPI-5 cursor.execute method return cursor
+* PYDBAPI-6 Install and Deployment
+* PYDBAPI-7 pip install of python driver package
+* PYDBAPI-13 Operating System Platforms
+* PYDBAPI-14 Driver must be available for use by Windows OS Users
+* PYDBAPI-15 Driver must be available for use by OSX (Mac) Users
+* PYDBAPI-16 Driver must be available for use by Linux OS Users
+* PYDBAPI-17 Python Language version
+* PYDBAPI-18 Python language version 3.4
+* PYDBAPI-19 Distribution
+* PYDBAPI-23 Teradata Analytics Platform Interoperability/Support
+* PYDBAPI-24 Works with Teradata Database 16.10, 16.20
+* PYDBAPI-26 Teradata Logon mechanism - Kerberos
+* PYDBAPI-32 Downloadable from pypi.org
+* PYDBAPI-40 Teradata Logon mechanism - LDAP
+* PYDBAPI-41 Teradata Logon mechanism - TD2
+* PYDBAPI-43 parameterized single-row inserts
+* PYDBAPI-44 parameterized queries
