@@ -22,6 +22,7 @@ Copyright 2019 Teradata. All Rights Reserved.
 * [Sample Programs](#SamplePrograms)
 * [Using the Teradata SQL Driver for Python](#Using)
 * [Connection Parameters](#ConnectionParameters)
+* [COP Discovery](#COPDiscovery)
 * [Stored Password Protection](#StoredPasswordProtection)
 * [Transaction Mode](#TransactionMode)
 * [Auto-Commit](#AutoCommit)
@@ -51,9 +52,11 @@ The Teradata SQL Driver for Python is a young product that offers a basic featur
 At the present time, the Teradata SQL Driver for Python offers the following features.
 
 * Supported for use with Teradata Database 14.10 and later releases. Informally tested to work with Teradata Database 12.0 and later releases.
+* COP Discovery.
 * Encrypted logon using the `TD2`, `JWT`, `LDAP`, `KRB5` (Kerberos), or `TDNEGO` logon mechanisms.
 * Data encryption enabled via the `encryptdata` connection parameter.
 * Unicode character data transferred via the UTF8 session character set.
+* Auto-commit for ANSI and TERA transaction modes.
 * 1 MB rows supported with Teradata Database 16.0 and later.
 * Multi-statement requests that return multiple result sets.
 * Most JDBC escape syntax.
@@ -69,11 +72,9 @@ At the present time, the Teradata SQL Driver for Python offers the following fea
 
 * The UTF8 session character set is always used. The `charset` connection parameter is not supported.
 * The following complex data types are not supported yet: `XML`, `JSON`, `DATASET STORAGE FORMAT AVRO`, and `DATASET STORAGE FORMAT CSV`.
-* COP Discovery is not supported yet. You must specify the hostname or IP address of a specific Teradata Database node to connect to.
 * No support yet for data encryption that is governed by central administration. To enable data encryption, you must specify a `true` value for the `encryptdata` connection parameter.
 * Laddered Concurrent Connect is not supported yet.
 * No support yet for Recoverable Network Protocol and Redrive.
-* Auto-commit for ANSI transaction mode is not offered yet. You must explicitly execute a `commit` command when using ANSI transaction mode.
 * FastLoad is not available yet.
 * FastExport is not available yet.
 * Monitor partition support is not available yet.
@@ -169,12 +170,14 @@ Parameter          | Default     | Type           | Description
 ------------------ | ----------- | -------------- | ---
 `account`          |             | string         | Specifies the Teradata Database account. Equivalent to the Teradata JDBC Driver `ACCOUNT` connection parameter.
 `column_name`      | `"false"`   | quoted boolean | Controls the behavior of cursor `.description` sequence `name` items. Equivalent to the Teradata JDBC Driver `COLUMN_NAME` connection parameter. False specifies that a cursor `.description` sequence `name` item provides the AS-clause name if available, or the column name if available, or the column title. True specifies that a cursor `.description` sequence `name` item provides the column name if available, but has no effect when StatementInfo parcel support is unavailable.
+`cop`              | `"true"`    | quoted boolean | Specifies whether COP Discovery is performed. Equivalent to the Teradata JDBC Driver `COP` connection parameter.
+`coplast`          | `"false"`   | quoted boolean | Specifies how COP Discovery determines the last COP hostname. Equivalent to the Teradata JDBC Driver `COPLAST` connection parameter. When `coplast` is `false` or omitted, or COP Discovery is turned off, then no DNS lookup occurs for the coplast hostname. When `coplast` is `true`, and COP Discovery is turned on, then a DNS lookup occurs for a coplast hostname.
 `dbs_port`         | `"1025"`    | quoted integer | Specifies the Teradata Database port number. Equivalent to the Teradata JDBC Driver `DBS_PORT` connection parameter.
 `encryptdata`      | `"false"`   | quoted boolean | Controls encryption of data exchanged between the Teradata Database and the Teradata SQL Driver for Python. Equivalent to the Teradata JDBC Driver `ENCRYPTDATA` connection parameter.
 `fake_result_sets` | `"false"`   | quoted boolean | Controls whether a fake result set containing statement metadata precedes each real result set.
-`host`             |             | string         | Specifies the Teradata Database hostname. Note that COP Discovery is not implemented yet.
+`host`             |             | string         | Specifies the Teradata Database hostname.
 `lob_support`      | `"true"`    | quoted boolean | Controls LOB support. Equivalent to the Teradata JDBC Driver `LOB_SUPPORT` connection parameter.
-`log`              | `"0"`       | quoted integer | Controls debug logging. Somewhat equivalent to the Teradata JDBC Driver `LOG` connection parameter. This parameter's behavior is subject to change in the future. This parameter's value is currently defined as an integer in which the 1-bit governs function and method tracing, the 2-bit governs debug logging, and the 4-bit governs transmit and receive message hex dumps.
+`log`              | `"0"`       | quoted integer | Controls debug logging. Somewhat equivalent to the Teradata JDBC Driver `LOG` connection parameter. This parameter's behavior is subject to change in the future. This parameter's value is currently defined as an integer in which the 1-bit governs function and method tracing, the 2-bit governs debug logging, the 4-bit governs transmit and receive message hex dumps, and the 8-bit governs timing. Compose the value by adding together 1, 2, 4, and/or 8.
 `logdata`          |             | string         | Specifies extra data for the chosen logon authentication method. Equivalent to the Teradata JDBC Driver `LOGDATA` connection parameter.
 `logmech`          | `"TD2"`     | string         | Specifies the logon authentication method. Equivalent to the Teradata JDBC Driver `LOGMECH` connection parameter. Possible values are `TD2` (the default), `JWT`, `LDAP`, `KRB5` for Kerberos, or `TDNEGO`.
 `max_message_body` | `"2097000"` | quoted integer | Not fully implemented yet and intended for future usage. Equivalent to the Teradata JDBC Driver `MAX_MESSAGE_BODY` connection parameter.
@@ -184,6 +187,41 @@ Parameter          | Default     | Type           | Description
 `teradata_values`  | `"true"`    | quoted boolean | Controls whether `str` or a more specific Python data type is used for certain Result set column value types. Refer to the table below for details.
 `tmode`            | `"DEFAULT"` | string         | Specifies the transaction mode. Equivalent to the Teradata JDBC Driver `TMODE` connection parameter. Possible values are `DEFAULT` (the default), `ANSI`, or `TERA`.
 `user`             |             | string         | Specifies the Teradata Database username. Equivalent to the Teradata JDBC Driver `USER` connection parameter.
+
+<a name="COPDiscovery"></a>
+
+### COP Discovery
+
+The Teradata SQL Driver for Python provides Communications Processor (COP) discovery behavior when the `cop` connection parameter is `true` or omitted. COP Discovery is turned off when the `cop` connection parameter is `false`.
+
+A Teradata Database system can be composed of multiple Teradata Database nodes. One or more of the Teradata Database nodes can be configured to run the Teradata Database Gateway process. Each Teradata Database node that runs the Teradata Database Gateway process is termed a Communications Processor, or COP. COP Discovery refers to the procedure of identifying all the available COP hostnames and their IP addresses. COP hostnames can be defined in DNS, or can be defined in the client system's `hosts` file. Teradata strongly recommends that COP hostnames be defined in DNS, rather than the client system's `hosts` file. Defining COP hostnames in DNS provides centralized administration, and enables centralized changes to COP hostnames if and when the Teradata Database is reconfigured.
+
+The `coplast` connection parameter specifies how COP Discovery determines the last COP hostname.
+* When `coplast` is `false` or omitted, or COP Discovery is turned off, then the Teradata SQL Driver for Python will not perform a DNS lookup for the coplast hostname.
+* When `coplast` is `true`, and COP Discovery is turned on, then the Teradata SQL Driver for Python will first perform a DNS lookup for a coplast hostname to obtain the IP address of the last COP hostname before performing COP Discovery. Subsequently, during COP Discovery, the Teradata SQL Driver for Python will stop searching for COP hostnames when either an unknown COP hostname is encountered, or a COP hostname is encountered whose IP address matches the IP address of the coplast hostname.
+
+Specifying `coplast` as `true` can improve performance with DNS that is slow to respond for DNS lookup failures, and is necessary for DNS that never returns a DNS lookup failure.
+
+When performing COP Discovery, the Teradata SQL Driver for Python starts with cop1, which is appended to the database hostname, and then proceeds with cop2, cop3, ..., copN. The Teradata SQL Driver for Python supports domain-name qualification for COP Discovery and the coplast hostname. Domain-name qualification is recommended, because it can improve performance by avoiding unnecessary DNS lookups for DNS search suffixes.
+
+The following table illustrates the DNS lookups performed for a hypothetical three-node Teradata Database system named "whomooz".
+
+&nbsp; | No domain name qualification | With domain name qualification<br />(Recommended)
+------ | ---------------------------- | ---
+Application-specified<br />Teradata Database hostname | `whomooz` | `whomooz.domain.com`
+Default: COP Discovery turned on, and `coplast` is `false` or omitted,<br />perform DNS lookups until unknown COP hostname is encountered | `whomoozcop1`&rarr;`10.0.0.1`<br />`whomoozcop2`&rarr;`10.0.0.2`<br />`whomoozcop3`&rarr;`10.0.0.3`<br />`whomoozcop4`&rarr;undefined | `whomoozcop1.domain.com`&rarr;`10.0.0.1`<br />`whomoozcop2.domain.com`&rarr;`10.0.0.2`<br />`whomoozcop3.domain.com`&rarr;`10.0.0.3`<br />`whomoozcop4.domain.com`&rarr;undefined
+COP Discovery turned on, and `coplast` is `true`,<br />perform DNS lookups until COP hostname is found whose IP address matches the coplast hostname, or unknown COP hostname is encountered | `whomoozcoplast`&rarr;`10.0.0.3`<br />`whomoozcop1`&rarr;`10.0.0.1`<br />`whomoozcop2`&rarr;`10.0.0.2`<br />`whomoozcop3`&rarr;`10.0.0.3` | `whomoozcoplast.domain.com`&rarr;`10.0.0.3`<br />`whomoozcop1.domain.com`&rarr;`10.0.0.1`<br />`whomoozcop2.domain.com`&rarr;`10.0.0.2`<br />`whomoozcop3.domain.com`&rarr;`10.0.0.3`
+COP Discovery turned off and round-robin DNS,<br />perform one DNS lookup that returns multiple IP addresses | `whomooz`&rarr;`10.0.0.1`, `10.0.0.2`, `10.0.0.3` | `whomooz.domain.com`&rarr;`10.0.0.1`, `10.0.0.2`, `10.0.0.3`
+
+Round-robin DNS rotates the list of IP addresses automatically to provide load distribution. Round-robin is only possible with DNS, not with the client system `hosts` file.
+
+The Teradata SQL Driver for Python supports the definition of multiple IP addresses for COP hostnames and non-COP hostnames.
+
+For the first connection to a particular Teradata Database system, the Teradata SQL Driver for Python generates a random number to index into the list of COPs. For each subsequent connection, the Teradata SQL Driver for Python increments the saved index until it wraps around to the first position. This behavior provides load distribution across all discovered COPs.
+
+The Teradata SQL Driver for Python masks connection failures to down COPs, thereby hiding most connection failures from the client application. An exception is thrown to the application only when all the COPs are down for that database. If a COP is down, the next COP in the sequence (including a wrap-around to the first COP) receives extra connections that were originally destined for the down COP. When multiple IP addresses are defined in DNS for a COP, the Teradata SQL Driver for Python will attempt to connect to each of the COP's IP addresses, and the COP is considered down only when connection attempts fail to all of the COP's IP addresses.
+
+If COP Discovery is turned off, or no COP hostnames are defined in DNS, the Teradata SQL Driver for Python connects directly to the hostname specified in the `host` connection parameter. This permits load distribution schemes other than the COP Discovery approach. For example, round-robin DNS or a TCP/IP load distribution product can be used. COP Discovery takes precedence over simple database hostname lookup. To use an alternative load distribution scheme, either ensure that no COP hostnames are defined in DNS, or turn off COP Discovery with `cop` as `false`.
 
 <a name="StoredPasswordProtection"></a>
 
@@ -651,7 +689,7 @@ Closes the Connection.
 
 `.commit()`
 
-Commits the current transaction. Not implemented yet.
+Commits the current transaction.
 
 ---
 
@@ -663,7 +701,7 @@ Creates and returns a new Cursor object for the Connection.
 
 `.rollback()`
 
-Rolls back the current transaction. Not implemented yet.
+Rolls back the current transaction.
 
 <a name="CursorAttributes"></a>
 
@@ -1035,6 +1073,10 @@ Request-Scope Function                                 | Effect
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`16.20.0.44` - Aug 7, 2019
+* GOSQL-4 Support COP discovery
+* PYDBAPI-36 COP Discovery
 
 `16.20.0.43` - Jul 29, 2019
 * GOSQL-18 Auto-commit
