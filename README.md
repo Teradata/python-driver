@@ -1074,6 +1074,9 @@ Request-Scope Function                                 | Effect
 
 ### Change Log
 
+`16.20.0.46` - Aug 16, 2019
+* GOSQL-39 COP Discovery interop with Kerberos
+
 `16.20.0.45` - Aug 12, 2019
 * GOSQL-38 timestamp prefix log messages
 
