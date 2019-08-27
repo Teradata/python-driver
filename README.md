@@ -144,11 +144,11 @@ Your Python script must import the `teradatasql` package in order to use the Ter
 
 After importing the `teradatasql` package, your Python script calls the `teradatasql.connect` function to open a connection to the Teradata Database.
 
-You may specify connection parameters as a JSON string, as `kwargs`, or using a combination of the two approaches. The `teradatasql.connect` function's first argument is a JSON string. The `teradatasql.connect` function's second and subsequent arguments are optional `kwargs`.
+You may specify connection parameters as a JSON string, as `kwargs`, or using a combination of the two approaches. The `teradatasql.connect` function's first argument is an optional JSON string. The `teradatasql.connect` function's second and subsequent arguments are optional `kwargs`.
 
 Connection parameters specified only as `kwargs`:
 
-    con = teradatasql.connect(None, host='whomooz', user='guest', password='please')
+    con = teradatasql.connect(host="whomooz", user="guest", password="please")
 
 Connection parameters specified only as a JSON string:
 
@@ -156,7 +156,9 @@ Connection parameters specified only as a JSON string:
 
 Connection parameters specified using a combination:
 
-    con = teradatasql.connect('{"host":"whomooz"}', user='guest', password='please')
+    con = teradatasql.connect('{"host":"whomooz"}', user="guest", password="please")
+
+When a combination of parameters are specified, connection parameters specified as `kwargs` take precedence over same-named connection parameters specified in the JSON string.
 
 <a name="ConnectionParameters"></a>
 
@@ -607,7 +609,9 @@ This technique is also demonstrated in sample program `CharPadding.py`.
 
 Creates a connection to the database and returns a Connection object.
 
-The first parameter is a JSON string or `None`. The second and subsequent arguments are optional `kwargs`. Specify connection parameters as a JSON string, as `kwargs`, or  a combination of the two.
+The first parameter is an optional JSON string that defaults to `None`. The second and subsequent arguments are optional `kwargs`. Specify connection parameters as a JSON string, as `kwargs`, or a combination of the two.
+
+When a combination of parameters are specified, connection parameters specified as `kwargs` take precedence over same-named connection parameters specified in the JSON string.
 
 ---
 
@@ -1073,6 +1077,10 @@ Request-Scope Function                                 | Effect
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`16.20.0.47` - Aug 27, 2019
+* GOSQL-40 Skip executing empty SQL request text
+* PYDBAPI-67 teradatasql.connect JSON connection string optional
 
 `16.20.0.46` - Aug 16, 2019
 * GOSQL-39 COP Discovery interop with Kerberos
