@@ -121,18 +121,18 @@ Sample programs are provided to demonstrate how to use the Teradata SQL Driver f
 
 The sample programs are coded with a fake Teradata Database hostname `whomooz`, username `guest`, and password `please`. Substitute your actual Teradata Database hostname and credentials before running a sample program.
 
-Program                     | Purpose
---------------------------- | ---
-BatchInsert.py              | Demonstrates how to insert a batch of rows
-CharPadding.py              | Demonstrates the Teradata Database's _Character Export Width_ behavior
-CommitRollback.py           | Demonstrates commit and rollback methods with auto-commit off.
-DriverDatabaseVersion.py    | Displays the Teradata SQL Driver version and Teradata Database version
-ElicitFile.py               | Demonstrates C source file upload to create a User-Defined Function (UDF)
-HelpSession.py              | Displays session information
-LoadCSVFile.py              | Demonstrates how to load data from a CSV file into a table
-MetadataFromPrepare.py      | Demonstrates how to prepare a SQL request and obtain SQL statement metadata
-StoredProc.py               | Demonstrates how to create and call a SQL stored procedure
-TJEncryptPassword.py        | Creates encrypted password files
+Program                                                                                                             | Purpose
+------------------------------------------------------------------------------------------------------------------- | ---
+[BatchInsert.py](https://github.com/Teradata/python-driver/blob/master/samples/BatchInsert.py)                      | Demonstrates how to insert a batch of rows
+[CharPadding.py](https://github.com/Teradata/python-driver/blob/master/samples/CharPadding.py)                      | Demonstrates the Teradata Database's _Character Export Width_ behavior
+[CommitRollback.py](https://github.com/Teradata/python-driver/blob/master/samples/CommitRollback.py)                | Demonstrates commit and rollback methods with auto-commit off.
+[DriverDatabaseVersion.py](https://github.com/Teradata/python-driver/blob/master/samples/DriverDatabaseVersion.py)  | Displays the Teradata SQL Driver version and Teradata Database version
+[ElicitFile.py](https://github.com/Teradata/python-driver/blob/master/samples/ElicitFile.py)                        | Demonstrates C source file upload to create a User-Defined Function (UDF)
+[HelpSession.py](https://github.com/Teradata/python-driver/blob/master/samples/HelpSession.py)                      | Displays session information
+[LoadCSVFile.py](https://github.com/Teradata/python-driver/blob/master/samples/LoadCSVFile.py)                      | Demonstrates how to load data from a CSV file into a table
+[MetadataFromPrepare.py](https://github.com/Teradata/python-driver/blob/master/samples/MetadataFromPrepare.py)      | Demonstrates how to prepare a SQL request and obtain SQL statement metadata
+[StoredProc.py](https://github.com/Teradata/python-driver/blob/master/samples/StoredProc.py)                        | Demonstrates how to create and call a SQL stored procedure
+[TJEncryptPassword.py](https://github.com/Teradata/python-driver/blob/master/samples/TJEncryptPassword.py)          | Creates encrypted password files
 
 <a name="Using"></a>
 
