@@ -76,7 +76,6 @@ At the present time, the Teradata SQL Driver for Python offers the following fea
 * No support yet for data encryption that is governed by central administration. To enable data encryption, you must specify a `true` value for the `encryptdata` connection parameter.
 * Laddered Concurrent Connect is not supported yet.
 * No support yet for Recoverable Network Protocol and Redrive.
-* FastLoad is not available yet.
 * FastExport is not available yet.
 * Monitor partition support is not available yet.
 
@@ -1085,10 +1084,11 @@ The Teradata SQL Driver for Python now offers FastLoad.
 Please be aware that this is just the initial release of the FastLoad feature. Think of it as a beta or preview version. It works, but does not yet offer all the features that JDBC FastLoad offers. FastLoad is still under active development, and we will continue to enhance it in subsequent builds.
 
 FastLoad has limitations and cannot be used in all cases as a substitute for SQL batch insert:
-* FastLoad can only load into an empty table.
+* FastLoad can only load into an empty permanent table.
 * FastLoad cannot load additional rows into a table that already contains rows.
+* FastLoad cannot load into a volatile table or global temporary table.
 * FastLoad cannot load duplicate rows into a `MULTISET` table.
-* Do not use Fastload to load only a few rows, because FastLoad opens extra connections to the database, which is time consuming.
+* Do not use FastLoad to load only a few rows, because FastLoad opens extra connections to the database, which is time consuming.
 * Only use FastLoad to load many rows (at least 100,000 rows) so that the row-loading performance gain exceeds the overhead of opening additional connections.
 * FastLoad does not support all Teradata Database data types. For example, `BLOB` and `CLOB` are not supported.
 * FastLoad requires StatementInfo parcel support to be enabled.
@@ -1140,6 +1140,9 @@ Warning and error information remains available until the next batch is inserted
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`16.20.0.49` - Oct 3, 2019
+* GOSQL-45 FastLoad interop with Stored Password Protection
 
 `16.20.0.48` - Sep 6, 2019
 * GOSQL-14 add support for FastLoad protocol
