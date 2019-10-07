@@ -124,6 +124,7 @@ The sample programs are coded with a fake Teradata Database hostname `whomooz`, 
 Program                                                                                                             | Purpose
 ------------------------------------------------------------------------------------------------------------------- | ---
 [BatchInsert.py](https://github.com/Teradata/python-driver/blob/master/samples/BatchInsert.py)                      | Demonstrates how to insert a batch of rows
+[BatchInsPerf.py](https://github.com/Teradata/python-driver/blob/master/samples/BatchInsPerf.py)                    | Measures time to insert one million rows
 [CharPadding.py](https://github.com/Teradata/python-driver/blob/master/samples/CharPadding.py)                      | Demonstrates the Teradata Database's _Character Export Width_ behavior
 [CommitRollback.py](https://github.com/Teradata/python-driver/blob/master/samples/CommitRollback.py)                | Demonstrates commit and rollback methods with auto-commit off.
 [DriverDatabaseVersion.py](https://github.com/Teradata/python-driver/blob/master/samples/DriverDatabaseVersion.py)  | Displays the Teradata SQL Driver version and Teradata Database version
@@ -1140,6 +1141,9 @@ Warning and error information remains available until the next batch is inserted
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`16.20.0.50` - Oct 7, 2019
+* PYDBAPI-68 improve performance for batch bind values
 
 `16.20.0.49` - Oct 3, 2019
 * GOSQL-45 FastLoad interop with Stored Password Protection
