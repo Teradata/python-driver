@@ -1140,6 +1140,9 @@ Warning and error information remains available until the next batch is inserted
 
 ### Change Log
 
+`16.20.0.54` - Nov 21, 2019
+* GOSQL-49 FastLoad support for additional connection parameters
+
 `16.20.0.53` - Nov 15, 2019
 * GOSQL-36 segment and iterate parameter batches per batch row limit
 * GOSQL-43 segment and iterate parameter batches per request message size limit for FastLoad
