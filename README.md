@@ -1141,7 +1141,7 @@ Warning and error information remains available until the next batch is inserted
 
 ### Change Log
 
-`16.20.0.54` - Nov 26, 2019
+`16.20.0.55` - Nov 26, 2019
 * GOSQL-15 add database connection parameter
 * PYDBAPI-66 Better exception when running on 32-bit Python
 
