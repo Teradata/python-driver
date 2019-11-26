@@ -1199,7 +1199,7 @@ Warning and error information remains available until the next batch is inserted
 * GOSQL-17 commit and rollback functions
 
 `16.20.0.39` - Oct 26, 2018
-* Sample program `StoredProc.py`
+* GOSQL-33 CALL to stored procedure INOUT and OUT parameter output values
 
 `16.20.0.38` - Oct 25, 2018
 * PYDBAPI-56 Stored Procedure Dynamic Result Sets
