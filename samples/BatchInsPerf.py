@@ -5,7 +5,6 @@
 import sys
 import teradatasql
 import time
-import traceback
 
 sTableName = "batchinsperf"
 nRowsPerBatch = 10000
@@ -18,7 +17,7 @@ with teradatasql.connect (host="whomooz", user="guest", password="please") as co
         try:
             cur.execute ("drop table " + sTableName)
         except Exception as ex:
-            print ("Ignoring", (traceback.format_exception_only (sys.exc_info () [0], sys.exc_info () [1]) [-1]).split ("\n") [0])
+            print ("Ignoring", str (ex).split ("\n") [0])
 
         cur.execute ("create table " + sTableName + " (c1 integer, c2 varchar(100), c3 integer, c4 varchar(100))")
         try:
