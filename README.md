@@ -1141,6 +1141,9 @@ Warning and error information remains available until the next batch is inserted
 
 ### Change Log
 
+`16.20.0.57` - Dec 10, 2019
+* GOSQL-50 provide FastLoad duplicate row errors with auto-commit on
+
 `16.20.0.56` - Dec 4, 2019
 * PYDBAPI-70 raise error for closed cursor usage
 
