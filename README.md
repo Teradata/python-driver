@@ -137,6 +137,7 @@ Program                                                                         
 [FakeResultSetEsc.py](https://github.com/Teradata/python-driver/blob/master/samples/FakeResultSetEsc.py)            | Demonstrates escape function for fake result sets
 [FastLoadBatch.py](https://github.com/Teradata/python-driver/blob/master/samples/FastLoadBatch.py)                  | Demonstrates how to FastLoad batches of rows
 [HelpSession.py](https://github.com/Teradata/python-driver/blob/master/samples/HelpSession.py)                      | Displays session information
+[IgnoreErrors.py](https://github.com/Teradata/python-driver/blob/master/samples/IgnoreErrors.py)                    | Demonstrates how to ignore errors
 [LoadCSVFile.py](https://github.com/Teradata/python-driver/blob/master/samples/LoadCSVFile.py)                      | Demonstrates how to load data from a CSV file into a table
 [MetadataFromPrepare.py](https://github.com/Teradata/python-driver/blob/master/samples/MetadataFromPrepare.py)      | Demonstrates how to prepare a SQL request and obtain SQL statement metadata
 [StoredProc.py](https://github.com/Teradata/python-driver/blob/master/samples/StoredProc.py)                        | Demonstrates how to create and call a SQL stored procedure
@@ -770,17 +771,21 @@ Closes the Cursor.
 
 ---
 
-`.execute(` *SQLRequest* `,` *OptionalSequenceOfParameterValues* `)`
+`.execute(` *SQLRequest* `,` *OptionalSequenceOfParameterValues* `, ignoreErrors=` *OptionalSequenceOfIgnoredErrorCodes* `)`
 
 Executes the SQL request.
 If a sequence of parameter values is provided as the second argument, the values will be bound to question-mark parameter markers in the SQL request. Specifying parameter values as a mapping is not supported.
 
+The `ignoreErrors` parameter is optional. The ignored error codes must be specified as a sequence of integers.
+
 ---
 
-`.executemany(` *SQLRequest* `,` *SequenceOfSequencesOfParameterValues* `)`
+`.executemany(` *SQLRequest* `,` *SequenceOfSequencesOfParameterValues* `, ignoreErrors=` *OptionalSequenceOfIgnoredErrorCodes* `)`
 
 Executes the SQL request as an iterated SQL request for the batch of parameter values.
 The batch of parameter values must be specified as a sequence of sequences. Specifying parameter values as a mapping is not supported.
+
+The `ignoreErrors` parameter is optional. The ignored error codes must be specified as a sequence of integers.
 
 ---
 
@@ -1140,6 +1145,9 @@ Warning and error information remains available until the next batch is inserted
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`16.20.0.58` - Dec 11, 2019
+* PYDBAPI-71 execute and executemany ignoreErrors parameter
 
 `16.20.0.57` - Dec 10, 2019
 * GOSQL-50 provide FastLoad duplicate row errors with auto-commit on
