@@ -12,7 +12,7 @@ For Teradata customer support, please visit [Teradata Access](https://access.ter
 
 Please note, this driver may contain beta/preview features ("Beta Features"). As such, by downloading and/or using the driver, in addition to agreeing to the licensing terms below, you acknowledge that the Beta Features are experimental in nature and that the Beta Features are provided "AS IS" and may not be functional on any machine or in any environment.
 
-Copyright 2019 Teradata. All Rights Reserved.
+Copyright 2020 Teradata. All Rights Reserved.
 
 ### Table of Contents
 
@@ -1145,6 +1145,11 @@ Warning and error information remains available until the next batch is inserted
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`16.20.0.59` - Jan 8, 2020
+* GOSQL-51 FastLoad fails when table is dropped and recreated
+* PYDBAPI-72 bind value performance improvement
+* PYDBAPI-73 DBAPI fails to insert 16383 rows
 
 `16.20.0.58` - Dec 11, 2019
 * PYDBAPI-71 execute and executemany ignoreErrors parameter
