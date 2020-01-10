@@ -85,7 +85,9 @@ At the present time, the Teradata SQL Driver for Python offers the following fea
 
 ### Installation
 
-Use pip to install the Teradata SQL Driver for Python.
+The Teradata SQL Driver for Python depends on the `pycryptodome` package which is available from PyPI.
+
+Use `pip install` to download and install the Teradata SQL Driver for Python and its dependencies automatically.
 
 Platform       | Command
 -------------- | ---
