@@ -74,7 +74,7 @@ At the present time, the Teradata SQL Driver for Python offers the following fea
 ### Limitations
 
 * The UTF8 session character set is always used. The `charset` connection parameter is not supported.
-* The following complex data types are not supported yet: `XML`, `JSON`, `DATASET STORAGE FORMAT AVRO`, and `DATASET STORAGE FORMAT CSV`.
+* The following complex data types are not supported yet: `JSON`, `DATASET STORAGE FORMAT AVRO`, and `DATASET STORAGE FORMAT CSV`.
 * No support yet for data encryption that is governed by central administration. To enable data encryption, you must specify a `true` value for the `encryptdata` connection parameter.
 * Laddered Concurrent Connect is not supported yet.
 * No support yet for Recoverable Network Protocol and Redrive.
@@ -140,8 +140,10 @@ Program                                                                         
 [FastLoadBatch.py](https://github.com/Teradata/python-driver/blob/master/samples/FastLoadBatch.py)                  | Demonstrates how to FastLoad batches of rows
 [HelpSession.py](https://github.com/Teradata/python-driver/blob/master/samples/HelpSession.py)                      | Displays session information
 [IgnoreErrors.py](https://github.com/Teradata/python-driver/blob/master/samples/IgnoreErrors.py)                    | Demonstrates how to ignore errors
+[InsertXML.py](https://github.com/Teradata/python-driver/blob/master/samples/InsertXML.py)                          | Demonstrates how to insert and retrieve XML values
 [LoadCSVFile.py](https://github.com/Teradata/python-driver/blob/master/samples/LoadCSVFile.py)                      | Demonstrates how to load data from a CSV file into a table
 [MetadataFromPrepare.py](https://github.com/Teradata/python-driver/blob/master/samples/MetadataFromPrepare.py)      | Demonstrates how to prepare a SQL request and obtain SQL statement metadata
+[ParamDataTypes.py](https://github.com/Teradata/python-driver/blob/master/samples/ParamDataTypes.py)                | Demonstrates how to specify data types for parameter marker bind values
 [StoredProc.py](https://github.com/Teradata/python-driver/blob/master/samples/StoredProc.py)                        | Demonstrates how to create and call a SQL stored procedure
 [TJEncryptPassword.py](https://github.com/Teradata/python-driver/blob/master/samples/TJEncryptPassword.py)          | Creates encrypted password files
 
@@ -552,6 +554,7 @@ Teradata Database data type        | Result set Python data type       | With `t
 `TIMESTAMP WITH TIME ZONE`         | `datetime.datetime` with `tzinfo` | `str`
 `VARBYTE`                          | `bytes`                           |
 `VARCHAR`                          | `str`                             |
+`XML`                              | `str`                             |
 
 The table below lists the parameterized SQL bind-value Python data types supported by the Teradata SQL Driver for Python, and indicates the corresponding Teradata Database data type transmitted to the server.
 
@@ -1084,6 +1087,7 @@ Request-Scope Function                                 | Effect
 `{fn teradata_failfast}`                               | Reject ("fail fast") this SQL request rather than delay by a workload management rule or throttle
 `{fn teradata_fake_result_sets}`                       | A fake result set containing statement metadata precedes each real result set
 `{fn teradata_lobselect(`*Option*`)}`                  | Executes the SQL request with LOB select *Option* `S` (spool-scoped LOB locators), `T` (transaction-scoped LOB locators), or the default `I` (inline materialized LOB values)
+`{fn teradata_parameter(`*Index*`,`*DataType*`)`       | Transmits parameter *Index* bind values as *DataType*
 `{fn teradata_provide(request_scope_lob_support_off)}` | Turns off LOB support for this SQL request
 `{fn teradata_provide(request_scope_refresh_rsmd)}`    | Executes the SQL request with the default request processing option `B` (both)
 `{fn teradata_provide(request_scope_sip_support_off)}` | Turns off StatementInfo parcel support for this SQL request
@@ -1147,6 +1151,12 @@ Warning and error information remains available until the next batch is inserted
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`16.20.0.60` - Mar 27, 2020
+* GOSQL-22 enable insert of large LOB values over 64KB
+* GOSQL-52 teradata_try_fastload consider bind value data types
+* GOSQL-54 enforce Decimal value maximum precision 38
+* PYDBAPI-37 Teradata Data Types Support up to 14.10 including LOB data
 
 `16.20.0.59` - Jan 8, 2020
 * GOSQL-51 FastLoad fails when table is dropped and recreated
