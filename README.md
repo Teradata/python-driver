@@ -1380,3 +1380,4 @@ Warning and error information remains available until the next batch is inserted
 * PYDBAPI-41 Teradata Logon mechanism - TD2
 * PYDBAPI-43 parameterized single-row inserts
 * PYDBAPI-44 parameterized queries
+
