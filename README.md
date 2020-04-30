@@ -200,7 +200,7 @@ Parameter          | Default     | Type           | Description
 `partition`        | `"DBC/SQL"` | string         | Specifies the Teradata Database Partition. Equivalent to the Teradata JDBC Driver `PARTITION` connection parameter.
 `password`         |             | string         | Specifies the Teradata Database password. Equivalent to the Teradata JDBC Driver `PASSWORD` connection parameter.
 `sip_support`      | `"true"`    | quoted boolean | Controls whether StatementInfo parcel is used. Equivalent to the Teradata JDBC Driver `SIP_SUPPORT` connection parameter.
-`teradata_values`  | `"true"`    | quoted boolean | Controls whether `str` or a more specific Python data type is used for certain Result set column value types. Refer to the table below for details.
+`teradata_values`  | `"true"`    | quoted boolean | Controls whether `str` or a more specific Python data type is used for certain result set column value types. Refer to the [Data Types](#DataTypes) table below for details.
 `tmode`            | `"DEFAULT"` | string         | Specifies the transaction mode. Equivalent to the Teradata JDBC Driver `TMODE` connection parameter. Possible values are `DEFAULT` (the default), `ANSI`, or `TERA`.
 `user`             |             | string         | Specifies the Teradata Database username. Equivalent to the Teradata JDBC Driver `USER` connection parameter.
 
@@ -1151,6 +1151,9 @@ Warning and error information remains available until the next batch is inserted
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`16.20.0.61` - Apr 30, 2020
+* GOSQL-57 Deferred LOB values larger than 1MB
 
 `16.20.0.60` - Mar 27, 2020
 * GOSQL-22 enable insert of large LOB values over 64KB
