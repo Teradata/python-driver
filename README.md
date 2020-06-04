@@ -1152,6 +1152,9 @@ Warning and error information remains available until the next batch is inserted
 
 ### Change Log
 
+`17.0.0.1` - June 4, 2020
+* GOSQL-61 FastLoad accommodate encryptdata true
+
 `16.20.0.62` - May 12, 2020
 * GOSQL-58 support multiple files for Elicit File protocol
 * GOSQL-59 FastLoad accommodate dbscontrol change of COUNT(*) return type
