@@ -1084,6 +1084,7 @@ Request-scope function escape clauses are removed before the SQL request text is
 
 Request-Scope Function                                 | Effect
 ------------------------------------------------------ | ---
+`{fn teradata_clobtranslate(`*Option*`)}`              | Executes the SQL request with CLOB translate *Option* `U` (unlocked) or the default `L` (locked)
 `{fn teradata_failfast}`                               | Reject ("fail fast") this SQL request rather than delay by a workload management rule or throttle
 `{fn teradata_fake_result_sets}`                       | A fake result set containing statement metadata precedes each real result set
 `{fn teradata_lobselect(`*Option*`)}`                  | Executes the SQL request with LOB select *Option* `S` (spool-scoped LOB locators), `T` (transaction-scoped LOB locators), or the default `I` (inline materialized LOB values)
@@ -1151,6 +1152,9 @@ Warning and error information remains available until the next batch is inserted
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`17.0.0.2` - June 10, 2020
+* GOSQL-60 CLOBTranslate=Locked workaround for DBS DR 194293
 
 `17.0.0.1` - June 4, 2020
 * GOSQL-61 FastLoad accommodate encryptdata true
