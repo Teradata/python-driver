@@ -1153,6 +1153,9 @@ Warning and error information remains available until the next batch is inserted
 
 ### Change Log
 
+`17.0.0.3` - July 30, 2020
+* Build DLL and shared library with Go 1.14.6
+
 `17.0.0.2` - June 10, 2020
 * GOSQL-60 CLOBTranslate=Locked workaround for DBS DR 194293
 
