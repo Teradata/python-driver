@@ -1153,6 +1153,9 @@ Warning and error information remains available until the next batch is inserted
 
 ### Change Log
 
+`17.0.0.5` - August 26, 2020
+* GOSQL-64 improve error checking for FastLoad escape functions
+
 `17.0.0.4` - August 18, 2020
 * GOSQL-62 prevent nativesql from executing FastLoad
 * GOSQL-63 prevent FastLoad panic
