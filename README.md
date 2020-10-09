@@ -1153,6 +1153,9 @@ Warning and error information remains available until the next batch is inserted
 
 ### Change Log
 
+`17.0.0.6` - October 9, 2020
+* GOSQL-68 cross-process COP hostname load distribution
+
 `17.0.0.5` - August 26, 2020
 * GOSQL-64 improve error checking for FastLoad escape functions
 
