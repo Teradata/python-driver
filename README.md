@@ -138,6 +138,7 @@ Program                                                                         
 [ElicitFile.py](https://github.com/Teradata/python-driver/blob/master/samples/ElicitFile.py)                        | Demonstrates C source file upload to create a User-Defined Function (UDF)
 [FakeResultSetCon.py](https://github.com/Teradata/python-driver/blob/master/samples/FakeResultSetCon.py)            | Demonstrates connection parameter for fake result sets
 [FakeResultSetEsc.py](https://github.com/Teradata/python-driver/blob/master/samples/FakeResultSetEsc.py)            | Demonstrates escape function for fake result sets
+[FastExportTable.py](https://github.com/Teradata/python-driver/blob/master/samples/FastExportTable.py)              | Demonstrates how to FastExport rows from a table
 [FastLoadBatch.py](https://github.com/Teradata/python-driver/blob/master/samples/FastLoadBatch.py)                  | Demonstrates how to FastLoad batches of rows
 [HelpSession.py](https://github.com/Teradata/python-driver/blob/master/samples/HelpSession.py)                      | Displays session information
 [IgnoreErrors.py](https://github.com/Teradata/python-driver/blob/master/samples/IgnoreErrors.py)                    | Demonstrates how to ignore errors
@@ -1182,7 +1183,10 @@ After beginning a FastExport, your application can obtain the Logon Sequence Num
 
 ### Change Log
 
-`17.0.0.7` - tbd
+`17.0.0.8` - December 18, 2020
+* Documentation changes
+
+`17.0.0.7` - December 18, 2020
 * GOSQL-13 add support for FastExport protocol
 
 `17.0.0.6` - October 9, 2020
