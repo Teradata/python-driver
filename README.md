@@ -132,7 +132,7 @@ Program                                                                         
 ------------------------------------------------------------------------------------------------------------------- | ---
 [BatchInsert.py](https://github.com/Teradata/python-driver/blob/master/samples/BatchInsert.py)                      | Demonstrates how to insert a batch of rows
 [BatchInsPerf.py](https://github.com/Teradata/python-driver/blob/master/samples/BatchInsPerf.py)                    | Measures time to insert one million rows
-[CharPadding.py](https://github.com/Teradata/python-driver/blob/master/samples/CharPadding.py)                      | Demonstrates the Teradata Database's _Character Export Width_ behavior
+[CharPadding.py](https://github.com/Teradata/python-driver/blob/master/samples/CharPadding.py)                      | Demonstrates the Teradata Database's *Character Export Width* behavior
 [CommitRollback.py](https://github.com/Teradata/python-driver/blob/master/samples/CommitRollback.py)                | Demonstrates commit and rollback methods with auto-commit off.
 [DriverDatabaseVersion.py](https://github.com/Teradata/python-driver/blob/master/samples/DriverDatabaseVersion.py)  | Displays the Teradata SQL Driver version and Teradata Database version
 [ElicitFile.py](https://github.com/Teradata/python-driver/blob/master/samples/ElicitFile.py)                        | Demonstrates C source file upload to create a User-Defined Function (UDF)
@@ -146,6 +146,7 @@ Program                                                                         
 [LoadCSVFile.py](https://github.com/Teradata/python-driver/blob/master/samples/LoadCSVFile.py)                      | Demonstrates how to load data from a CSV file into a table
 [MetadataFromPrepare.py](https://github.com/Teradata/python-driver/blob/master/samples/MetadataFromPrepare.py)      | Demonstrates how to prepare a SQL request and obtain SQL statement metadata
 [ParamDataTypes.py](https://github.com/Teradata/python-driver/blob/master/samples/ParamDataTypes.py)                | Demonstrates how to specify data types for parameter marker bind values
+[ShowCommand.py](https://github.com/Teradata/python-driver/blob/master/samples/ShowCommand.py)                      | Displays the results from the `SHOW` command
 [StoredProc.py](https://github.com/Teradata/python-driver/blob/master/samples/StoredProc.py)                        | Demonstrates how to create and call a SQL stored procedure
 [TJEncryptPassword.py](https://github.com/Teradata/python-driver/blob/master/samples/TJEncryptPassword.py)          | Creates encrypted password files
 
@@ -288,7 +289,7 @@ PasswordEncryptionKeyFileName | `PassKey.properties` | Specifies a filename in t
 EncryptedPasswordFileName     | `EncPass.properties` | Specifies a filename in the current directory, a relative pathname, or an absolute pathname. The filename or pathname that must differ from the PasswordEncryptionKeyFileName. The file is created by this program. If the file already exists, it will be overwritten by the new file.
 Hostname                      | `whomooz`            | Specifies the Teradata Database hostname.
 Username                      | `guest`              | Specifies the Teradata Database username.
-Password                      | `please`             | Specifies the Teradata Database password to be encrypted. Unicode characters in the password can be specified with the `\u`*XXXX* escape sequence.
+Password                      | `please`             | Specifies the Teradata Database password to be encrypted. Unicode characters in the password can be specified with the `\u` *XXXX* escape sequence.
 
 #### Example Commands
 
@@ -311,15 +312,15 @@ The password encryption key file is a text file in Java Properties file format, 
 
 The file must contain the following string properties:
 
-Property                                          | Description
-------------------------------------------------- | ---
-`version=1`                                       | The version number must be `1`. This property is required.
-`transformation=`*Algorithm*`/`*Mode*`/`*Padding* | Specifies the transformation in the form *Algorithm*`/`*Mode*`/`*Padding*. Supported transformations are listed in a table below. This property is required.
-`algorithm=`*Algorithm*                           | This value must correspond to the *Algorithm* portion of the transformation. This property is required.
-`match=`*MatchValue*                              | The password encryption key and encrypted password files must contain the same match value. The match values are compared to ensure that the two specified files are related to each other, serving as a "sanity check" to help avoid configuration errors. This property is required.
-`key=`*HexDigits*                                 | This value is the password encryption key, encoded as hex digits. This property is required.
-`mac=`*MACAlgorithm*                              | Specifies the message authentication code (MAC) algorithm `HmacSHA1` or `HmacSHA256`. Stored Password Protection performs Encrypt-then-MAC for protection from a padding oracle attack. This property is required.
-`mackey=`*HexDigits*                              | This value is the MAC key, encoded as hex digits. This property is required.
+Property                                           | Description
+-------------------------------------------------- | ---
+`version=1`                                        | The version number must be `1`. This property is required.
+`transformation=` *Algorithm*`/`*Mode*`/`*Padding* | Specifies the transformation in the form *Algorithm*`/`*Mode*`/`*Padding*. Supported transformations are listed in a table below. This property is required.
+`algorithm=` *Algorithm*                           | This value must correspond to the *Algorithm* portion of the transformation. This property is required.
+`match=` *MatchValue*                              | The password encryption key and encrypted password files must contain the same match value. The match values are compared to ensure that the two specified files are related to each other, serving as a "sanity check" to help avoid configuration errors. This property is required.
+`key=` *HexDigits*                                 | This value is the password encryption key, encoded as hex digits. This property is required.
+`mac=` *MACAlgorithm*                              | Specifies the message authentication code (MAC) algorithm `HmacSHA1` or `HmacSHA256`. Stored Password Protection performs Encrypt-then-MAC for protection from a padding oracle attack. This property is required.
+`mackey=` *HexDigits*                              | This value is the MAC key, encoded as hex digits. This property is required.
 
 The TJEncryptPassword program uses a timestamp as a shared match value, but a timestamp is not required. Any shared string can serve as a match value. The timestamp is not related in any way to the encryption of the password, and the timestamp cannot be used to decrypt the password.
 
@@ -329,13 +330,13 @@ The encrypted password file is a text file in Java Properties file format, using
 
 The file must contain the following string properties:
 
-Property                                          | Description
-------------------------------------------------- | ---
-`version=1`                                       | The version number must be `1`. This property is required.
-`match=`*MatchValue*                              | The password encryption key and encrypted password files must contain the same match value. The match values are compared to ensure that the two specified files are related to each other, serving as a "sanity check" to help avoid configuration errors. This property is required.
-`password=`*HexDigits*                            | This value is the encrypted password, encoded as hex digits. This property is required.
-`params=`*HexDigits*                              | This value contains the cipher algorithm parameters, if any, encoded as hex digits. Some ciphers need algorithm parameters that cannot be derived from the key, such as an initialization vector. This property is optional, depending on whether the cipher algorithm has associated parameters.
-`hash=`*HexDigits*                                | This value is the expected message authentication code (MAC), encoded as hex digits. After encryption, the expected MAC is calculated using the ciphertext, transformation name, and algorithm parameters if any. Before decryption, the Teradata SQL Driver for Python calculates the MAC using the ciphertext, transformation name, and algorithm parameters if any, and verifies that the calculated MAC matches the expected MAC. If the calculated MAC differs from the expected MAC, then either or both of the files may have been tampered with. This property is required.
+Property                                           | Description
+-------------------------------------------------- | ---
+`version=1`                                        | The version number must be `1`. This property is required.
+`match=` *MatchValue*                              | The password encryption key and encrypted password files must contain the same match value. The match values are compared to ensure that the two specified files are related to each other, serving as a "sanity check" to help avoid configuration errors. This property is required.
+`password=` *HexDigits*                            | This value is the encrypted password, encoded as hex digits. This property is required.
+`params=` *HexDigits*                              | This value contains the cipher algorithm parameters, if any, encoded as hex digits. Some ciphers need algorithm parameters that cannot be derived from the key, such as an initialization vector. This property is optional, depending on whether the cipher algorithm has associated parameters.
+`hash=` *HexDigits*                                | This value is the expected message authentication code (MAC), encoded as hex digits. After encryption, the expected MAC is calculated using the ciphertext, transformation name, and algorithm parameters if any. Before decryption, the Teradata SQL Driver for Python calculates the MAC using the ciphertext, transformation name, and algorithm parameters if any, and verifies that the calculated MAC matches the expected MAC. If the calculated MAC differs from the expected MAC, then either or both of the files may have been tampered with. This property is required.
 
 While `params` is technically optional, an initialization vector is required by all three block cipher modes `CBC`, `CFB`, and `OFB` that are supported by the Teradata SQL Driver for Python. ECB (Electronic Codebook) does not require `params`, but ECB is not supported by the Teradata SQL Driver for Python.
 
@@ -590,7 +591,7 @@ A Python `None` value bound to a question-mark parameter marker is transmitted t
 
 ### Character Export Width
 
-The Teradata SQL Driver for Python always uses the UTF8 session character set, and the `charset` connection parameter is not supported. Be aware of the Teradata Database's _Character Export Width_ behavior that adds trailing space padding to fixed-width `CHAR` data type result set column values when using the UTF8 session character set.
+The Teradata SQL Driver for Python always uses the UTF8 session character set, and the `charset` connection parameter is not supported. Be aware of the Teradata Database's *Character Export Width* behavior that adds trailing space padding to fixed-width `CHAR` data type result set column values when using the UTF8 session character set.
 
 The Teradata Database `CHAR(`_n_`)` data type is a fixed-width data type (holding _n_ characters), and the Teradata Database reserves a fixed number of bytes for the `CHAR(`_n_`)` data type in response spools and in network message traffic.
 
@@ -691,12 +692,13 @@ String constant `"qmark"` indicating that prepared SQL requests use question-mar
 ### Module Exceptions
 
 `teradatasql.Error` is the base class for other exceptions.
+
 * `teradatasql.InterfaceError` is raised for errors related to the driver. Not supported yet.
 * `teradatasql.DatabaseError` is raised for errors related to the database.
-  * `teradatasql.DataError` is raised for data value errors such as division by zero. Not supported yet.
-  * `teradatasql.IntegrityError` is raised for referential integrity violations. Not supported yet.
-  * `teradatasql.OperationalError` is raised for errors related to the database's operation.
-  * `teradatasql.ProgrammingError` is raised for SQL object existence errors and SQL syntax errors. Not supported yet.
+    - `teradatasql.DataError` is raised for data value errors such as division by zero. Not supported yet.
+    - `teradatasql.IntegrityError` is raised for referential integrity violations. Not supported yet.
+    - `teradatasql.OperationalError` is raised for errors related to the database's operation.
+    - `teradatasql.ProgrammingError` is raised for SQL object existence errors and SQL syntax errors. Not supported yet.
 
 <a name="ConnectionMethods"></a>
 
@@ -1182,6 +1184,9 @@ After beginning a FastExport, your application can obtain the Logon Sequence Num
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`17.10.0.0` - June 8, 2021
+* GOSQL-75 trim whitespace from SQL request text
 
 `17.0.0.8` - December 18, 2020
 * Documentation changes
