@@ -6,9 +6,9 @@ This package implements the [PEP-249 Python Database API Specification 2.0](http
 
 This package requires 64-bit Python 3.4 or later, and runs on Windows, macOS, and Linux. 32-bit Python is not supported.
 
-For community support, please visit the [Teradata Community forums](https://community.teradata.com/).
+For community support, please visit [Teradata Community](https://support.teradata.com/community).
 
-For Teradata customer support, please visit [Teradata Access](https://access.teradata.com/).
+For Teradata customer support, please visit [Teradata Customer Service](https://support.teradata.com/).
 
 Please note, this driver may contain beta/preview features ("Beta Features"). As such, by downloading and/or using the driver, in addition to agreeing to the licensing terms below, you acknowledge that the Beta Features are experimental in nature and that the Beta Features are provided "AS IS" and may not be functional on any machine or in any environment.
 
@@ -26,6 +26,7 @@ Copyright 2021 Teradata. All Rights Reserved.
 * [Connection Parameters](#ConnectionParameters)
 * [COP Discovery](#COPDiscovery)
 * [Stored Password Protection](#StoredPasswordProtection)
+* [Client Attributes](#ClientAttributes)
 * [Transaction Mode](#TransactionMode)
 * [Auto-Commit](#AutoCommit)
 * [Data Types](#DataTypes)
@@ -59,7 +60,7 @@ At the present time, the Teradata SQL Driver for Python offers the following fea
 * Supported for use with Teradata Database 14.10 and later releases. Informally tested to work with Teradata Database 12.0 and later releases.
 * COP Discovery.
 * Encrypted logon using the `TD2`, `JWT`, `LDAP`, `KRB5` (Kerberos), or `TDNEGO` logon mechanisms.
-* Data encryption enabled via the `encryptdata` connection parameter.
+* Data encryption governed by central administration, or enabled via the `encryptdata` connection parameter.
 * Unicode character data transferred via the UTF8 session character set.
 * Auto-commit for ANSI and TERA transaction modes.
 * 1 MB rows supported with Teradata Database 16.0 and later.
@@ -78,7 +79,6 @@ At the present time, the Teradata SQL Driver for Python offers the following fea
 ### Limitations
 
 * The UTF8 session character set is always used. The `charset` connection parameter is not supported.
-* No support yet for data encryption that is governed by central administration. To enable data encryption, you must specify a `true` value for the `encryptdata` connection parameter.
 * Laddered Concurrent Connect is not supported yet.
 * No support yet for Recoverable Network Protocol and Redrive.
 * Monitor partition support is not available yet.
@@ -204,7 +204,7 @@ Parameter          | Default     | Type           | Description
 `log`              | `"0"`       | quoted integer | Controls debug logging. Somewhat equivalent to the Teradata JDBC Driver `LOG` connection parameter. This parameter's behavior is subject to change in the future. This parameter's value is currently defined as an integer in which the 1-bit governs function and method tracing, the 2-bit governs debug logging, the 4-bit governs transmit and receive message hex dumps, and the 8-bit governs timing. Compose the value by adding together 1, 2, 4, and/or 8.
 `logdata`          |             | string         | Specifies extra data for the chosen logon authentication method. Equivalent to the Teradata JDBC Driver `LOGDATA` connection parameter.
 `logmech`          | `"TD2"`     | string         | Specifies the logon authentication method. Equivalent to the Teradata JDBC Driver `LOGMECH` connection parameter. Possible values are `TD2` (the default), `JWT`, `LDAP`, `KRB5` for Kerberos, or `TDNEGO`.
-`max_message_body` | `"2097000"` | quoted integer | Not fully implemented yet and intended for future usage. Equivalent to the Teradata JDBC Driver `MAX_MESSAGE_BODY` connection parameter.
+`max_message_body` | `"2097000"` | quoted integer | Specifies the maximum Response Message size in bytes. Equivalent to the Teradata JDBC Driver `MAX_MESSAGE_BODY` connection parameter.
 `partition`        | `"DBC/SQL"` | string         | Specifies the Teradata Database Partition. Equivalent to the Teradata JDBC Driver `PARTITION` connection parameter.
 `password`         |             | string         | Specifies the Teradata Database password. Equivalent to the Teradata JDBC Driver `PASSWORD` connection parameter.
 `sip_support`      | `"true"`    | quoted boolean | Controls whether StatementInfo parcel is used. Equivalent to the Teradata JDBC Driver `SIP_SUPPORT` connection parameter.
@@ -440,6 +440,58 @@ The Teradata SQL Driver for Python verifies that the match values in the two fil
 Before decryption, the Teradata SQL Driver for Python calculates the MAC using the ciphertext, transformation name, and algorithm parameters if any, and verifies that the calculated MAC matches the expected MAC. The Teradata SQL Driver for Python raises an exception if the calculated MAC differs from the expected MAC, to indicate that either or both of the files may have been tampered with.
 
 Finally, the Teradata SQL Driver for Python uses the decrypted password to log on to the Teradata Database.
+
+<a name="ClientAttributes"></a>
+
+### Client Attributes
+
+Client Attributes record a variety of information about the client system and client software in the system tables `DBC.SessionTbl` and `DBC.EventLog`. Client Attributes are intended to be a replacement for the information recorded in the `LogonSource` column of the system tables `DBC.SessionTbl` and `DBC.EventLog`.
+
+The Client Attributes are recorded at session logon time. Subsequently, the system views `DBC.SessionInfoV` and `DBC.LogOnOffV` can be queried to obtain information about the client system and client software on a per-session basis. Client Attribute values may be recorded in the database in either mixed-case or in uppercase, depending on the session character set and other factors. Analysis of recorded Client Attributes must flexibly accommodate either mixed-case or uppercase values.
+
+Warning: The information in this section is subject to change in future releases of the driver. Client Attributes can be "mined" for information about client system demographics; however, any applications that parse Client Attribute values must be changed if Client Attribute formats are changed in the future.
+
+Client Attributes are not intended to be used for workload management. Instead, query bands are intended for workload management. Any use of Client Attributes for workload management may break if Client Attributes are changed, or augmented, in the future.
+
+Client Attribute            | Source   | Description
+--------------------------- | -------- | ---
+`MechanismName`             | database | The connection's logon mechanism; for example, TD2, LDAP, etc.
+`ClientIpAddress`           | database | The client IP address, as determined by the database
+`ClientTcpPortNumber`       | database | The connection's client TCP port number, as determined by the database
+`ClientIPAddrByClient`      | driver   | The client IP address, as determined by the driver
+`ClientPortByClient`        | driver   | The connection's client TCP port number, as determined by the driver
+`ClientProgramName`         | driver   | The client program name
+`ClientSystemUserId`        | driver   | The client user name
+`ClientOsName`              | driver   | The client operating system name
+`ClientProcThreadId`        | driver   | The client process ID
+`ClientVmName`              | driver   | Python runtime information
+`ClientTdHostName`          | driver   | The database hostname as specified by the application, without any COP suffix
+`ClientCOPSuffixedHostName` | driver   | The COP-suffixed database hostname chosen by the driver
+`ServerIPAddrByClient`      | driver   | The database node's IP address, as determined by the driver
+`ServerPortByClient`        | driver   | The destination port number of the TCP connection to the database node, as determined by the driver
+`ServerConfType`            | database | The confidentiality type, as determined by the database:<br/>`T` - TLS used for encryption<br/>`E` - TDGSS used for encryption<br/>`U` - Data transfer is unencrypted
+`ClientConfVersion`         | database | The TLS version as determined by the database, if this is an HTTPS/TLS connection
+`ClientConfCipherSuite`     | database | The TLS cipher as determined by the database, if this is an HTTPS/TLS connection
+`ClientAttributesEx`        | driver   | Additional Client Attributes are available in this column as a list of name=value pairs, each terminated by a semicolon. Individual values can be accessed using the `NVP` system function.<br/>`PYTHON` - The Python version<br/>`TZ` - The Python current time zone<br/>`GO` - The Go version<br/>`SCS` - The session character set<br/>`CCS` - The client character set<br/>`LOB` - Y/N indicator for LOB support<br/>`SIP` - Y/N indicator for StatementInfo parcel support<br/>`TM` - The transaction mode indicator A (ANSI) or T (TERA)<br/>`ENC` - Y/N indicator for `encryptdata` connection parameter<br/>`DP` - The `dbs_port` connection parameter
+
+#### LogonSource Column
+
+The `LogonSource` column is obsolete and has been superseded by Client Attributes. The `LogonSource` column may be deprecated and subsequently removed in future releases of the database.
+
+When the driver establishes a connection to the database, the driver composes a string value that is stored in the `LogonSource` column of the system tables `DBC.SessionTbl` and `DBC.EventLog`. The `LogonSource` column is included in system views such as `DBC.SessionInfoV` and `DBC.LogOnOffV`. All `LogonSource` values are recorded in the database in uppercase.
+
+The driver follows the format documented in the Teradata Data Dictionary, section "System Views Columns Reference", for network-attached `LogonSource` values. Network-attached `LogonSource` values have eight fields, separated by whitespace. The database composes fields 1 through 3, and the driver composes fields 4 through 8.
+
+Field | Source   | Description
+----- | -------- | ---
+1     | database | The string `(TCP/IP)` to indicate the connection type
+2     | database | The connection's client TCP port number, in hexadecimal
+3     | database | The client IP address, as determined by the database
+4     | driver   | The database hostname as specified by the application, without any COP suffix
+5     | driver   | The client process ID
+6     | driver   | The client user name
+7     | driver   | The client program name
+8     | driver   | The string `01 LSS` to indicate the `LogonSource` string version `01`
 
 <a name="TransactionMode"></a>
 
@@ -1028,11 +1080,11 @@ The escape clause must be specified immediately after the `LIKE` predicate that 
 
 Outer join escape clauses are replaced by the corresponding SQL clause before the SQL request text is transmitted to the database.
 
-`{oj `*TableName*` `*OptionalCorrelationName*` LEFT OUTER JOIN `*TableName*` `*OptionalCorrelationName*` ON `*JoinCondition*`}`
+`{oj `*TableName* *OptionalCorrelationName* `LEFT OUTER JOIN `*TableName* *OptionalCorrelationName* `ON `*JoinCondition*`}`
 
-`{oj `*TableName*` `*OptionalCorrelationName*` RIGHT OUTER JOIN `*TableName*` `*OptionalCorrelationName*` ON `*JoinCondition*`}`
+`{oj `*TableName* *OptionalCorrelationName* `RIGHT OUTER JOIN `*TableName* *OptionalCorrelationName* `ON `*JoinCondition*`}`
 
-`{oj `*TableName*` `*OptionalCorrelationName*` FULL OUTER JOIN `*TableName*` `*OptionalCorrelationName*` ON `*JoinCondition*`}`
+`{oj `*TableName* *OptionalCorrelationName* `FULL OUTER JOIN `*TableName* *OptionalCorrelationName* `ON `*JoinCondition*`}`
 
 #### Stored Procedure Calls
 
@@ -1062,7 +1114,9 @@ Connection Function                           | Returns
 `{fn teradata_database_version}`              | Version number of the Teradata Database
 `{fn teradata_driver_version}`                | Version number of the Teradata SQL Driver for Python
 `{fn teradata_getloglevel}`                   | Current log level
+`{fn teradata_go_runtime}`                    | Go runtime version for the Teradata GoSQL Driver
 `{fn teradata_logon_sequence_number}`         | Session's Logon Sequence Number, if available
+`{fn teradata_program_name}`                  | Executable program name
 `{fn teradata_provide(config_response)}`      | Config Response parcel contents in JSON format
 `{fn teradata_provide(connection_id)}`        | Connection's unique identifier within the process
 `{fn teradata_provide(default_connection)}`   | `false` indicating this is not a stored procedure default connection
@@ -1222,6 +1276,14 @@ Limitations when using CSV batch inserts:
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`17.10.0.3` - November 30, 2021
+* GOSQL-12 Centralized administration for data encryption
+* GOSQL-25 Assign Response message error handling
+* GOSQL-27 Enhance checks for missing logon parameters
+* GOSQL-65 improve terasso error messages
+* GOSQL-66 transmit Client Attributes to DBS during logon
+* PYDBAPI-58 Centralized administration (from database) of Data Encryption
 
 `17.10.0.2` - July 2, 2021
 * GOSQL-33 CALL to stored procedure INOUT and OUT parameter output values
