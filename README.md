@@ -22,7 +22,7 @@ Copyright 2021 Teradata. All Rights Reserved.
 * [License](#License)
 * [Documentation](#Documentation)
 * [Sample Programs](#SamplePrograms)
-* [Using the Teradata SQL Driver for Python](#Using)
+* [Using the Driver](#Using)
 * [Connection Parameters](#ConnectionParameters)
 * [COP Discovery](#COPDiscovery)
 * [Stored Password Protection](#StoredPasswordProtection)
@@ -51,14 +51,16 @@ Table of Contents links do not work on PyPI due to a [PyPI limitation](https://g
 
 ### Features
 
-The *Teradata SQL Driver for Python* is a DBAPI Driver that enables Python applications to connect to the Teradata Database. The Teradata SQL Driver for Python implements the [PEP-249 Python Database API Specification 2.0](https://www.python.org/dev/peps/pep-0249/).
+The *Teradata SQL Driver for Python* is a DBAPI Driver that enables Python applications to connect to the Teradata Database. The driver implements the [PEP-249 Python Database API Specification 2.0](https://www.python.org/dev/peps/pep-0249/).
 
-The Teradata SQL Driver for Python is a young product that offers a basic feature set. We are working diligently to add features to the Teradata SQL Driver for Python, and our goal is feature parity with the Teradata JDBC Driver.
+The driver is a young product that offers a basic feature set. We are working diligently to add features to the driver, and our goal is feature parity with the Teradata JDBC Driver.
 
-At the present time, the Teradata SQL Driver for Python offers the following features.
+At the present time, the driver offers the following features.
 
 * Supported for use with Teradata Database 14.10 and later releases. Informally tested to work with Teradata Database 12.0 and later releases.
 * COP Discovery.
+* Laddered Concurrent Connect.
+* HTTPS/TLS connections with Teradata SQL Engine 16.20.53.30 and later.
 * Encrypted logon using the `TD2`, `JWT`, `LDAP`, `KRB5` (Kerberos), or `TDNEGO` logon mechanisms.
 * Data encryption governed by central administration, or enabled via the `encryptdata` connection parameter.
 * Unicode character data transferred via the UTF8 session character set.
@@ -78,8 +80,8 @@ At the present time, the Teradata SQL Driver for Python offers the following fea
 
 ### Limitations
 
+* TLS certificate verification is not implemented yet. `VERIFY-CA` and `VERIFY-FULL` do not perform certificate verification yet.
 * The UTF8 session character set is always used. The `charset` connection parameter is not supported.
-* Laddered Concurrent Connect is not supported yet.
 * No support yet for Recoverable Network Protocol and Redrive.
 * Monitor partition support is not available yet.
 
@@ -87,16 +89,16 @@ At the present time, the Teradata SQL Driver for Python offers the following fea
 
 ### Installation
 
-The Teradata SQL Driver for Python depends on the `pycryptodome` package which is available from PyPI.
+The driver depends on the `pycryptodome` package which is available from PyPI.
 
-Use `pip install` to download and install the Teradata SQL Driver for Python and its dependencies automatically.
+Use `pip install` to download and install the driver and its dependencies automatically.
 
 Platform       | Command
 -------------- | ---
 macOS or Linux | `pip install teradatasql`
 Windows        | `py -3 -m pip install teradatasql`
 
-When upgrading to a new version of the Teradata SQL Driver for Python, you may need to use pip install's `--no-cache-dir` option to force the download of the new version.
+When upgrading to a new version of the driver, you may need to use pip install's `--no-cache-dir` option to force the download of the new version.
 
 Platform       | Command
 -------------- | ---
@@ -107,9 +109,9 @@ Windows        | `py -3 -m pip install --no-cache-dir -U teradatasql`
 
 ### License
 
-Use of the Teradata SQL Driver for Python is governed by the *License Agreement for the Teradata SQL Driver for Python*.
+Use of the driver is governed by the *License Agreement for the Teradata SQL Driver for Python*.
 
-When the Teradata SQL Driver for Python is installed, the `LICENSE` and `THIRDPARTYLICENSE` files are placed in the `teradatasql` directory under your Python installation directory.
+When the driver is installed, the `LICENSE` and `THIRDPARTYLICENSE` files are placed in the `teradatasql` directory under your Python installation directory.
 
 In addition to the license terms, the driver may contain beta/preview features ("Beta Features"). As such, by downloading and/or using the driver, in addition to the licensing terms, you acknowledge that the Beta Features are experimental in nature and that the Beta Features are provided "AS IS" and may not be functional on any machine or in any environment.
 
@@ -117,32 +119,32 @@ In addition to the license terms, the driver may contain beta/preview features (
 
 ### Documentation
 
-When the Teradata SQL Driver for Python is installed, the `README.md` file is placed in the `teradatasql` directory under your Python installation directory. This permits you to view the documentation offline, when you are not connected to the Internet.
+When the driver is installed, the `README.md` file is placed in the `teradatasql` directory under your Python installation directory. This permits you to view the documentation offline, when you are not connected to the Internet.
 
-The `README.md` file is a plain text file containing the documentation for the Teradata SQL Driver for Python. While the file can be viewed with any text file viewer or editor, your viewing experience will be best with an editor that understands Markdown format.
+The `README.md` file is a plain text file containing the documentation for the driver. While the file can be viewed with any text file viewer or editor, your viewing experience will be best with an editor that understands Markdown format.
 
 <a name="SamplePrograms"></a>
 
 ### Sample Programs
 
-Sample programs are provided to demonstrate how to use the Teradata SQL Driver for Python. When the Teradata SQL Driver for Python is installed, the sample programs are placed in the `teradatasql/samples` directory under your Python installation directory.
+Sample programs are provided to demonstrate how to use the driver. When the driver is installed, the sample programs are placed in the `teradatasql/samples` directory under your Python installation directory.
 
-The sample programs are coded with a fake Teradata Database hostname `whomooz`, username `guest`, and password `please`. Substitute your actual Teradata Database hostname and credentials before running a sample program.
+The sample programs are coded with a fake database hostname `whomooz`, username `guest`, and password `please`. Substitute your actual database hostname and credentials before running a sample program.
 
 Program                                                                                                             | Purpose
 ------------------------------------------------------------------------------------------------------------------- | ---
 [BatchInsert.py](https://github.com/Teradata/python-driver/blob/master/samples/BatchInsert.py)                      | Demonstrates how to insert a batch of rows
 [BatchInsertCSV.py](https://github.com/Teradata/python-driver/blob/master/samples/BatchInsertCSV.py)                | Demonstrates how to insert a batch of rows from a CSV file
 [BatchInsPerf.py](https://github.com/Teradata/python-driver/blob/master/samples/BatchInsPerf.py)                    | Measures time to insert one million rows
-[CharPadding.py](https://github.com/Teradata/python-driver/blob/master/samples/CharPadding.py)                      | Demonstrates the Teradata Database's *Character Export Width* behavior
+[CharPadding.py](https://github.com/Teradata/python-driver/blob/master/samples/CharPadding.py)                      | Demonstrates the database's *Character Export Width* behavior
 [CommitRollback.py](https://github.com/Teradata/python-driver/blob/master/samples/CommitRollback.py)                | Demonstrates commit and rollback methods with auto-commit off.
-[DriverDatabaseVersion.py](https://github.com/Teradata/python-driver/blob/master/samples/DriverDatabaseVersion.py)  | Displays the Teradata SQL Driver version and Teradata Database version
+[DriverDatabaseVersion.py](https://github.com/Teradata/python-driver/blob/master/samples/DriverDatabaseVersion.py)  | Displays the driver version and database version
 [ElicitFile.py](https://github.com/Teradata/python-driver/blob/master/samples/ElicitFile.py)                        | Demonstrates C source file upload to create a User-Defined Function (UDF)
 [FakeResultSetCon.py](https://github.com/Teradata/python-driver/blob/master/samples/FakeResultSetCon.py)            | Demonstrates connection parameter for fake result sets
 [FakeResultSetEsc.py](https://github.com/Teradata/python-driver/blob/master/samples/FakeResultSetEsc.py)            | Demonstrates escape function for fake result sets
 [FastExportTable.py](https://github.com/Teradata/python-driver/blob/master/samples/FastExportTable.py)              | Demonstrates how to FastExport rows from a table
 [FastLoadBatch.py](https://github.com/Teradata/python-driver/blob/master/samples/FastLoadBatch.py)                  | Demonstrates how to FastLoad batches of rows
-[FastLoadCSV.py](https://github.com/Teradata/python-driver/blob/master/samples/FastLoadBatch.py)                  | Demonstrates how to FastLoad batches of rows from a CSV file
+[FastLoadCSV.py](https://github.com/Teradata/python-driver/blob/master/samples/FastLoadBatch.py)                    | Demonstrates how to FastLoad batches of rows from a CSV file
 [HelpSession.py](https://github.com/Teradata/python-driver/blob/master/samples/HelpSession.py)                      | Displays session information
 [IgnoreErrors.py](https://github.com/Teradata/python-driver/blob/master/samples/IgnoreErrors.py)                    | Demonstrates how to ignore errors
 [InsertXML.py](https://github.com/Teradata/python-driver/blob/master/samples/InsertXML.py)                          | Demonstrates how to insert and retrieve XML values
@@ -155,13 +157,13 @@ Program                                                                         
 
 <a name="Using"></a>
 
-### Using the Teradata SQL Driver for Python
+### Using the Driver
 
-Your Python script must import the `teradatasql` package in order to use the Teradata SQL Driver for Python.
+Your Python script must import the `teradatasql` package in order to use the driver.
 
     import teradatasql
 
-After importing the `teradatasql` package, your Python script calls the `teradatasql.connect` function to open a connection to the Teradata Database.
+After importing the `teradatasql` package, your Python script calls the `teradatasql.connect` function to open a connection to the database.
 
 You may specify connection parameters as a JSON string, as `kwargs`, or using a combination of the two approaches. The `teradatasql.connect` function's first argument is an optional JSON string. The `teradatasql.connect` function's second and subsequent arguments are optional `kwargs`.
 
@@ -183,69 +185,76 @@ When a combination of parameters are specified, connection parameters specified 
 
 ### Connection Parameters
 
-The following table lists the connection parameters currently offered by the Teradata SQL Driver for Python.
+The following table lists the connection parameters currently offered by the driver.
 
-Our goal is consistency for the connection parameters offered by the Teradata SQL Driver for Python and the Teradata JDBC Driver, with respect to connection parameter names and functionality. For comparison, Teradata JDBC Driver connection parameters are [documented here](https://downloads.teradata.com/doc/connectivity/jdbc/reference/current/jdbcug_chapter_2.html#BGBHDDGB).
+Our goal is consistency for the connection parameters offered by this driver and the Teradata JDBC Driver, with respect to connection parameter names and functionality. For comparison, Teradata JDBC Driver connection parameters are [documented here](https://downloads.teradata.com/doc/connectivity/jdbc/reference/current/jdbcug_chapter_2.html#BGBHDDGB).
 
-Parameter          | Default     | Type           | Description
------------------- | ----------- | -------------- | ---
-`account`          |             | string         | Specifies the Teradata Database account. Equivalent to the Teradata JDBC Driver `ACCOUNT` connection parameter.
-`column_name`      | `"false"`   | quoted boolean | Controls the behavior of cursor `.description` sequence `name` items. Equivalent to the Teradata JDBC Driver `COLUMN_NAME` connection parameter. False specifies that a cursor `.description` sequence `name` item provides the AS-clause name if available, or the column name if available, or the column title. True specifies that a cursor `.description` sequence `name` item provides the column name if available, but has no effect when StatementInfo parcel support is unavailable.
-`cop`              | `"true"`    | quoted boolean | Specifies whether COP Discovery is performed. Equivalent to the Teradata JDBC Driver `COP` connection parameter.
-`coplast`          | `"false"`   | quoted boolean | Specifies how COP Discovery determines the last COP hostname. Equivalent to the Teradata JDBC Driver `COPLAST` connection parameter. When `coplast` is `false` or omitted, or COP Discovery is turned off, then no DNS lookup occurs for the coplast hostname. When `coplast` is `true`, and COP Discovery is turned on, then a DNS lookup occurs for a coplast hostname.
-`database`         |             | string         | Specifies the initial database to use after logon, instead of the user's default database. Equivalent to the Teradata JDBC Driver `DATABASE` connection parameter.
-`dbs_port`         | `"1025"`    | quoted integer | Specifies the Teradata Database port number. Equivalent to the Teradata JDBC Driver `DBS_PORT` connection parameter.
-`encryptdata`      | `"false"`   | quoted boolean | Controls encryption of data exchanged between the Teradata Database and the Teradata SQL Driver for Python. Equivalent to the Teradata JDBC Driver `ENCRYPTDATA` connection parameter.
-`fake_result_sets` | `"false"`   | quoted boolean | Controls whether a fake result set containing statement metadata precedes each real result set.
-`field_quote`      | `"\""`      | string         | Specifies a single character string used to quote fields in a CSV file.
-`field_sep`        | `","`       | string         | Specifies a single character string used to separate fields in a CSV file.
-`host`             |             | string         | Specifies the Teradata Database hostname.
-`lob_support`      | `"true"`    | quoted boolean | Controls LOB support. Equivalent to the Teradata JDBC Driver `LOB_SUPPORT` connection parameter.
-`log`              | `"0"`       | quoted integer | Controls debug logging. Somewhat equivalent to the Teradata JDBC Driver `LOG` connection parameter. This parameter's behavior is subject to change in the future. This parameter's value is currently defined as an integer in which the 1-bit governs function and method tracing, the 2-bit governs debug logging, the 4-bit governs transmit and receive message hex dumps, and the 8-bit governs timing. Compose the value by adding together 1, 2, 4, and/or 8.
-`logdata`          |             | string         | Specifies extra data for the chosen logon authentication method. Equivalent to the Teradata JDBC Driver `LOGDATA` connection parameter.
-`logmech`          | `"TD2"`     | string         | Specifies the logon authentication method. Equivalent to the Teradata JDBC Driver `LOGMECH` connection parameter. Possible values are `TD2` (the default), `JWT`, `LDAP`, `KRB5` for Kerberos, or `TDNEGO`.
-`max_message_body` | `"2097000"` | quoted integer | Specifies the maximum Response Message size in bytes. Equivalent to the Teradata JDBC Driver `MAX_MESSAGE_BODY` connection parameter.
-`partition`        | `"DBC/SQL"` | string         | Specifies the Teradata Database Partition. Equivalent to the Teradata JDBC Driver `PARTITION` connection parameter.
-`password`         |             | string         | Specifies the Teradata Database password. Equivalent to the Teradata JDBC Driver `PASSWORD` connection parameter.
-`sip_support`      | `"true"`    | quoted boolean | Controls whether StatementInfo parcel is used. Equivalent to the Teradata JDBC Driver `SIP_SUPPORT` connection parameter.
-`teradata_values`  | `"true"`    | quoted boolean | Controls whether `str` or a more specific Python data type is used for certain result set column value types. Refer to the [Data Types](#DataTypes) table below for details.
-`tmode`            | `"DEFAULT"` | string         | Specifies the transaction mode. Equivalent to the Teradata JDBC Driver `TMODE` connection parameter. Possible values are `DEFAULT` (the default), `ANSI`, or `TERA`.
-`user`             |             | string         | Specifies the Teradata Database username. Equivalent to the Teradata JDBC Driver `USER` connection parameter.
+Parameter               | Default     | Type           | Description
+----------------------- | ----------- | -------------- | ---
+`account`               |             | string         | Specifies the database account. Equivalent to the Teradata JDBC Driver `ACCOUNT` connection parameter.
+`column_name`           | `"false"`   | quoted boolean | Controls the behavior of cursor `.description` sequence `name` items. Equivalent to the Teradata JDBC Driver `COLUMN_NAME` connection parameter. False specifies that a cursor `.description` sequence `name` item provides the AS-clause name if available, or the column name if available, or the column title. True specifies that a cursor `.description` sequence `name` item provides the column name if available, but has no effect when StatementInfo parcel support is unavailable.
+`connect_failure_ttl`   | `"0"`       | quoted integer | Specifies the time-to-live in seconds to remember the most recent connection failure for each IP address/port combination. The driver subsequently skips connection attempts to that IP address/port for the duration of the time-to-live. The default value of zero disables this feature. The recommended value is half the database restart time. Equivalent to the Teradata JDBC Driver `CONNECT_FAILURE_TTL` connection parameter.
+`cop`                   | `"true"`    | quoted boolean | Specifies whether COP Discovery is performed. Equivalent to the Teradata JDBC Driver `COP` connection parameter.
+`coplast`               | `"false"`   | quoted boolean | Specifies how COP Discovery determines the last COP hostname. Equivalent to the Teradata JDBC Driver `COPLAST` connection parameter. When `coplast` is `false` or omitted, or COP Discovery is turned off, then no DNS lookup occurs for the coplast hostname. When `coplast` is `true`, and COP Discovery is turned on, then a DNS lookup occurs for a coplast hostname.
+`database`              |             | string         | Specifies the initial database to use after logon, instead of the user's default database. Equivalent to the Teradata JDBC Driver `DATABASE` connection parameter.
+`dbs_port`              | `"1025"`    | quoted integer | Specifies the database port number. Equivalent to the Teradata JDBC Driver `DBS_PORT` connection parameter.
+`encryptdata`           | `"false"`   | quoted boolean | Controls encryption of data exchanged between the driver and the database. Equivalent to the Teradata JDBC Driver `ENCRYPTDATA` connection parameter.
+`fake_result_sets`      | `"false"`   | quoted boolean | Controls whether a fake result set containing statement metadata precedes each real result set.
+`field_quote`           | `"\""`      | string         | Specifies a single character string used to quote fields in a CSV file.
+`field_sep`             | `","`       | string         | Specifies a single character string used to separate fields in a CSV file. Equivalent to the Teradata JDBC Driver `FIELD_SEP` connection parameter.
+`host`                  |             | string         | Specifies the database hostname.
+`https_port`            | `"443"`     | quoted integer | Specifies the database port number for HTTPS/TLS connections. Equivalent to the Teradata JDBC Driver `HTTPS_PORT` connection parameter.
+`lob_support`           | `"true"`    | quoted boolean | Controls LOB support. Equivalent to the Teradata JDBC Driver `LOB_SUPPORT` connection parameter.
+`log`                   | `"0"`       | quoted integer | Controls debug logging. Somewhat equivalent to the Teradata JDBC Driver `LOG` connection parameter. This parameter's behavior is subject to change in the future. This parameter's value is currently defined as an integer in which the 1-bit governs function and method tracing, the 2-bit governs debug logging, the 4-bit governs transmit and receive message hex dumps, and the 8-bit governs timing. Compose the value by adding together 1, 2, 4, and/or 8.
+`logdata`               |             | string         | Specifies extra data for the chosen logon authentication method. Equivalent to the Teradata JDBC Driver `LOGDATA` connection parameter.
+`logmech`               | `"TD2"`     | string         | Specifies the logon authentication method. Equivalent to the Teradata JDBC Driver `LOGMECH` connection parameter. Possible values are `TD2` (the default), `JWT`, `LDAP`, `KRB5` for Kerberos, or `TDNEGO`.
+`max_message_body`      | `"2097000"` | quoted integer | Specifies the maximum Response Message size in bytes. Equivalent to the Teradata JDBC Driver `MAX_MESSAGE_BODY` connection parameter.
+`partition`             | `"DBC/SQL"` | string         | Specifies the database partition. Equivalent to the Teradata JDBC Driver `PARTITION` connection parameter.
+`password`              |             | string         | Specifies the database password. Equivalent to the Teradata JDBC Driver `PASSWORD` connection parameter.
+`sip_support`           | `"true"`    | quoted boolean | Controls whether StatementInfo parcel is used. Equivalent to the Teradata JDBC Driver `SIP_SUPPORT` connection parameter.
+`sslca`                 |             | string         | Specifies the file name of a PEM file that contains Certificate Authority (CA) certificates for use with `sslmode` values `VERIFY-CA` or `VERIFY-FULL`. Equivalent to the Teradata JDBC Driver `SSLCA` connection parameter.
+`sslcapath`             |             | string         | Specifies a directory of PEM files that contain Certificate Authority (CA) certificates for use with `sslmode` values `VERIFY-CA` or `VERIFY-FULL`. Only files with an extension of `.pem` are used. Other files in the specified directory are not used. Equivalent to the Teradata JDBC Driver `SSLCAPATH` connection parameter.
+`sslcipher`             |             | string         | Specifies the TLS cipher for HTTPS/TLS connections. Equivalent to the Teradata JDBC Driver `SSLCIPHER` connection parameter.
+`sslmode`               | `"PREFER"`  | string         | Specifies the mode for connections to the database. Equivalent to the Teradata JDBC Driver `SSLMODE` connection parameter.<br/>&bull; `DISABLE` disables HTTPS/TLS connections and uses only non-TLS connections.<br/>&bull; `ALLOW` uses non-TLS connections unless the database requires HTTPS/TLS connections.<br/>&bull; `PREFER` uses HTTPS/TLS connections unless the database does not offer HTTPS/TLS connections.<br/>&bull; `REQUIRE` uses only HTTPS/TLS connections.<br/>&bull; `VERIFY-CA` uses only HTTPS/TLS connections and verifies that the server certificate is valid and trusted.<br/>&bull; `VERIFY-FULL` uses only HTTPS/TLS connections, verifies that the server certificate is valid and trusted, and verifies that the server certificate matches the database hostname.
+`sslprotocol`           | `"TLSv1.2"` | string         | Specifies the TLS protocol for HTTPS/TLS connections. Equivalent to the Teradata JDBC Driver `SSLPROTOCOL` connection parameter.
+`teradata_values`       | `"true"`    | quoted boolean | Controls whether `str` or a more specific Python data type is used for certain result set column value types. Refer to the [Data Types](#DataTypes) table below for details.
+`tmode`                 | `"DEFAULT"` | string         | Specifies the transaction mode. Equivalent to the Teradata JDBC Driver `TMODE` connection parameter. Possible values are `DEFAULT` (the default), `ANSI`, or `TERA`.
+`user`                  |             | string         | Specifies the database username. Equivalent to the Teradata JDBC Driver `USER` connection parameter.
 
 <a name="COPDiscovery"></a>
 
 ### COP Discovery
 
-The Teradata SQL Driver for Python provides Communications Processor (COP) discovery behavior when the `cop` connection parameter is `true` or omitted. COP Discovery is turned off when the `cop` connection parameter is `false`.
+The driver provides Communications Processor (COP) discovery behavior when the `cop` connection parameter is `true` or omitted. COP Discovery is turned off when the `cop` connection parameter is `false`.
 
-A Teradata Database system can be composed of multiple Teradata Database nodes. One or more of the Teradata Database nodes can be configured to run the Teradata Database Gateway process. Each Teradata Database node that runs the Teradata Database Gateway process is termed a Communications Processor, or COP. COP Discovery refers to the procedure of identifying all the available COP hostnames and their IP addresses. COP hostnames can be defined in DNS, or can be defined in the client system's `hosts` file. Teradata strongly recommends that COP hostnames be defined in DNS, rather than the client system's `hosts` file. Defining COP hostnames in DNS provides centralized administration, and enables centralized changes to COP hostnames if and when the Teradata Database is reconfigured.
+A database system can be composed of multiple database nodes. One or more of the database nodes can be configured to run the database Gateway process. Each database node that runs the database Gateway process is termed a Communications Processor, or COP. COP Discovery refers to the procedure of identifying all the available COP hostnames and their IP addresses. COP hostnames can be defined in DNS, or can be defined in the client system's `hosts` file. Teradata strongly recommends that COP hostnames be defined in DNS, rather than the client system's `hosts` file. Defining COP hostnames in DNS provides centralized administration, and enables centralized changes to COP hostnames if and when the database is reconfigured.
 
 The `coplast` connection parameter specifies how COP Discovery determines the last COP hostname.
-* When `coplast` is `false` or omitted, or COP Discovery is turned off, then the Teradata SQL Driver for Python will not perform a DNS lookup for the coplast hostname.
-* When `coplast` is `true`, and COP Discovery is turned on, then the Teradata SQL Driver for Python will first perform a DNS lookup for a coplast hostname to obtain the IP address of the last COP hostname before performing COP Discovery. Subsequently, during COP Discovery, the Teradata SQL Driver for Python will stop searching for COP hostnames when either an unknown COP hostname is encountered, or a COP hostname is encountered whose IP address matches the IP address of the coplast hostname.
+* When `coplast` is `false` or omitted, or COP Discovery is turned off, then the driver will not perform a DNS lookup for the coplast hostname.
+* When `coplast` is `true`, and COP Discovery is turned on, then the driver will first perform a DNS lookup for a coplast hostname to obtain the IP address of the last COP hostname before performing COP Discovery. Subsequently, during COP Discovery, the driver will stop searching for COP hostnames when either an unknown COP hostname is encountered, or a COP hostname is encountered whose IP address matches the IP address of the coplast hostname.
 
 Specifying `coplast` as `true` can improve performance with DNS that is slow to respond for DNS lookup failures, and is necessary for DNS that never returns a DNS lookup failure.
 
-When performing COP Discovery, the Teradata SQL Driver for Python starts with cop1, which is appended to the database hostname, and then proceeds with cop2, cop3, ..., copN. The Teradata SQL Driver for Python supports domain-name qualification for COP Discovery and the coplast hostname. Domain-name qualification is recommended, because it can improve performance by avoiding unnecessary DNS lookups for DNS search suffixes.
+When performing COP Discovery, the driver starts with cop1, which is appended to the database hostname, and then proceeds with cop2, cop3, ..., copN. The driver supports domain-name qualification for COP Discovery and the coplast hostname. Domain-name qualification is recommended, because it can improve performance by avoiding unnecessary DNS lookups for DNS search suffixes.
 
-The following table illustrates the DNS lookups performed for a hypothetical three-node Teradata Database system named "whomooz".
+The following table illustrates the DNS lookups performed for a hypothetical three-node database system named "whomooz".
 
-&nbsp; | No domain name qualification | With domain name qualification<br />(Recommended)
+&nbsp; | No domain name qualification | With domain name qualification<br/>(Recommended)
 ------ | ---------------------------- | ---
-Application-specified<br />Teradata Database hostname | `whomooz` | `whomooz.domain.com`
-Default: COP Discovery turned on, and `coplast` is `false` or omitted,<br />perform DNS lookups until unknown COP hostname is encountered | `whomoozcop1`&rarr;`10.0.0.1`<br />`whomoozcop2`&rarr;`10.0.0.2`<br />`whomoozcop3`&rarr;`10.0.0.3`<br />`whomoozcop4`&rarr;undefined | `whomoozcop1.domain.com`&rarr;`10.0.0.1`<br />`whomoozcop2.domain.com`&rarr;`10.0.0.2`<br />`whomoozcop3.domain.com`&rarr;`10.0.0.3`<br />`whomoozcop4.domain.com`&rarr;undefined
-COP Discovery turned on, and `coplast` is `true`,<br />perform DNS lookups until COP hostname is found whose IP address matches the coplast hostname, or unknown COP hostname is encountered | `whomoozcoplast`&rarr;`10.0.0.3`<br />`whomoozcop1`&rarr;`10.0.0.1`<br />`whomoozcop2`&rarr;`10.0.0.2`<br />`whomoozcop3`&rarr;`10.0.0.3` | `whomoozcoplast.domain.com`&rarr;`10.0.0.3`<br />`whomoozcop1.domain.com`&rarr;`10.0.0.1`<br />`whomoozcop2.domain.com`&rarr;`10.0.0.2`<br />`whomoozcop3.domain.com`&rarr;`10.0.0.3`
-COP Discovery turned off and round-robin DNS,<br />perform one DNS lookup that returns multiple IP addresses | `whomooz`&rarr;`10.0.0.1`, `10.0.0.2`, `10.0.0.3` | `whomooz.domain.com`&rarr;`10.0.0.1`, `10.0.0.2`, `10.0.0.3`
+Application-specified<br/>database hostname | `whomooz` | `whomooz.domain.com`
+Default: COP Discovery turned on, and `coplast` is `false` or omitted,<br/>perform DNS lookups until unknown COP hostname is encountered | `whomoozcop1`&rarr;`10.0.0.1`<br/>`whomoozcop2`&rarr;`10.0.0.2`<br/>`whomoozcop3`&rarr;`10.0.0.3`<br/>`whomoozcop4`&rarr;undefined | `whomoozcop1.domain.com`&rarr;`10.0.0.1`<br/>`whomoozcop2.domain.com`&rarr;`10.0.0.2`<br/>`whomoozcop3.domain.com`&rarr;`10.0.0.3`<br/>`whomoozcop4.domain.com`&rarr;undefined
+COP Discovery turned on, and `coplast` is `true`,<br/>perform DNS lookups until COP hostname is found whose IP address matches the coplast hostname, or unknown COP hostname is encountered | `whomoozcoplast`&rarr;`10.0.0.3`<br/>`whomoozcop1`&rarr;`10.0.0.1`<br/>`whomoozcop2`&rarr;`10.0.0.2`<br/>`whomoozcop3`&rarr;`10.0.0.3` | `whomoozcoplast.domain.com`&rarr;`10.0.0.3`<br/>`whomoozcop1.domain.com`&rarr;`10.0.0.1`<br/>`whomoozcop2.domain.com`&rarr;`10.0.0.2`<br/>`whomoozcop3.domain.com`&rarr;`10.0.0.3`
+COP Discovery turned off and round-robin DNS,<br/>perform one DNS lookup that returns multiple IP addresses | `whomooz`&rarr;`10.0.0.1`, `10.0.0.2`, `10.0.0.3` | `whomooz.domain.com`&rarr;`10.0.0.1`, `10.0.0.2`, `10.0.0.3`
 
 Round-robin DNS rotates the list of IP addresses automatically to provide load distribution. Round-robin is only possible with DNS, not with the client system `hosts` file.
 
-The Teradata SQL Driver for Python supports the definition of multiple IP addresses for COP hostnames and non-COP hostnames.
+The driver supports the definition of multiple IP addresses for COP hostnames and non-COP hostnames.
 
-For the first connection to a particular Teradata Database system, the Teradata SQL Driver for Python generates a random number to index into the list of COPs. For each subsequent connection, the Teradata SQL Driver for Python increments the saved index until it wraps around to the first position. This behavior provides load distribution across all discovered COPs.
+For the first connection to a particular database system, the driver generates a random number to index into the list of COPs. For each subsequent connection, the driver increments the saved index until it wraps around to the first position. This behavior provides load distribution across all discovered COPs.
 
-The Teradata SQL Driver for Python masks connection failures to down COPs, thereby hiding most connection failures from the client application. An exception is thrown to the application only when all the COPs are down for that database. If a COP is down, the next COP in the sequence (including a wrap-around to the first COP) receives extra connections that were originally destined for the down COP. When multiple IP addresses are defined in DNS for a COP, the Teradata SQL Driver for Python will attempt to connect to each of the COP's IP addresses, and the COP is considered down only when connection attempts fail to all of the COP's IP addresses.
+The driver masks connection failures to down COPs, thereby hiding most connection failures from the client application. An exception is thrown to the application only when all the COPs are down for that database. If a COP is down, the next COP in the sequence (including a wrap-around to the first COP) receives extra connections that were originally destined for the down COP. When multiple IP addresses are defined in DNS for a COP, the driver will attempt to connect to each of the COP's IP addresses, and the COP is considered down only when connection attempts fail to all of the COP's IP addresses.
 
-If COP Discovery is turned off, or no COP hostnames are defined in DNS, the Teradata SQL Driver for Python connects directly to the hostname specified in the `host` connection parameter. This permits load distribution schemes other than the COP Discovery approach. For example, round-robin DNS or a TCP/IP load distribution product can be used. COP Discovery takes precedence over simple database hostname lookup. To use an alternative load distribution scheme, either ensure that no COP hostnames are defined in DNS, or turn off COP Discovery with `cop` as `false`.
+If COP Discovery is turned off, or no COP hostnames are defined in DNS, the driver connects directly to the hostname specified in the `host` connection parameter. This permits load distribution schemes other than the COP Discovery approach. For example, round-robin DNS or a TCP/IP load distribution product can be used. COP Discovery takes precedence over simple database hostname lookup. To use an alternative load distribution scheme, either ensure that no COP hostnames are defined in DNS, or turn off COP Discovery with `cop` as `false`.
 
 <a name="StoredPasswordProtection"></a>
 
@@ -253,7 +262,7 @@ If COP Discovery is turned off, or no COP hostnames are defined in DNS, the Tera
 
 #### Overview
 
-Stored Password Protection enables an application to provide a connection password in encrypted form to the Teradata SQL Driver for Python.
+Stored Password Protection enables an application to provide a connection password in encrypted form to the driver.
 
 An encrypted password may be specified in the following contexts:
 * A login password specified as the `password` connection parameter.
@@ -267,17 +276,17 @@ Each filename must be preceded by the `file:` prefix. The *PasswordEncryptionKey
 
 The *PasswordEncryptionKeyFileName* specifies the name of a file that contains the password encryption key and associated information. The *EncryptedPasswordFileName* specifies the name of a file that contains the encrypted password and associated information. The two files are described below.
 
-Stored Password Protection is offered by the Teradata JDBC Driver, the Teradata SQL Driver for Python, and the Teradata SQL Driver for R. These drivers use the same file format.
+Stored Password Protection is offered by this driver, the Teradata JDBC Driver, and the Teradata SQL Driver for R. These drivers use the same file format.
 
 #### Program TJEncryptPassword
 
-`TJEncryptPassword.py` is a sample program to create encrypted password files for use with Stored Password Protection. When the Teradata SQL Driver for Python is installed, the sample programs are placed in the `teradatasql/samples` directory under your Python installation directory.
+`TJEncryptPassword.py` is a sample program to create encrypted password files for use with Stored Password Protection. When the driver is installed, the sample programs are placed in the `teradatasql/samples` directory under your Python installation directory.
 
-This program works in conjunction with Stored Password Protection offered by the Teradata JDBC Driver and the Teradata SQL Driver for Python. This program creates the files containing the password encryption key and encrypted password, which can be subsequently specified via the `ENCRYPTED_PASSWORD(` syntax.
+This program works in conjunction with Stored Password Protection offered by the driver. This program creates the files containing the password encryption key and encrypted password, which can be subsequently specified via the `ENCRYPTED_PASSWORD(` syntax.
 
-You are not required to use this program to create the files containing the password encryption key and encrypted password. You can develop your own software to create the necessary files. You may also use the [`TJEncryptPassword.java`](https://downloads.teradata.com/doc/connectivity/jdbc/reference/current/samp/TJEncryptPassword.java.txt) sample program that is available with the [Teradata JDBC Driver Reference](https://downloads.teradata.com/doc/connectivity/jdbc/reference/current/frameset.html). The only requirement is that the files must match the format expected by the Teradata SQL Driver for Python, which is documented below.
+You are not required to use this program to create the files containing the password encryption key and encrypted password. You can develop your own software to create the necessary files. You may also use the [`TJEncryptPassword.java`](https://downloads.teradata.com/doc/connectivity/jdbc/reference/current/samp/TJEncryptPassword.java.txt) sample program that is available with the [Teradata JDBC Driver Reference](https://downloads.teradata.com/doc/connectivity/jdbc/reference/current/frameset.html). The only requirement is that the files must match the format expected by the driver, which is documented below.
 
-This program encrypts the password and then immediately decrypts the password, in order to verify that the password can be successfully decrypted. This program mimics the password decryption of the Teradata SQL Driver for Python, and is intended to openly illustrate its operation and enable scrutiny by the community.
+This program encrypts the password and then immediately decrypts the password, in order to verify that the password can be successfully decrypted. This program mimics the password decryption of the driver, and is intended to openly illustrate its operation and enable scrutiny by the community.
 
 The encrypted password is only as safe as the two files. You are responsible for restricting access to the files containing the password encryption key and encrypted password. If an attacker obtains both files, the password can be decrypted. The operating system file permissions for the two files should be as limited and restrictive as possible, to ensure that only the intended operating system userid has access to the files.
 
@@ -292,15 +301,15 @@ KeySizeInBits                 | `256`                | Specifies the algorithm k
 MAC                           | `HmacSHA256`         | Specifies the message authentication code (MAC) algorithm `HmacSHA1` or `HmacSHA256`.
 PasswordEncryptionKeyFileName | `PassKey.properties` | Specifies a filename in the current directory, a relative pathname, or an absolute pathname. The file is created by this program. If the file already exists, it will be overwritten by the new file.
 EncryptedPasswordFileName     | `EncPass.properties` | Specifies a filename in the current directory, a relative pathname, or an absolute pathname. The filename or pathname that must differ from the PasswordEncryptionKeyFileName. The file is created by this program. If the file already exists, it will be overwritten by the new file.
-Hostname                      | `whomooz`            | Specifies the Teradata Database hostname.
-Username                      | `guest`              | Specifies the Teradata Database username.
-Password                      | `please`             | Specifies the Teradata Database password to be encrypted. Unicode characters in the password can be specified with the `\u`*XXXX* escape sequence.
+Hostname                      | `whomooz`            | Specifies the database hostname.
+Username                      | `guest`              | Specifies the database username.
+Password                      | `please`             | Specifies the database password to be encrypted. Unicode characters in the password can be specified with the `\u`*XXXX* escape sequence.
 
 #### Example Commands
 
-The TJEncryptPassword program uses the Teradata SQL Driver for Python to log on to the specified Teradata Database using the encrypted password, so the Teradata SQL Driver for Python must have been installed with the `pip install teradatasql` command.
+The TJEncryptPassword program uses the driver to log on to the specified database using the encrypted password, so the driver must have been installed with the `pip install teradatasql` command.
 
-The following commands assume that the `TJEncryptPassword.py` program file is located in the current directory. When the Teradata SQL Driver for Python is installed, the sample programs are placed in the `teradatasql/samples` directory under your Python installation directory. Change your current directory to the `teradatasql/samples` directory under your Python installation directory.
+The following commands assume that the `TJEncryptPassword.py` program file is located in the current directory. When the driver is installed, the sample programs are placed in the `teradatasql/samples` directory under your Python installation directory. Change your current directory to the `teradatasql/samples` directory under your Python installation directory.
 
 The following example commands illustrate using a 256-bit AES key, and using the HmacSHA256 algorithm.
 
@@ -311,7 +320,7 @@ Windows        | `py -3 TJEncryptPassword.py AES/CBC/NoPadding 256 HmacSHA256 Pa
 
 #### Password Encryption Key File Format
 
-You are not required to use the TJEncryptPassword program to create the files containing the password encryption key and encrypted password. You can develop your own software to create the necessary files, but the files must match the format expected by the Teradata SQL Driver for Python.
+You are not required to use the TJEncryptPassword program to create the files containing the password encryption key and encrypted password. You can develop your own software to create the necessary files, but the files must match the format expected by the driver.
 
 The password encryption key file is a text file in Java Properties file format, using the ISO 8859-1 character encoding.
 
@@ -341,15 +350,15 @@ Property                                          | Description
 `match=`*MatchValue*                              | The password encryption key and encrypted password files must contain the same match value. The match values are compared to ensure that the two specified files are related to each other, serving as a "sanity check" to help avoid configuration errors. This property is required.
 `password=`*HexDigits*                            | This value is the encrypted password, encoded as hex digits. This property is required.
 `params=`*HexDigits*                              | This value contains the cipher algorithm parameters, if any, encoded as hex digits. Some ciphers need algorithm parameters that cannot be derived from the key, such as an initialization vector. This property is optional, depending on whether the cipher algorithm has associated parameters.
-`hash=`*HexDigits*                                | This value is the expected message authentication code (MAC), encoded as hex digits. After encryption, the expected MAC is calculated using the ciphertext, transformation name, and algorithm parameters if any. Before decryption, the Teradata SQL Driver for Python calculates the MAC using the ciphertext, transformation name, and algorithm parameters if any, and verifies that the calculated MAC matches the expected MAC. If the calculated MAC differs from the expected MAC, then either or both of the files may have been tampered with. This property is required.
+`hash=`*HexDigits*                                | This value is the expected message authentication code (MAC), encoded as hex digits. After encryption, the expected MAC is calculated using the ciphertext, transformation name, and algorithm parameters if any. Before decryption, the driver calculates the MAC using the ciphertext, transformation name, and algorithm parameters if any, and verifies that the calculated MAC matches the expected MAC. If the calculated MAC differs from the expected MAC, then either or both of the files may have been tampered with. This property is required.
 
-While `params` is technically optional, an initialization vector is required by all three block cipher modes `CBC`, `CFB`, and `OFB` that are supported by the Teradata SQL Driver for Python. ECB (Electronic Codebook) does not require `params`, but ECB is not supported by the Teradata SQL Driver for Python.
+While `params` is technically optional, an initialization vector is required by all three block cipher modes `CBC`, `CFB`, and `OFB` that are supported by the driver. ECB (Electronic Codebook) does not require `params`, but ECB is not supported by the driver.
 
 #### Transformation, Key Size, and MAC
 
 A transformation is a string that describes the set of operations to be performed on the given input, to produce transformed output. A transformation specifies the name of a cryptographic algorithm such as DES or AES, followed by a feedback mode and padding scheme.
 
-The Teradata SQL Driver for Python supports the following transformations and key sizes.
+The driver supports the following transformations and key sizes.
 
 Transformation              | Key Size
 --------------------------- | ---
@@ -392,17 +401,17 @@ Stored Password Protection hides the password length in the encrypted password f
 
 * A block cipher with no padding, such as `AES/CBC/NoPadding`, may only be used to encrypt data whose byte count after extension is a multiple of the algorithm's block size. The 512-byte boundary is compatible with many block ciphers. AES, for example, has a block size of 128 bits (16 bytes), and is therefore compatible with the 512-byte boundary.
 * A block cipher with padding, such as `AES/CBC/PKCS5Padding`, can be used to encrypt data of any length. However, CBC with padding is vulnerable to a "padding oracle attack", so Stored Password Protection performs Encrypt-then-MAC for protection from a padding oracle attack. MAC algorithms `HmacSHA1` and `HmacSHA256` are supported.
-* The Teradata SQL Driver for Python does not support block ciphers used as byte-oriented ciphers via modes such as `CFB8` or `OFB8`.
+* The driver does not support block ciphers used as byte-oriented ciphers via modes such as `CFB8` or `OFB8`.
 
 The strength of the encryption depends on your choice of cipher algorithm and key size.
 
 * AES uses a 128-bit (16 byte), 192-bit (24 byte), or 256-bit (32 byte) key.
-* DESede uses a 192-bit (24 byte) key. The The Teradata SQL Driver for Python does not support a 128-bit (16 byte) key for DESede.
+* DESede uses a 192-bit (24 byte) key. The driver does not support a 128-bit (16 byte) key for DESede.
 * DES uses a 64-bit (8 byte) key.
 
 #### Sharing Files with the Teradata JDBC Driver
 
-The Teradata SQL Driver for Python and the Teradata JDBC Driver can share the files containing the password encryption key and encrypted password, if you use a transformation, key size, and MAC algorithm that is supported by both drivers.
+This driver and the Teradata JDBC Driver can share the files containing the password encryption key and encrypted password, if you use a transformation, key size, and MAC algorithm that is supported by both drivers.
 
 * Recommended choices for compatibility are `AES/CBC/NoPadding` and `HmacSHA256`.
 * Use a 256-bit key if your Java environment has the Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files from Oracle.
@@ -411,7 +420,7 @@ The Teradata SQL Driver for Python and the Teradata JDBC Driver can share the fi
 
 #### File Locations
 
-For the `ENCRYPTED_PASSWORD(` syntax of the Teradata SQL Driver for Python, each filename must be preceded by the `file:` prefix.
+For the `ENCRYPTED_PASSWORD(` syntax of the driver, each filename must be preceded by the `file:` prefix.
 The *PasswordEncryptionKeyFileName* must be separated from the *EncryptedPasswordFileName* by a single comma. The files can be located in the current directory, specified with a relative path, or specified with an absolute path.
 
 
@@ -433,13 +442,13 @@ Example with absolute paths on Linux:
 
 #### Processing Sequence
 
-The two filenames specified for an encrypted password must be accessible to the Teradata SQL Driver for Python and must conform to the properties file formats described above. The Teradata SQL Driver for Python raises an exception if the file is not accessible, or the file does not conform to the required file format.
+The two filenames specified for an encrypted password must be accessible to the driver and must conform to the properties file formats described above. The driver raises an exception if the file is not accessible, or the file does not conform to the required file format.
 
-The Teradata SQL Driver for Python verifies that the match values in the two files are present, and match each other. The Teradata SQL Driver for Python raises an exception if the match values differ from each other. The match values are compared to ensure that the two specified files are related to each other, serving as a "sanity check" to help avoid configuration errors. The TJEncryptPassword program uses a timestamp as a shared match value, but a timestamp is not required. Any shared string can serve as a match value. The timestamp is not related in any way to the encryption of the password, and the timestamp cannot be used to decrypt the password.
+The driver verifies that the match values in the two files are present, and match each other. The driver raises an exception if the match values differ from each other. The match values are compared to ensure that the two specified files are related to each other, serving as a "sanity check" to help avoid configuration errors. The TJEncryptPassword program uses a timestamp as a shared match value, but a timestamp is not required. Any shared string can serve as a match value. The timestamp is not related in any way to the encryption of the password, and the timestamp cannot be used to decrypt the password.
 
-Before decryption, the Teradata SQL Driver for Python calculates the MAC using the ciphertext, transformation name, and algorithm parameters if any, and verifies that the calculated MAC matches the expected MAC. The Teradata SQL Driver for Python raises an exception if the calculated MAC differs from the expected MAC, to indicate that either or both of the files may have been tampered with.
+Before decryption, the driver calculates the MAC using the ciphertext, transformation name, and algorithm parameters if any, and verifies that the calculated MAC matches the expected MAC. The driver raises an exception if the calculated MAC differs from the expected MAC, to indicate that either or both of the files may have been tampered with.
 
-Finally, the Teradata SQL Driver for Python uses the decrypted password to log on to the Teradata Database.
+Finally, the driver uses the decrypted password to log on to the database.
 
 <a name="ClientAttributes"></a>
 
@@ -469,10 +478,10 @@ Client Attribute            | Source   | Description
 `ClientCOPSuffixedHostName` | driver   | The COP-suffixed database hostname chosen by the driver
 `ServerIPAddrByClient`      | driver   | The database node's IP address, as determined by the driver
 `ServerPortByClient`        | driver   | The destination port number of the TCP connection to the database node, as determined by the driver
-`ServerConfType`            | database | The confidentiality type, as determined by the database:<br/>`T` - TLS used for encryption<br/>`E` - TDGSS used for encryption<br/>`U` - Data transfer is unencrypted
+`ServerConfType`            | database | The confidentiality type, as determined by the database<br/>`T` - TLS used for encryption<br/>`E` - TDGSS used for encryption<br/>`U` - Data transfer is unencrypted
 `ClientConfVersion`         | database | The TLS version as determined by the database, if this is an HTTPS/TLS connection
 `ClientConfCipherSuite`     | database | The TLS cipher as determined by the database, if this is an HTTPS/TLS connection
-`ClientAttributesEx`        | driver   | Additional Client Attributes are available in this column as a list of name=value pairs, each terminated by a semicolon. Individual values can be accessed using the `NVP` system function.<br/>`PYTHON` - The Python version<br/>`TZ` - The Python current time zone<br/>`GO` - The Go version<br/>`SCS` - The session character set<br/>`CCS` - The client character set<br/>`LOB` - Y/N indicator for LOB support<br/>`SIP` - Y/N indicator for StatementInfo parcel support<br/>`TM` - The transaction mode indicator A (ANSI) or T (TERA)<br/>`ENC` - Y/N indicator for `encryptdata` connection parameter<br/>`DP` - The `dbs_port` connection parameter
+`ClientAttributesEx`        | driver   | Additional Client Attributes are available in this column as a list of name=value pairs, each terminated by a semicolon. Individual values can be accessed using the `NVP` system function.<br/>`PYTHON` - The Python version<br/>`TZ` - The Python current time zone<br/>`GO` - The Go version<br/>`SCS` - The session character set<br/>`CCS` - The client character set<br/>`LOB` - Y/N indicator for LOB support<br/>`SIP` - Y/N indicator for StatementInfo parcel support<br/>`TM` - The transaction mode indicator A (ANSI) or T (TERA)<br/>`ENC` - Y/N indicator for `encryptdata` connection parameter<br/>`DP` - The `dbs_port` connection parameter<br/>`HP` - The `https_port` connection parameter<br/>`SSL` - Numeric level corresponding to `sslmode`<br/>`SSLM` - The `sslmode` connection parameter
 
 #### LogonSource Column
 
@@ -500,27 +509,27 @@ Field | Source   | Description
 The `tmode` connection parameter enables an application to specify the transaction mode for the connection.
 * `"tmode":"ANSI"` provides American National Standards Institute (ANSI) transaction semantics. This mode is recommended.
 * `"tmode":"TERA"` provides legacy Teradata transaction semantics. This mode is only recommended for legacy applications that require Teradata transaction semantics.
-* `"tmode":"DEFAULT"` provides the default transaction mode configured for the Teradata Database, which may be either ANSI or TERA mode. `"tmode":"DEFAULT"` is the default when the `tmode` connection parameter is omitted.
+* `"tmode":"DEFAULT"` provides the default transaction mode configured for the database, which may be either ANSI or TERA mode. `"tmode":"DEFAULT"` is the default when the `tmode` connection parameter is omitted.
 
 While ANSI mode is generally recommended, please note that every application is different, and some applications may need to use TERA mode. The following differences between ANSI and TERA mode might affect a typical user or application:
-1. Silent truncation of inserted data occurs in TERA mode, but not ANSI mode. In ANSI mode, the Teradata Database returns an error instead of truncating data.
+1. Silent truncation of inserted data occurs in TERA mode, but not ANSI mode. In ANSI mode, the database returns an error instead of truncating data.
 2. Tables created in ANSI mode are `MULTISET` by default. Tables created in TERA mode are `SET` tables by default.
 3. For tables created in ANSI mode, character columns are `CASESPECIFIC` by default. For tables created in TERA mode, character columns are `NOT CASESPECIFIC` by default.
 4. In ANSI mode, character literals are `CASESPECIFIC`. In TERA mode, character literals are `NOT CASESPECIFIC`.
 
 The last two behavior differences, taken together, may cause character data comparisons (such as in `WHERE` clause conditions) to be case-insensitive in TERA mode, but case-sensitive in ANSI mode. This, in turn, can produce different query results in ANSI mode versus TERA mode. Comparing two `NOT CASESPECIFIC` expressions is case-insensitive regardless of mode, and comparing a `CASESPECIFIC` expression to another expression of any kind is case-sensitive regardless of mode. You may explicitly `CAST` an expression to be `CASESPECIFIC` or `NOT CASESPECIFIC` to obtain the character data comparison required by your application.
 
-The Teradata Database Reference / *SQL Request and Transaction Processing* recommends that ANSI mode be used for all new applications. The primary benefit of using ANSI mode is that inadvertent data truncation is avoided. In contrast, when using TERA mode, silent data truncation can occur when data is inserted, because silent data truncation is a feature of TERA mode.
+The Teradata Reference / *SQL Request and Transaction Processing* recommends that ANSI mode be used for all new applications. The primary benefit of using ANSI mode is that inadvertent data truncation is avoided. In contrast, when using TERA mode, silent data truncation can occur when data is inserted, because silent data truncation is a feature of TERA mode.
 
 A drawback of using ANSI mode is that you can only call stored procedures that were created using ANSI mode, and you cannot call stored procedures that were created using TERA mode. It may not be possible to switch over to ANSI mode exclusively, because you may have some legacy applications that require TERA mode to work properly. You can work around this drawback by creating your stored procedures twice, in two different users/databases, once using ANSI mode, and once using TERA mode.
 
-Refer to the Teradata Database Reference / *SQL Request and Transaction Processing* for complete information regarding the differences between ANSI and TERA transaction modes.
+Refer to the Teradata Reference / *SQL Request and Transaction Processing* for complete information regarding the differences between ANSI and TERA transaction modes.
 
 <a name="AutoCommit"></a>
 
 ### Auto-Commit
 
-The Teradata SQL Driver for Python provides auto-commit on and off functionality for both ANSI and TERA mode.
+The driver provides auto-commit on and off functionality for both ANSI and TERA mode.
 
 When a connection is first established, it begins with the default auto-commit setting, which is on. When auto-commit is on, the driver is solely responsible for managing transactions, and the driver commits each SQL request that is successfully executed. An application should not execute any transaction management SQL commands when auto-commit is on. An application should not call the `commit` method or the `rollback` method when auto-commit is on.
 
@@ -540,11 +549,11 @@ Best practices recommend that an application avoid executing database-vendor-spe
 3. When auto-commit is on in TERA mode, the driver does not execute `BT` or `ET`, unless the application explicitly executes `BT` or `ET` commands itself, which is not recommended.
 4. When auto-commit is off in TERA mode, the driver executes `BT` before submitting the application's first SQL request of a new transaction. When the application calls the `commit` method, then the driver executes `ET` until the transaction is complete.
 
-As part of the wire protocol between the Teradata Database and Teradata client interface software (such as the Teradata SQL Driver for Python), each message transmitted from the Teradata Database to the client has a bit designated to indicate whether the session has a transaction in progress or not. Thus, the client interface software is kept informed as to whether the session has a transaction in progress or not.
+As part of the wire protocol between the database and Teradata client interface software (such as this driver), each message transmitted from the database to the client has a bit designated to indicate whether the session has a transaction in progress or not. Thus, the client interface software is kept informed as to whether the session has a transaction in progress or not.
 
 In TERA mode with auto-commit off, when the application uses the driver to execute a SQL request, if the session does not have a transaction in progress, then the driver automatically executes `BT` before executing the application's SQL request. Subsequently, in TERA mode with auto-commit off, when the application uses the driver to execute another SQL request, and the session already has a transaction in progress, then the driver has no need to execute `BT` before executing the application's SQL request.
 
-In TERA mode, `BT` and `ET` pairs can be nested, and the Teradata Database keeps track of the nesting level. The outermost `BT`/`ET` pair defines the transaction scope; inner `BT`/`ET` pairs have no effect on the transaction because the Teradata Database does not provide actual transaction nesting. To commit the transaction, `ET` commands must be repeatedly executed until the nesting is unwound. The Teradata wire protocol bit (mentioned earlier) indicates when the nesting is unwound and the transaction is complete. When the application calls the `commit` method in TERA mode, the driver repeatedly executes `ET` commands until the nesting is unwound and the transaction is complete.
+In TERA mode, `BT` and `ET` pairs can be nested, and the database keeps track of the nesting level. The outermost `BT`/`ET` pair defines the transaction scope; inner `BT`/`ET` pairs have no effect on the transaction because the database does not provide actual transaction nesting. To commit the transaction, `ET` commands must be repeatedly executed until the nesting is unwound. The Teradata wire protocol bit (mentioned earlier) indicates when the nesting is unwound and the transaction is complete. When the application calls the `commit` method in TERA mode, the driver repeatedly executes `ET` commands until the nesting is unwound and the transaction is complete.
 
 In rare cases, an application may not follow best practices and may explicitly execute transaction management commands. Such an application must turn off auto-commit before executing transaction management commands such as `BT`, `ET`, `ABORT`, `COMMIT`, or `ROLLBACK`. The application is responsible for executing the appropriate commands for the transaction mode in effect. TERA mode commands are `BT`, `ET`, and `ABORT`. ANSI mode commands are `COMMIT` and `ROLLBACK`. An application must take special care when opening a transaction in TERA mode with auto-commit off. In TERA mode with auto-commit off, when the application executes a SQL request, if the session does not have a transaction in progress, then the driver automatically executes `BT` before executing the application's SQL request. Therefore, the application should not begin a transaction by executing `BT`.
 
@@ -574,9 +583,9 @@ Please note that neither previous example shows best practices. Best practices r
 
 ### Data Types
 
-The table below lists the Teradata Database data types supported by the Teradata SQL Driver for Python, and indicates the corresponding Python data type returned in result set rows.
+The table below lists the database data types supported by the driver, and indicates the corresponding Python data type returned in result set rows.
 
-Teradata Database data type        | Result set Python data type       | With `teradata_values` as `false`
+Database data type                 | Result set Python data type       | With `teradata_values` as `false`
 ---------------------------------- | --------------------------------- | ---
 `BIGINT`                           | `int`                             |
 `BLOB`                             | `bytes`                           |
@@ -616,9 +625,9 @@ Teradata Database data type        | Result set Python data type       | With `t
 `VARCHAR`                          | `str`                             |
 `XML`                              | `str`                             |
 
-The table below lists the parameterized SQL bind-value Python data types supported by the Teradata SQL Driver for Python, and indicates the corresponding Teradata Database data type transmitted to the server.
+The table below lists the parameterized SQL bind-value Python data types supported by the driver, and indicates the corresponding database data type transmitted to the server.
 
-Bind-value Python data type       | Teradata Database data type
+Bind-value Python data type       | Database data type
 --------------------------------- | ---
 `bytes`                           | `VARBYTE`
 `datetime.date`                   | `DATE`
@@ -640,19 +649,19 @@ Transforms are used for structured UDT data values, and they can be transferred 
 
 ### Null Values
 
-SQL `NULL` values received from the Teradata Database are returned in result set rows as Python `None` values.
+SQL `NULL` values received from the database are returned in result set rows as Python `None` values.
 
-A Python `None` value bound to a question-mark parameter marker is transmitted to the Teradata Database as a `NULL` `VARCHAR` value.
+A Python `None` value bound to a question-mark parameter marker is transmitted to the database as a `NULL` `VARCHAR` value.
 
 <a name="CharacterExportWidth"></a>
 
 ### Character Export Width
 
-The Teradata SQL Driver for Python always uses the UTF8 session character set, and the `charset` connection parameter is not supported. Be aware of the Teradata Database's *Character Export Width* behavior that adds trailing space padding to fixed-width `CHAR` data type result set column values when using the UTF8 session character set.
+The driver always uses the UTF8 session character set, and the `charset` connection parameter is not supported. Be aware of the database's *Character Export Width* behavior that adds trailing space padding to fixed-width `CHAR` data type result set column values when using the UTF8 session character set.
 
-The Teradata Database `CHAR(`_n_`)` data type is a fixed-width data type (holding _n_ characters), and the Teradata Database reserves a fixed number of bytes for the `CHAR(`_n_`)` data type in response spools and in network message traffic.
+The database `CHAR(`_n_`)` data type is a fixed-width data type (holding _n_ characters), and the database reserves a fixed number of bytes for the `CHAR(`_n_`)` data type in response spools and in network message traffic.
 
-UTF8 is a variable-width character encoding scheme that requires a varying number of bytes for each character. When the UTF8 session character set is used, the Teradata Database reserves the maximum number of bytes that the `CHAR(`_n_`)` data type could occupy in response spools and in network message traffic. When the UTF8 session character set is used, the Teradata Database appends padding characters to the tail end of `CHAR(`_n_`)` values smaller than the reserved maximum size, so that the `CHAR(`_n_`)` values all occupy the same fixed number of bytes in response spools and in network message traffic.
+UTF8 is a variable-width character encoding scheme that requires a varying number of bytes for each character. When the UTF8 session character set is used, the database reserves the maximum number of bytes that the `CHAR(`_n_`)` data type could occupy in response spools and in network message traffic. When the UTF8 session character set is used, the database appends padding characters to the tail end of `CHAR(`_n_`)` values smaller than the reserved maximum size, so that the `CHAR(`_n_`)` values all occupy the same fixed number of bytes in response spools and in network message traffic.
 
 Work around this drawback by using `CAST` or `TRIM` in SQL `SELECT` statements, or in views, to convert fixed-width `CHAR` data types to `VARCHAR`.
 
@@ -730,7 +739,7 @@ Creates and returns a `datetime.datetime` value corresponding to the specified n
 
 `teradatasql.apilevel`
 
-String constant `"2.0"` indicating that the Teradata SQL Driver for Python implements the [PEP-249 Python Database API Specification 2.0](https://www.python.org/dev/peps/pep-0249/).
+String constant `"2.0"` indicating that the driver implements the [PEP-249 Python Database API Specification 2.0](https://www.python.org/dev/peps/pep-0249/).
 
 ---
 
@@ -931,7 +940,7 @@ Identifies a SQL `CHAR`, `CLOB`, `INTERVAL`, `PERIOD`, or `VARCHAR` column as a 
 
 ### Escape Syntax
 
-The Teradata SQL Driver for Python accepts most of the JDBC escape clauses offered by the Teradata JDBC Driver.
+The driver accepts most of the JDBC escape clauses offered by the Teradata JDBC Driver.
 
 #### Date and Time Literals
 
@@ -1110,9 +1119,9 @@ Connection function escape clauses are replaced by the returned information befo
 
 Connection Function                           | Returns
 --------------------------------------------- | ---
-`{fn teradata_amp_count}`                     | Number of AMPs of the Teradata Database system
-`{fn teradata_database_version}`              | Version number of the Teradata Database
-`{fn teradata_driver_version}`                | Version number of the Teradata SQL Driver for Python
+`{fn teradata_amp_count}`                     | Number of AMPs of the database system
+`{fn teradata_database_version}`              | Version number of the database
+`{fn teradata_driver_version}`                | Version number of the driver
 `{fn teradata_getloglevel}`                   | Current log level
 `{fn teradata_go_runtime}`                    | Go runtime version for the Teradata GoSQL Driver
 `{fn teradata_logon_sequence_number}`         | Session's Logon Sequence Number, if available
@@ -1125,10 +1134,10 @@ Connection Function                           | Returns
 `{fn teradata_provide(lob_support)}`          | `true` or `false` indicating this connection's LOB support
 `{fn teradata_provide(local_address)}`        | Local address of the connection's TCP socket
 `{fn teradata_provide(local_port)}`           | Local port of the connection's TCP socket
-`{fn teradata_provide(original_hostname)}`    | Original specified Teradata Database hostname
+`{fn teradata_provide(original_hostname)}`    | Original specified database hostname
 `{fn teradata_provide(redrive_active)}`       | `true` or `false` indicating whether this connection has Redrive active
-`{fn teradata_provide(remote_address)}`       | Hostname (if available) and IP address of the connected Teradata Database node
-`{fn teradata_provide(remote_port)}`          | TCP port number of the Teradata Database
+`{fn teradata_provide(remote_address)}`       | Hostname (if available) and IP address of the connected database node
+`{fn teradata_provide(remote_port)}`          | TCP port number of the database
 `{fn teradata_provide(rnp_active)}`           | `true` or `false` indicating whether this connection has Recoverable Network Protocol active
 `{fn teradata_provide(session_charset_code)}` | Session character set code `191`
 `{fn teradata_provide(session_charset_name)}` | Session character set name `UTF8`
@@ -1162,9 +1171,9 @@ Request-Scope Function                                 | Effect
 
 ### FastLoad
 
-The Teradata SQL Driver for Python now offers FastLoad.
+The driver offers FastLoad, which opens multiple database connections to transfer data in parallel.
 
-Please be aware that this is just the initial release of the FastLoad feature. Think of it as a beta or preview version. It works, but does not yet offer all the features that JDBC FastLoad offers. FastLoad is still under active development, and we will continue to enhance it in subsequent builds.
+Please be aware that this is an early release of the FastLoad feature. Think of it as a beta or preview version. It works, but does not yet offer all the features that JDBC FastLoad offers. FastLoad is still under active development, and we will continue to enhance it in subsequent builds.
 
 FastLoad has limitations and cannot be used in all cases as a substitute for SQL batch insert:
 * FastLoad can only load into an empty permanent table.
@@ -1173,7 +1182,7 @@ FastLoad has limitations and cannot be used in all cases as a substitute for SQL
 * FastLoad cannot load duplicate rows into a `MULTISET` table.
 * Do not use FastLoad to load only a few rows, because FastLoad opens extra connections to the database, which is time consuming.
 * Only use FastLoad to load many rows (at least 100,000 rows) so that the row-loading performance gain exceeds the overhead of opening additional connections.
-* FastLoad does not support all Teradata Database data types. For example, `BLOB` and `CLOB` are not supported.
+* FastLoad does not support all database data types. For example, `BLOB` and `CLOB` are not supported.
 * FastLoad requires StatementInfo parcel support to be enabled.
 * FastLoad locks the destination table.
 * If Online Archive encounters a table being loaded with FastLoad, online archiving of that table will be bypassed.
@@ -1216,9 +1225,9 @@ Warning and error information remains available until the next batch is inserted
 
 ### FastExport
 
-The Teradata SQL Driver for Python now offers FastExport.
+The driver offers FastExport, which opens multiple database connections to transfer data in parallel.
 
-Please be aware that this is just the initial release of the FastExport feature. Think of it as a beta or preview version. It works, but does not yet offer all the features that JDBC FastExport offers. FastExport is still under active development, and we will continue to enhance it in subsequent builds.
+Please be aware that this is an early release of the FastExport feature. Think of it as a beta or preview version. It works, but does not yet offer all the features that JDBC FastExport offers. FastExport is still under active development, and we will continue to enhance it in subsequent builds.
 
 FastExport has limitations and cannot be used in all cases as a substitute for SQL queries:
 * FastExport cannot query a volatile table or global temporary table.
@@ -1226,7 +1235,7 @@ FastExport has limitations and cannot be used in all cases as a substitute for S
 * FastExport supports question-mark parameter markers in `WHERE` clause conditions. However, the database does not permit the equal `=` operator for primary or unique secondary indexes, and will return database error 3695 "A Single AMP Select statement has been issued in FastExport".
 * Do not use FastExport to fetch only a few rows, because FastExport opens extra connections to the database, which is time consuming.
 * Only use FastExport to fetch many rows (at least 100,000 rows) so that the row-fetching performance gain exceeds the overhead of opening additional connections.
-* FastExport does not support all Teradata Database data types. For example, `BLOB` and `CLOB` are not supported.
+* FastExport does not support all database data types. For example, `BLOB` and `CLOB` are not supported.
 * For best efficiency, do not use `GROUP BY` and `ORDER BY` clauses with FastExport.
 * FastExport's result set ordering behavior may differ from a regular SQL query. In particular, a query containing an ordered analytic function may not produce an ordered result set. Use an `ORDER BY` clause to guarantee result set order.
 
@@ -1246,7 +1255,7 @@ After beginning a FastExport, your application can obtain the Logon Sequence Num
 
 ### CSV Batch Inserts
 
-The Teradata SQL Driver for Python can read batch insert bind values from a CSV (comma separated values) file. This feature can be used with SQL batch inserts and with FastLoad.
+The driver can read batch insert bind values from a CSV (comma separated values) file. This feature can be used with SQL batch inserts and with FastLoad.
 
 To specify batch insert bind values in a CSV file, the application prepends the escape function `{fn teradata_read_csv(`*CSVFileName*`)}` to the `INSERT` statement.
 
@@ -1264,7 +1273,7 @@ Considerations when using a CSV file:
 * Specify a `NULL` value in the CSV file with an empty value between commas (e.g. `1,,456`).
 * A zero-length quoted string specifies a zero-length non-`NULL` string, not a `NULL` value (e.g. `1,"",456`).
 * Not all data types are supported. For example, `BLOB`, `BYTE`, and `VARBYTE` are not supported.
-* A field length greater than 64KB is trasnmitted to the database as a `DEFERRED CLOB` for a SQL batch insert. A field length greater than 64KB is not supported with FastLoad.
+* A field length greater than 64KB is transmitted to the database as a `DEFERRED CLOB` for a SQL batch insert. A field length greater than 64KB is not supported with FastLoad.
 
 Limitations when using CSV batch inserts:
 * Bound parameter values cannot be specified in the execute method when using the escape function `{fn teradata_read_csv(`*CSVFileName*`)}`.
@@ -1276,6 +1285,11 @@ Limitations when using CSV batch inserts:
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`17.10.0.4` - December 13, 2021
+* GOSQL-20 TLS support
+* GOSQL-29 Laddered Concurrent Connect
+* PYDBAPI-82 Implement Laddered Concurrent Connect in Python driver
 
 `17.10.0.3` - November 30, 2021
 * GOSQL-12 Centralized administration for data encryption
