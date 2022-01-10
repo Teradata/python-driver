@@ -12,7 +12,7 @@ For Teradata customer support, please visit [Teradata Customer Service](https://
 
 Please note, this driver may contain beta/preview features ("Beta Features"). As such, by downloading and/or using the driver, in addition to agreeing to the licensing terms below, you acknowledge that the Beta Features are experimental in nature and that the Beta Features are provided "AS IS" and may not be functional on any machine or in any environment.
 
-Copyright 2021 Teradata. All Rights Reserved.
+Copyright 2022 Teradata. All Rights Reserved.
 
 ### Table of Contents
 
@@ -1285,6 +1285,9 @@ Limitations when using CSV batch inserts:
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`17.10.0.5` - January 10, 2022
+* GOSQL-86 provide UDF compilation errors
 
 `17.10.0.4` - December 13, 2021
 * GOSQL-20 TLS support
