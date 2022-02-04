@@ -22,7 +22,7 @@ with teradatasql.connect ('{"host":"whomooz","user":"guest","password":"please"}
             [ print (row) for row in cur.fetchall () ]
 
             print ("Modified query with either CAST or TRIM to avoid trailing space padding:")
-            cur.execute ("SELECT CAST(c1 AS VARCHAR(10)), TRIM(TRAILING FROM c1) FROM MyTable")
+            cur.execute ("SELECT CAST(c1 AS VARCHAR(10)), TRIM(TRAILING FROM c2) FROM MyTable")
             [ print (row) for row in cur.fetchall () ]
 
             cur.execute ("CREATE VIEW MyView (c1, c2) AS SELECT CAST(c1 AS VARCHAR(10)), TRIM(TRAILING FROM c2) FROM MyTable")
