@@ -1197,7 +1197,7 @@ FastLoad has limitations and cannot be used in all cases as a substitute for SQL
 * FastLoad can only load into an empty permanent table.
 * FastLoad cannot load additional rows into a table that already contains rows.
 * FastLoad cannot load into a volatile table or global temporary table.
-* FastLoad cannot load duplicate rows into a `MULTISET` table.
+* FastLoad cannot load duplicate rows into a `MULTISET` table with a primary index.
 * Do not use FastLoad to load only a few rows, because FastLoad opens extra connections to the database, which is time consuming.
 * Only use FastLoad to load many rows (at least 100,000 rows) so that the row-loading performance gain exceeds the overhead of opening additional connections.
 * FastLoad does not support all database data types. For example, `BLOB` and `CLOB` are not supported.
@@ -1355,6 +1355,9 @@ Limitations when exporting to CSV files:
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`17.10.0.7` - February 23, 2022
+* GOSQL-91 Avoid Error 8019 by always sending Config Request message
 
 `17.10.0.6` - February 4, 2022
 * GOSQL-26 provide stored procedure creation errors
