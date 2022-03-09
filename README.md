@@ -1356,6 +1356,10 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
+`17.10.0.8` - March 9, 2022
+* GOSQL-84 accommodate 64-bit Activity Count
+* GOSQL-92 FastLoad returns error 512 when first column value is NULL
+
 `17.10.0.7` - February 23, 2022
 * GOSQL-91 Avoid Error 8019 by always sending Config Request message
 
