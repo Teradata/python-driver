@@ -1356,6 +1356,9 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
+`17.10.0.9` - March 18, 2022
+* GOSQL-94 thread-safe connect failure cache
+
 `17.10.0.8` - March 9, 2022
 * GOSQL-84 accommodate 64-bit Activity Count
 * GOSQL-92 FastLoad returns error 512 when first column value is NULL
