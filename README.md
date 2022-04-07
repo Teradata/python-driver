@@ -1175,6 +1175,8 @@ Request-Scope Function                                 | Effect
 `{fn teradata_clobtranslate(`*Option*`)}`              | Executes the SQL request with CLOB translate *Option* `U` (unlocked) or the default `L` (locked)
 `{fn teradata_failfast}`                               | Reject ("fail fast") this SQL request rather than delay by a workload management rule or throttle
 `{fn teradata_fake_result_sets}`                       | A fake result set containing statement metadata precedes each real result set
+`{fn teradata_field_quote(`*String*`)}`                | Specifies a single-character string used to quote fields in a CSV file. Takes precedence over the `field_quote` connection parameter.
+`{fn teradata_field_sep(`*String*`)}`                  | Specifies a single-character string used to separate fields in a CSV file. Takes precedence over the `field_sep` connection parameter.
 `{fn teradata_lobselect(`*Option*`)}`                  | Executes the SQL request with LOB select *Option* `S` (spool-scoped LOB locators), `T` (transaction-scoped LOB locators), or the default `I` (inline materialized LOB values)
 `{fn teradata_parameter(`*Index*`,`*DataType*`)`       | Transmits parameter *Index* bind values as *DataType*
 `{fn teradata_provide(request_scope_lob_support_off)}` | Turns off LOB support for this SQL request
@@ -1184,6 +1186,16 @@ Request-Scope Function                                 | Effect
 `{fn teradata_rpo(`*RequestProcessingOption*`)}`       | Executes the SQL request with *RequestProcessingOption* `S` (prepare), `E` (execute), or the default `B` (both)
 `{fn teradata_untrusted}`                              | Marks the SQL request as untrusted; not implemented yet
 `{fn teradata_write_csv(`*CSVFileName*`)}`             | Exports one or more result set(s) from a SQL request or a FastExport to the specified CSV file or files
+
+The `teradata_field_sep` and `teradata_field_quote` escape functions have a single-character string argument. The string argument must follow SQL literal syntax. The string argument may be enclosed in single-quote (`'`) characters or double-quote (`"`) characters.
+
+To represent a single-quote character in a string enclosed in single-quote characters, you must repeat the single-quote character.
+
+    {fn teradata_field_quote('''')}
+
+To represent a double-quote character in a string enclosed in double-quote characters, you must repeat the double-quote character.
+
+    {fn teradata_field_quote("""")}
 
 <a name="FastLoad"></a>
 
@@ -1282,9 +1294,9 @@ The application can specify batch insert bind values in a CSV file, or specify b
 Considerations when using a CSV file:
 * Each record is on a separate line of the CSV file. Records are delimited by line breaks (CRLF). The last record in the file may or may not have an ending line break.
 * The first line of the CSV file is a header line. The header line lists the column names separated by the field separator (e.g. `col1,col2,col3`).
-* The field separator defaults to the comma character (`,`). You can specify a different field separator character with the `field_sep` connection parameter. The specified field separator character must match the actual separator character used in the CSV file.
-* Each field can optionally be enclosed by the field quote character, which defaults to the double-quote character (e.g. `"abc",123,efg`). Specify the `field_quote` connection parameter to override the default field quote character. The field quote character must match the actual field quote character used in the CSV file.
-* The connection parameters `field_sep` and `field_quote` cannot be set to the same value. The field separator and field quote characters must be legal UTF-8 characters and cannot be line feed (`\n`) or carriage return (`\r`).
+* The field separator defaults to the comma character (`,`). You can specify a different field separator character with the `field_sep` connection parameter or with the `teradata_field_sep` escape function. The specified field separator character must match the actual separator character used in the CSV file.
+* Each field can optionally be enclosed by the field quote character, which defaults to the double-quote character (e.g. `"abc",123,efg`). You can specify a different field quote character with the `field_quote` connection parameter or with the `teradata_field_quote` escape function. The field quote character must match the actual field quote character used in the CSV file.
+* The field separator and field quote characters cannot be set to the same value. The field separator and field quote characters must be legal UTF-8 characters and cannot be line feed (`\n`) or carriage return (`\r`).
 * Field quote characters are only permitted in fields enclosed by field quote characters. Field quote characters must not appear inside unquoted fields (e.g. not allowed `ab"cd"ef,1,abc`).
 * To include a field quote character in a quoted field, the field quote character must be repeated (e.g. `"abc""efg""dh",123,xyz`).
 * Line breaks, field quote characters, and field separators may be included in a quoted field (e.g. `"abc,efg\ndh",123,xyz`).
@@ -1336,10 +1348,10 @@ myFile_3.csv  | Second result set
 
 Exported CSV files have the following characteristics:
 * Each record is on a separate line of the CSV file. Records are delimited by line breaks (CRLF).
-* Column values are separated by the field separator character, which defaults to the comma character (`,`). You can specify a different field separator character with the `field_sep` connection parameter.
+* Column values are separated by the field separator character, which defaults to the comma character (`,`). You can specify a different field separator character with the `field_sep` connection parameter or with the `teradata_field_sep` escape function.
 * The first line of the CSV file is a header line. The header line lists the column names separated by the field separator (e.g. `col1,col2,col3`).
-* The `field_quote` connection parameter is used to override the default double-quote character (`"`).
-* The connection parameters `field_sep` and `field_quote` cannot be set to the same value. The field separator and field quote characters must be legal UTF-8 characters and cannot be line feed (`\n`) or carriage return (`\r`).
+* When necessary, column values are enclosed by the field quote character, which defaults to the double-quote character (`"`). You can specify a different field quote character with the `field_quote` connection parameter or with the `teradata_field_quote` escape function.
+* The field separator and field quote characters cannot be set to the same value. The field separator and field quote characters must be legal UTF-8 characters and cannot be line feed (`\n`) or carriage return (`\r`).
 * If a column value contains line breaks, field quote characters, and/or field separators in a field, the value is quoted with the field quote character.
 * If a column value contains a field quote character, the value is quoted and the field quote character is repeated. For example, column value `abc"def` is exported as `"abc""def"`.
 * A `NULL` value is exported to the CSV file as an empty value between field separators (e.g. `123,,456`).
@@ -1355,6 +1367,10 @@ Limitations when exporting to CSV files:
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`17.10.0.11` - April 7, 2021
+* GOSQL-82 Escape functions teradata_field_sep and teradata_field_quote
+* GOSQL-97 FastLoad/FastExport accommodate extra whitespace in SQL request
 
 `17.10.0.10` - March 24, 2022
 * GOSQL-95 case-insensitive sslmode connection parameter values
