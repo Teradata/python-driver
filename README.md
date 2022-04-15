@@ -81,7 +81,6 @@ At the present time, the driver offers the following features.
 
 ### Limitations
 
-* TLS certificate verification is not implemented yet. `VERIFY-CA` and `VERIFY-FULL` do not perform certificate verification yet.
 * The UTF8 session character set is always used. The `charset` connection parameter is not supported.
 * No support yet for Recoverable Network Protocol and Redrive.
 * Monitor partition support is not available yet.
@@ -486,7 +485,7 @@ Client Attribute            | Source   | Description
 `ServerConfType`            | database | The confidentiality type, as determined by the database<br/>`T` - TLS used for encryption<br/>`E` - TDGSS used for encryption<br/>`U` - Data transfer is unencrypted
 `ClientConfVersion`         | database | The TLS version as determined by the database, if this is an HTTPS/TLS connection
 `ClientConfCipherSuite`     | database | The TLS cipher as determined by the database, if this is an HTTPS/TLS connection
-`ClientAttributesEx`        | driver   | Additional Client Attributes are available in this column as a list of name=value pairs, each terminated by a semicolon. Individual values can be accessed using the `NVP` system function.<br/>`PYTHON` - The Python version<br/>`TZ` - The Python current time zone<br/>`GO` - The Go version<br/>`SCS` - The session character set<br/>`CCS` - The client character set<br/>`LOB` - Y/N indicator for LOB support<br/>`SIP` - Y/N indicator for StatementInfo parcel support<br/>`TM` - The transaction mode indicator A (ANSI) or T (TERA)<br/>`ENC` - Y/N indicator for `encryptdata` connection parameter<br/>`DP` - The `dbs_port` connection parameter<br/>`HP` - The `https_port` connection parameter<br/>`SSL` - Numeric level corresponding to `sslmode`<br/>`SSLM` - The `sslmode` connection parameter
+`ClientAttributesEx`        | driver   | Additional Client Attributes are available in this column as a list of name=value pairs, each terminated by a semicolon. Individual values can be accessed using the `NVP` system function.<br/>`PYTHON` - The Python version<br/>`TZ` - The Python current time zone<br/>`GO` - The Go version<br/>`SCS` - The session character set<br/>`CCS` - The client character set<br/>`LOB` - Y/N indicator for LOB support<br/>`SIP` - Y/N indicator for StatementInfo parcel support<br/>`TM` - The transaction mode indicator A (ANSI) or T (TERA)<br/>`ENC` - Y/N indicator for `encryptdata` connection parameter<br/>`DP` - The `dbs_port` connection parameter<br/>`HP` - The `https_port` connection parameter<br/>`SSL` - Numeric level corresponding to `sslmode`<br/>`SSLM` - The `sslmode` connection parameter<br/>`CERT` - The TLS certificate status<br/><br/>The `CERT` attribute indicates the TLS certificate status for an HTTPS/TLS connection. When the `CERT` attribute indicates the TLS certificate is valid (`V`) or invalid (`I`), then additional TLS certificate status details are provided as a series of comma-separated two-letter codes.<br/>`U` - the TLS certificate status is unavailable<br/>`V` - the TLS certificate status is valid<br/>`I` - the TLS certificate status is invalid<br/>`PU` - sslca PEM file is unavailable for server certificate verification<br/>`PA` - server certificate was verified using sslca PEM file<br/>`PR` - server certificate was rejected using sslca PEM file<br/>`DU` - sslcapath PEM directory is unavailable for server certificate verification<br/>`DA` - server certificate was verified using sslcapath PEM directory<br/>`DR` - server certificate was rejected using sslcapath PEM directory<br/>`SA` - server certificate was verified by the system<br/>`SR` - server certificate was rejected by the system<br/>`CY` - server certificate passed VERIFY-CA check<br/>`CN` - server certificate failed VERIFY-CA check<br/>`HU` - server hostname is unavailable for server certificate matching, because database IP address was specified<br/>`HY` - server hostname matches server certificate<br/>`HN` - server hostname does not match server certificate<br/>`RU` - resolved server hostname is unavailable for server certificate matching, because database IP address was specified<br/>`RY` - resolved server hostname matches server certificate<br/>`RN` - resolved server hostname does not match server certificate<br/>`IY` - IP address matches server certificate<br/>`IN` - IP address does not match server certificate<br/>`FY` - server certificate passed VERIFY-FULL check<br/>`FN` - server certificate failed VERIFY-FULL check
 
 #### LogonSource Column
 
@@ -1139,6 +1138,8 @@ Connection Function                           | Returns
 `{fn teradata_amp_count}`                     | Number of AMPs of the database system
 `{fn teradata_database_version}`              | Version number of the database
 `{fn teradata_driver_version}`                | Version number of the driver
+`{fn teradata_get_errors}`                    | Errors from the most recent batch operation
+`{fn teradata_get_warnings}`                  | Warnings from an operation that completed with warnings
 `{fn teradata_getloglevel}`                   | Current log level
 `{fn teradata_go_runtime}`                    | Go runtime version for the Teradata GoSQL Driver
 `{fn teradata_logon_sequence_number}`         | Session's Logon Sequence Number, if available
@@ -1161,7 +1162,6 @@ Connection Function                           | Returns
 `{fn teradata_provide(sip_support)}`          | `true` or `false` indicating this connection's StatementInfo parcel support
 `{fn teradata_provide(transaction_mode)}`     | Session's transaction mode, `ANSI` or `TERA`
 `{fn teradata_session_number}`                | Session number
-`{fn teradata_setloglevel(`*LogLevel*`)}`     | Empty string, and changes the connection's *LogLevel*
 
 #### Request-Scope Functions
 
@@ -1173,6 +1173,9 @@ Request-scope function escape clauses are removed before the SQL request text is
 Request-Scope Function                                 | Effect
 ------------------------------------------------------ | ---
 `{fn teradata_clobtranslate(`*Option*`)}`              | Executes the SQL request with CLOB translate *Option* `U` (unlocked) or the default `L` (locked)
+`{fn teradata_error_table_1_suffix(`*Suffix*`)}`       | Specifies the suffix to append to the name of FastLoad error table 1
+`{fn teradata_error_table_2_suffix(`*Suffix*`)}`       | Specifies the suffix to append to the name of FastLoad error table 2
+`{fn teradata_error_table_database(`*DbName*`)}`       | Specifies the parent database name for FastLoad error tables 1 and 2
 `{fn teradata_failfast}`                               | Reject ("fail fast") this SQL request rather than delay by a workload management rule or throttle
 `{fn teradata_fake_result_sets}`                       | A fake result set containing statement metadata precedes each real result set
 `{fn teradata_field_quote(`*String*`)}`                | Specifies a single-character string used to quote fields in a CSV file. Takes precedence over the `field_quote` connection parameter.
@@ -1183,7 +1186,12 @@ Request-Scope Function                                 | Effect
 `{fn teradata_provide(request_scope_refresh_rsmd)}`    | Executes the SQL request with the default request processing option `B` (both)
 `{fn teradata_provide(request_scope_sip_support_off)}` | Turns off StatementInfo parcel support for this SQL request
 `{fn teradata_read_csv(`*CSVFileName*`)}`              | Executes a batch insert using the bind parameter values read from the specified CSV file for either a SQL batch insert or a FastLoad
+`{fn teradata_require_fastexport}`                     | Specifies that FastExport is required for the SQL request
+`{fn teradata_require_fastload}`                       | Specifies that FastLoad is required for the SQL request
 `{fn teradata_rpo(`*RequestProcessingOption*`)}`       | Executes the SQL request with *RequestProcessingOption* `S` (prepare), `E` (execute), or the default `B` (both)
+`{fn teradata_sessions(`*Number*`)}`                   | Specifies the *Number* of data transfer connections for FastLoad or FastExport
+`{fn teradata_try_fastexport}`                         | Tries to use FastExport for the SQL request
+`{fn teradata_try_fastload}`                           | Tries to use FastLoad for the SQL request
 `{fn teradata_untrusted}`                              | Marks the SQL request as untrusted; not implemented yet
 `{fn teradata_write_csv(`*CSVFileName*`)}`             | Exports one or more result set(s) from a SQL request or a FastExport to the specified CSV file or files
 
@@ -1234,8 +1242,8 @@ To use FastLoad, your application must prepend one of the following escape funct
 
 Your application can prepend other optional escape functions to the `INSERT` statement:
 * `{fn teradata_sessions(`n`)}` specifies the number of data transfer connections to be opened, and is capped at the number of AMPs. The default is the smaller of 8 or the number of AMPs. `CHECK WORKLOAD` is not yet used, meaning that the driver does not ask the database how many data transfer connections should be used.
-* `{fn teradata_error_table_1_suffix(`suffix`)}` specifies what suffix to append to the name of FastLoad error table 1. The default suffix is `_ERR_1`.
-* `{fn teradata_error_table_2_suffix(`suffix`)}` specifies what suffix to append to the name of FastLoad error table 2. The default suffix is `_ERR_2`.
+* `{fn teradata_error_table_1_suffix(`suffix`)}` specifies the suffix to append to the name of FastLoad error table 1. The default suffix is `_ERR_1`.
+* `{fn teradata_error_table_2_suffix(`suffix`)}` specifies the suffix to append to the name of FastLoad error table 2. The default suffix is `_ERR_2`.
 * `{fn teradata_error_table_database(`dbname`)}` specifies the parent database name for FastLoad error tables 1 and 2. By default, the FastLoad error tables reside in the same database as the destination table.
 
 After beginning a FastLoad, your application can obtain the Logon Sequence Number (LSN) assigned to the FastLoad by prepending the following escape functions to the `INSERT` statement:
@@ -1368,7 +1376,11 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
-`17.10.0.11` - April 7, 2021
+`17.10.0.12` - April 15, 2022
+* GOSQL-71 TLS certificate verification
+* GOSQL-98 remove escape function teradata_setloglevel
+
+`17.10.0.11` - April 7, 2022
 * GOSQL-82 Escape functions teradata_field_sep and teradata_field_quote
 * GOSQL-97 FastLoad/FastExport accommodate extra whitespace in SQL request
 
