@@ -1380,9 +1380,18 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
+`17.10.0.15` - June 2, 2022
+* Switch to TeraGSS 17.20.00.04 and OpenSSL 1.1.1l
+* Requires macOS 10.14 Mojave or later and ends support for older versions of macOS
+
 `17.10.0.14` - May 18, 2022
 * GOSQL-104 FastExport reports invalid CSV path name for first query but not subsequent
 * GOSQL-105 Avoid driver failure when database warning length is invalid
+
+`17.10.0.13` - May 16, 2022
+* GOSQL-53 browser and logmech=BROWSER connection parameters
+* GOSQL-56 Implement Federated Authentication feature in GoSQL Driver
+* PYDBAPI-77 Implement Federated Authentication feature in Python driver
 
 `17.10.0.12` - April 15, 2022
 * GOSQL-71 TLS certificate verification
