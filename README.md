@@ -1380,6 +1380,9 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
+`17.10.0.16` - June 6, 2022
+* GOSQL-106 indicate unavailable TLS certificate status with ClientAttributesEx CERT=U
+
 `17.10.0.15` - June 2, 2022
 * Switch to TeraGSS 17.20.00.04 and OpenSSL 1.1.1l
 * Requires macOS 10.14 Mojave or later and ends support for older versions of macOS
