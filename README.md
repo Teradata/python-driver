@@ -1182,6 +1182,7 @@ Request-Scope Function                                 | Effect
 `{fn teradata_error_table_database(`*DbName*`)}`       | Specifies the parent database name for FastLoad error tables 1 and 2
 `{fn teradata_failfast}`                               | Reject ("fail fast") this SQL request rather than delay by a workload management rule or throttle
 `{fn teradata_fake_result_sets}`                       | A fake result set containing statement metadata precedes each real result set
+`{fn teradata_fake_result_sets_off}`                   | Turns off fake result sets for this SQL request
 `{fn teradata_field_quote(`*String*`)}`                | Specifies a single-character string used to quote fields in a CSV file. Takes precedence over the `field_quote` connection parameter.
 `{fn teradata_field_sep(`*String*`)}`                  | Specifies a single-character string used to separate fields in a CSV file. Takes precedence over the `field_sep` connection parameter.
 `{fn teradata_lobselect(`*Option*`)}`                  | Executes the SQL request with LOB select *Option* `S` (spool-scoped LOB locators), `T` (transaction-scoped LOB locators), or the default `I` (inline materialized LOB values)
@@ -1197,7 +1198,7 @@ Request-Scope Function                                 | Effect
 `{fn teradata_try_fastexport}`                         | Tries to use FastExport for the SQL request
 `{fn teradata_try_fastload}`                           | Tries to use FastLoad for the SQL request
 `{fn teradata_untrusted}`                              | Marks the SQL request as untrusted; not implemented yet
-`{fn teradata_write_csv(`*CSVFileName*`)}`             | Exports one or more result set(s) from a SQL request or a FastExport to the specified CSV file or files
+`{fn teradata_write_csv(`*CSVFileName*`)}`             | Exports one or more result sets from a SQL request or a FastExport to the specified CSV file or files
 
 The `teradata_field_sep` and `teradata_field_quote` escape functions have a single-character string argument. The string argument must follow SQL literal syntax. The string argument may be enclosed in single-quote (`'`) characters or double-quote (`"`) characters.
 
@@ -1379,6 +1380,9 @@ Limitations when exporting to CSV files:
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`17.20.0.0` - June 16, 2022
+* GOSQL-74 FastLoad support for connection parameter fake_result_sets=true
 
 `17.10.0.16` - June 6, 2022
 * GOSQL-106 indicate unavailable TLS certificate status with ClientAttributesEx CERT=U
