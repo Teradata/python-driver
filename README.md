@@ -1381,6 +1381,9 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
+`17.20.0.1` - August 11, 2022
+* Build DLL and shared library with Go 1.18.5
+
 `17.20.0.0` - June 16, 2022
 * GOSQL-74 FastLoad support for connection parameter fake_result_sets=true
 
