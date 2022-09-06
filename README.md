@@ -138,6 +138,7 @@ Program                                                                         
 [BatchInsPerf.py](https://github.com/Teradata/python-driver/blob/master/samples/BatchInsPerf.py)                    | Measures time to insert one million rows
 [CharPadding.py](https://github.com/Teradata/python-driver/blob/master/samples/CharPadding.py)                      | Demonstrates the database's *Character Export Width* behavior
 [CommitRollback.py](https://github.com/Teradata/python-driver/blob/master/samples/CommitRollback.py)                | Demonstrates commit and rollback methods with auto-commit off.
+[DecimalDigits.py](https://github.com/Teradata/python-driver/blob/master/samples/DecimalDigits.py)                  | Demonstrates how to format decimal.Decimal values.
 [DriverDatabaseVersion.py](https://github.com/Teradata/python-driver/blob/master/samples/DriverDatabaseVersion.py)  | Displays the driver version and database version
 [ElicitFile.py](https://github.com/Teradata/python-driver/blob/master/samples/ElicitFile.py)                        | Demonstrates C source file upload to create a User-Defined Function (UDF)
 [ExportCSVResult.py](https://github.com/Teradata/python-driver/blob/master/samples/ExportCSVResult.py)              | Demonstrates how to export a query result set to a CSV file
@@ -1381,6 +1382,9 @@ Limitations when exporting to CSV files:
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`17.20.0.3` - September 6, 2022
+* GOSQL-118 teradata_write_csv support for queries containing commas
 
 `17.20.0.2` - August 23, 2022
 * GOSQL-117 browser_tab_timeout connection parameter
