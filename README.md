@@ -1383,6 +1383,10 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
+`17.20.0.4` - September 14, 2022
+* GOSQL-87 support Mac ARM without Rosetta
+* GOSQL-119 avoid nil pointer dereference for FastExport CSV error
+
 `17.20.0.3` - September 6, 2022
 * GOSQL-118 teradata_write_csv support for queries containing commas
 
