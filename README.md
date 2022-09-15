@@ -1383,6 +1383,9 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
+`17.20.0.5` - September 15, 2022
+* Additional changes for GOSQL-119 avoid nil pointer dereference for FastExport CSV error
+
 `17.20.0.4` - September 14, 2022
 * GOSQL-87 support Mac ARM without Rosetta
 * GOSQL-119 avoid nil pointer dereference for FastExport CSV error
