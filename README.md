@@ -1383,6 +1383,9 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
+`17.20.0.6` - September 19, 2022
+* Build DLL and shared library with Go 1.18.6
+
 `17.20.0.5` - September 15, 2022
 * Additional changes for GOSQL-119 avoid nil pointer dereference for FastExport CSV error
 
