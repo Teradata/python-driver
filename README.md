@@ -1383,6 +1383,9 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
+`17.20.0.7` - September 27, 2022
+* Avoid Kerberos logon failure
+
 `17.20.0.6` - September 19, 2022
 * Build DLL and shared library with Go 1.18.6
 
