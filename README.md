@@ -1384,6 +1384,9 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
+`17.20.0.9` - October 25, 2022
+* Build DLL and shared library with Go 1.18.7
+
 `17.20.0.8` - October 19, 2022
 * GOSQL-122 case-insensitive VERIFY-FULL
 
