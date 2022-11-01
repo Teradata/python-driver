@@ -1389,6 +1389,10 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
+`17.20.0.11` - November 1, 2022
+* GOSQL-125 FastLoad FastExport govern support for fake_result_sets=true
+* GOSQL-127 substitute dash for unavailable program name in Client Attributes
+
 `17.20.0.10` - October 27, 2022
 * GOSQL-67 FastLoad FastExport workload management
 * GOSQL-120 govern connection parameter
