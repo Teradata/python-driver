@@ -1204,6 +1204,8 @@ Request-Scope Function                                 | Effect
 `{fn teradata_try_fastexport}`                         | Tries to use FastExport for the SQL request
 `{fn teradata_try_fastload}`                           | Tries to use FastLoad for the SQL request
 `{fn teradata_untrusted}`                              | Marks the SQL request as untrusted; not implemented yet
+`{fn teradata_values_off}`                             | Turns off `teradata_values` for this SQL request. Takes precedence over the `teradata_values` connection parameter. Refer to the [Data Types](#DataTypes) table for details.
+`{fn teradata_values_on}`                              | Turns on `teradata_values` for this SQL request. Takes precedence over the `teradata_values` connection parameter. Refer to the [Data Types](#DataTypes) table for details.
 `{fn teradata_write_csv(`*CSVFileName*`)}`             | Exports one or more result sets from a SQL request or a FastExport to the specified CSV file or files
 
 The `teradata_field_sep` and `teradata_field_quote` escape functions have a single-character string argument. The string argument must follow SQL literal syntax. The string argument may be enclosed in single-quote (`'`) characters or double-quote (`"`) characters.
@@ -1388,6 +1390,10 @@ Limitations when exporting to CSV files:
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`17.20.0.12` - December 2, 2022
+* Build DLL and shared library with Go 1.19.3
+* GOSQL-126 escape functions teradata_values_off and teradata_values_on
 
 `17.20.0.11` - November 1, 2022
 * GOSQL-125 FastLoad FastExport govern support for fake_result_sets=true

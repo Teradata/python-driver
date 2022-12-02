@@ -41,7 +41,7 @@ with teradatasql.connect (host="whomooz", user="guest", password="please") as co
             "7,uvw",
             "8,xyz",
             "9,",
-        ]   
+        ]
         print ("records", records)
 
         csvFileName = "dataPy.csv"
@@ -64,6 +64,8 @@ with teradatasql.connect (host="whomooz", user="guest", password="please") as co
                 print (sInsert)
                 cur.execute (sInsert)
 
+                # obtain the warnings and errors for transmitting the data to the database -- the acquisition phase
+
                 sRequest = "{fn teradata_nativesql}{fn teradata_get_warnings}" + sInsert
                 print (sRequest)
                 cur.execute (sRequest)
@@ -81,6 +83,8 @@ with teradatasql.connect (host="whomooz", user="guest", password="please") as co
 
                 print ("con.commit()")
                 con.commit ()
+
+                # obtain the warnings and errors for the apply phase
 
                 sRequest = "{fn teradata_nativesql}{fn teradata_get_warnings}" + sInsert
                 print (sRequest)
