@@ -12,7 +12,7 @@ For Teradata customer support, please visit [Teradata Customer Service](https://
 
 Please note, this driver may contain beta/preview features ("Beta Features"). As such, by downloading and/or using the driver, in addition to agreeing to the licensing terms below, you acknowledge that the Beta Features are experimental in nature and that the Beta Features are provided "AS IS" and may not be functional on any machine or in any environment.
 
-Copyright 2022 Teradata. All Rights Reserved.
+Copyright 2023 Teradata. All Rights Reserved.
 
 ### Table of Contents
 
@@ -149,7 +149,7 @@ Program                                                                         
 [FastExportCSV.py](https://github.com/Teradata/python-driver/blob/master/samples/FastExportCSV.py)                  | Demonstrates how to FastExport rows from a table to a CSV file
 [FastExportTable.py](https://github.com/Teradata/python-driver/blob/master/samples/FastExportTable.py)              | Demonstrates how to FastExport rows from a table
 [FastLoadBatch.py](https://github.com/Teradata/python-driver/blob/master/samples/FastLoadBatch.py)                  | Demonstrates how to FastLoad batches of rows
-[FastLoadCSV.py](https://github.com/Teradata/python-driver/blob/master/samples/FastLoadBatch.py)                    | Demonstrates how to FastLoad batches of rows from a CSV file
+[FastLoadCSV.py](https://github.com/Teradata/python-driver/blob/master/samples/FastLoadCSV.py)                      | Demonstrates how to FastLoad batches of rows from a CSV file
 [HelpSession.py](https://github.com/Teradata/python-driver/blob/master/samples/HelpSession.py)                      | Displays session information
 [IgnoreErrors.py](https://github.com/Teradata/python-driver/blob/master/samples/IgnoreErrors.py)                    | Demonstrates how to ignore errors
 [InsertXML.py](https://github.com/Teradata/python-driver/blob/master/samples/InsertXML.py)                          | Demonstrates how to insert and retrieve XML values
@@ -1390,6 +1390,9 @@ Limitations when exporting to CSV files:
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`17.20.0.13` - January 17, 2023
+* GOSQL-133 return FastLoad errors for FastLoad with teradata_read_csv
 
 `17.20.0.12` - December 2, 2022
 * Build DLL and shared library with Go 1.19.3

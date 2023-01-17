@@ -110,14 +110,6 @@ with teradatasql.connect (host="whomooz", user="guest", password="please") as co
                 print (sRequest)
                 cur.execute (sRequest)
 
-                sRequest = "DROP TABLE " + sTableName + "_ERR_1"
-                print (sRequest)
-                cur.execute (sRequest)
-
-                sRequest = "DROP TABLE " + sTableName + "_ERR_2"
-                print (sRequest)
-                cur.execute (sRequest)
-
         finally:
             print ("os.remove", csvFileName)
             os.remove (csvFileName)
