@@ -222,6 +222,7 @@ Parameter               | Default     | Type           | Description
 `oidc_token`            | `"access_token"` | string    | Specifies the kind of OIDC token to use for Browser Authentication. Specify `id_token` to use the id_token instead of the access_token. Browser Authentication is supported for Windows and macOS. Equivalent to the Teradata JDBC Driver `OIDC_TOKEN` connection parameter.
 `partition`             | `"DBC/SQL"` | string         | Specifies the database partition. Equivalent to the Teradata JDBC Driver `PARTITION` connection parameter.
 `password`              |             | string         | Specifies the database password. Equivalent to the Teradata JDBC Driver `PASSWORD` connection parameter.
+`request_timeout`       | `"0"`       | quoted integer | Specifies the timeout for executing each SQL request. Zero means no timeout.
 `sip_support`           | `"true"`    | quoted boolean | Controls whether StatementInfo parcel is used. Equivalent to the Teradata JDBC Driver `SIP_SUPPORT` connection parameter.
 `sslca`                 |             | string         | Specifies the file name of a PEM file that contains Certificate Authority (CA) certificates for use with `sslmode` values `VERIFY-CA` or `VERIFY-FULL`. Equivalent to the Teradata JDBC Driver `SSLCA` connection parameter.
 `sslcapath`             |             | string         | Specifies a directory of PEM files that contain Certificate Authority (CA) certificates for use with `sslmode` values `VERIFY-CA` or `VERIFY-FULL`. Only files with an extension of `.pem` are used. Other files in the specified directory are not used. Equivalent to the Teradata JDBC Driver `SSLCAPATH` connection parameter.
@@ -793,6 +794,14 @@ String constant `"qmark"` indicating that prepared SQL requests use question-mar
 
 ### Connection Methods
 
+`.cancel()`
+
+Attempts to cancel the currently executing SQL request, if one is currently executing. Does nothing if called when no SQL request is executing.
+
+This method must be called from a thread other than the thread which is blocked while executing the SQL request.
+
+---
+
 `.close()`
 
 Closes the Connection.
@@ -1197,6 +1206,7 @@ Request-Scope Function                                 | Effect
 `{fn teradata_provide(request_scope_refresh_rsmd)}`    | Executes the SQL request with the default request processing option `B` (both)
 `{fn teradata_provide(request_scope_sip_support_off)}` | Turns off StatementInfo parcel support for this SQL request
 `{fn teradata_read_csv(`*CSVFileName*`)}`              | Executes a batch insert using the bind parameter values read from the specified CSV file for either a SQL batch insert or a FastLoad
+`{fn teradata_request_timeout(`*Seconds*`)}`           | Specifies the timeout for executing the SQL request. Zero means no timeout. Takes precedence over the `request_timeout` connection parameter.
 `{fn teradata_require_fastexport}`                     | Specifies that FastExport is required for the SQL request
 `{fn teradata_require_fastload}`                       | Specifies that FastLoad is required for the SQL request
 `{fn teradata_rpo(`*RequestProcessingOption*`)}`       | Executes the SQL request with *RequestProcessingOption* `S` (prepare), `E` (execute), or the default `B` (both)
@@ -1390,6 +1400,12 @@ Limitations when exporting to CSV files:
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`17.20.0.14` - January 19, 2023
+* GOSQL-24 Asynchronous abort SQL request execution
+* GOSQL-134 escape function teradata_request_timeout
+* GOSQL-135 connection parameter request_timeout
+* PYDBAPI-114 Connection.cancel method to cancel executing SQL request
 
 `17.20.0.13` - January 17, 2023
 * GOSQL-133 return FastLoad errors for FastLoad with teradata_read_csv
