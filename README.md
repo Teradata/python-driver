@@ -1401,6 +1401,9 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
+`17.20.0.15` - February 16, 2023
+* GOSQL-137 limit the max number of records in a CSV batch
+
 `17.20.0.14` - January 19, 2023
 * GOSQL-24 Asynchronous abort SQL request execution
 * GOSQL-134 escape function teradata_request_timeout
