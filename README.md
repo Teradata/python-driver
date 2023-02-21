@@ -1401,6 +1401,9 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
+`17.20.0.16` - February 21, 2023
+* GOSQL-138 avoid panic for aborted session
+
 `17.20.0.15` - February 16, 2023
 * GOSQL-137 limit the max number of records in a CSV batch
 
