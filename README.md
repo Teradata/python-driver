@@ -154,6 +154,7 @@ Program                                                                         
 [IgnoreErrors.py](https://github.com/Teradata/python-driver/blob/master/samples/IgnoreErrors.py)                    | Demonstrates how to ignore errors
 [InsertXML.py](https://github.com/Teradata/python-driver/blob/master/samples/InsertXML.py)                          | Demonstrates how to insert and retrieve XML values
 [LoadCSVFile.py](https://github.com/Teradata/python-driver/blob/master/samples/LoadCSVFile.py)                      | Demonstrates how to load data from a CSV file into a table
+[LobLocators.py](https://github.com/Teradata/python-driver/blob/master/samples/LobLocators.py)                      | Demonstrates how to use LOB locators
 [MetadataFromPrepare.py](https://github.com/Teradata/python-driver/blob/master/samples/MetadataFromPrepare.py)      | Demonstrates how to prepare a SQL request and obtain SQL statement metadata
 [ParamDataTypes.py](https://github.com/Teradata/python-driver/blob/master/samples/ParamDataTypes.py)                | Demonstrates how to specify data types for parameter marker bind values
 [ShowCommand.py](https://github.com/Teradata/python-driver/blob/master/samples/ShowCommand.py)                      | Displays the results from the `SHOW` command
@@ -207,6 +208,11 @@ Parameter               | Default     | Type           | Description
 `database`              |             | string         | Specifies the initial database to use after logon, instead of the user's default database. Equivalent to the Teradata JDBC Driver `DATABASE` connection parameter.
 `dbs_port`              | `"1025"`    | quoted integer | Specifies the database port number. Equivalent to the Teradata JDBC Driver `DBS_PORT` connection parameter.
 `encryptdata`           | `"false"`   | quoted boolean | Controls encryption of data exchanged between the driver and the database. Equivalent to the Teradata JDBC Driver `ENCRYPTDATA` connection parameter.
+`error_query_count`     | `"21"`      | quoted integer | Specifies how many times the driver will attempt to query FastLoad Error Table 1 after a FastLoad operation. Equivalent to the Teradata JDBC Driver `ERROR_QUERY_COUNT` connection parameter.
+`error_query_interval`  | `"500"`     | quoted integer | Specifies how many milliseconds the driver will wait between attempts to query FastLoad Error Table 1. Equivalent to the Teradata JDBC Driver `ERROR_QUERY_INTERVAL` connection parameter.
+`error_table_1_suffix`  | `"_ERR_1"`  | string         | Specifies the suffix for the name of FastLoad Error Table 1. Equivalent to the Teradata JDBC Driver `ERROR_TABLE_1_SUFFIX` connection parameter.
+`error_table_2_suffix`  | `"_ERR_2"`  | string         | Specifies the suffix for the name of FastLoad Error Table 2. Equivalent to the Teradata JDBC Driver `ERROR_TABLE_2_SUFFIX` connection parameter.
+`error_table_database`  |             | string         | Specifies the database name for the FastLoad error tables. By default, FastLoad error tables reside in the same database as the destination table being loaded. Equivalent to the Teradata JDBC Driver `ERROR_TABLE_DATABASE` connection parameter.
 `fake_result_sets`      | `"false"`   | quoted boolean | Controls whether a fake result set containing statement metadata precedes each real result set.
 `field_quote`           | `"\""`      | string         | Specifies a single character string used to quote fields in a CSV file.
 `field_sep`             | `","`       | string         | Specifies a single character string used to separate fields in a CSV file. Equivalent to the Teradata JDBC Driver `FIELD_SEP` connection parameter.
@@ -217,12 +223,14 @@ Parameter               | Default     | Type           | Description
 `log`                   | `"0"`       | quoted integer | Controls debug logging. Somewhat equivalent to the Teradata JDBC Driver `LOG` connection parameter. This parameter's behavior is subject to change in the future. This parameter's value is currently defined as an integer in which the 1-bit governs function and method tracing, the 2-bit governs debug logging, the 4-bit governs transmit and receive message hex dumps, and the 8-bit governs timing. Compose the value by adding together 1, 2, 4, and/or 8.
 `logdata`               |             | string         | Specifies extra data for the chosen logon authentication method. Equivalent to the Teradata JDBC Driver `LOGDATA` connection parameter.
 `logmech`               | `"TD2"`     | string         | Specifies the logon authentication method. Equivalent to the Teradata JDBC Driver `LOGMECH` connection parameter. Possible case-insensitive values are `TD2` (the default), `BROWSER`, `JWT`, `LDAP`, `KRB5` for Kerberos, or `TDNEGO`. Browser Authentication is supported for Windows and macOS.
+`manage_error_tables`   | `"true"`    | quoted boolean | Controls whether the driver manages the FastLoad error tables.
 `max_message_body`      | `"2097000"` | quoted integer | Specifies the maximum Response Message size in bytes. Equivalent to the Teradata JDBC Driver `MAX_MESSAGE_BODY` connection parameter.
 `oidc_scope`            | `"openid"`  | string         | Specifies the OpenID Connect (OIDC) scope to use for Browser Authentication. Browser Authentication is supported for Windows and macOS. Equivalent to the Teradata JDBC Driver `OIDC_SCOPE` connection parameter.
 `oidc_token`            | `"access_token"` | string    | Specifies the kind of OIDC token to use for Browser Authentication. Specify `id_token` to use the id_token instead of the access_token. Browser Authentication is supported for Windows and macOS. Equivalent to the Teradata JDBC Driver `OIDC_TOKEN` connection parameter.
 `partition`             | `"DBC/SQL"` | string         | Specifies the database partition. Equivalent to the Teradata JDBC Driver `PARTITION` connection parameter.
 `password`              |             | string         | Specifies the database password. Equivalent to the Teradata JDBC Driver `PASSWORD` connection parameter.
 `request_timeout`       | `"0"`       | quoted integer | Specifies the timeout for executing each SQL request. Zero means no timeout.
+`sessions`              |             | quoted integer | Specifies the number of data transfer connections for FastLoad or FastExport. The default (recommended) lets the database choose the appropriate number of connections. Equivalent to the Teradata JDBC Driver `SESSIONS` connection parameter.
 `sip_support`           | `"true"`    | quoted boolean | Controls whether StatementInfo parcel is used. Equivalent to the Teradata JDBC Driver `SIP_SUPPORT` connection parameter.
 `sslca`                 |             | string         | Specifies the file name of a PEM file that contains Certificate Authority (CA) certificates for use with `sslmode` values `VERIFY-CA` or `VERIFY-FULL`. Equivalent to the Teradata JDBC Driver `SSLCA` connection parameter.
 `sslcapath`             |             | string         | Specifies a directory of PEM files that contain Certificate Authority (CA) certificates for use with `sslmode` values `VERIFY-CA` or `VERIFY-FULL`. Only files with an extension of `.pem` are used. Other files in the specified directory are not used. Equivalent to the Teradata JDBC Driver `SSLCAPATH` connection parameter.
@@ -1190,9 +1198,11 @@ Request-scope function escape clauses are removed before the SQL request text is
 Request-Scope Function                                 | Effect
 ------------------------------------------------------ | ---
 `{fn teradata_clobtranslate(`*Option*`)}`              | Executes the SQL request with CLOB translate *Option* `U` (unlocked) or the default `L` (locked)
-`{fn teradata_error_table_1_suffix(`*Suffix*`)}`       | Specifies the suffix to append to the name of FastLoad error table 1
-`{fn teradata_error_table_2_suffix(`*Suffix*`)}`       | Specifies the suffix to append to the name of FastLoad error table 2
-`{fn teradata_error_table_database(`*DbName*`)}`       | Specifies the parent database name for FastLoad error tables 1 and 2
+`{fn teradata_error_query_count(`*Number*`)}`          | Specifies how many times the driver will attempt to query FastLoad Error Table 1 after a FastLoad operation. Takes precedence over the `error_query_count` connection parameter.
+`{fn teradata_error_query_interval(`*Milliseconds*`)}` | Specifies how many milliseconds the driver will wait between attempts to query FastLoad Error Table 1. Takes precedence over the `error_query_interval` connection parameter.
+`{fn teradata_error_table_1_suffix(`*Suffix*`)}`       | Specifies the suffix to append to the name of FastLoad error table 1. Takes precedence over the `error_table_1_suffix` connection parameter.
+`{fn teradata_error_table_2_suffix(`*Suffix*`)}`       | Specifies the suffix to append to the name of FastLoad error table 2. Takes precedence over the `error_table_2_suffix` connection parameter.
+`{fn teradata_error_table_database(`*DbName*`)}`       | Specifies the parent database name for FastLoad error tables 1 and 2. Takes precedence over the `error_table_database` connection parameter.
 `{fn teradata_failfast}`                               | Reject ("fail fast") this SQL request rather than delay by a workload management rule or throttle
 `{fn teradata_fake_result_sets}`                       | A fake result set containing statement metadata precedes each real result set
 `{fn teradata_fake_result_sets_off}`                   | Turns off fake result sets for this SQL request
@@ -1201,6 +1211,8 @@ Request-Scope Function                                 | Effect
 `{fn teradata_govern_off}`                             | Teradata workload management rules will reject rather than delay a FastLoad or FastExport. Takes precedence over the `govern` connection parameter.
 `{fn teradata_govern_on}`                              | Teradata workload management rules may delay a FastLoad or FastExport. Takes precedence over the `govern` connection parameter.
 `{fn teradata_lobselect(`*Option*`)}`                  | Executes the SQL request with LOB select *Option* `S` (spool-scoped LOB locators), `T` (transaction-scoped LOB locators), or the default `I` (inline materialized LOB values)
+`{fn teradata_manage_error_tables_off}`                | Turns off FastLoad error table management for this request. Takes precedence over the `manage_error_tables` connection parameter.
+`{fn teradata_manage_error_tables_on}`                 | Turns on FastLoad error table management for this request. Takes precedence over the `manage_error_tables` connection parameter.
 `{fn teradata_parameter(`*Index*`,`*DataType*`)`       | Transmits parameter *Index* bind values as *DataType*
 `{fn teradata_provide(request_scope_lob_support_off)}` | Turns off LOB support for this SQL request
 `{fn teradata_provide(request_scope_refresh_rsmd)}`    | Executes the SQL request with the default request processing option `B` (both)
@@ -1210,7 +1222,7 @@ Request-Scope Function                                 | Effect
 `{fn teradata_require_fastexport}`                     | Specifies that FastExport is required for the SQL request
 `{fn teradata_require_fastload}`                       | Specifies that FastLoad is required for the SQL request
 `{fn teradata_rpo(`*RequestProcessingOption*`)}`       | Executes the SQL request with *RequestProcessingOption* `S` (prepare), `E` (execute), or the default `B` (both)
-`{fn teradata_sessions(`*Number*`)}`                   | Specifies the *Number* of data transfer connections for FastLoad or FastExport
+`{fn teradata_sessions(`*Number*`)}`                   | Specifies the *Number* of data transfer connections for FastLoad or FastExport. Takes precedence over the `sessions` connection parameter.
 `{fn teradata_try_fastexport}`                         | Tries to use FastExport for the SQL request
 `{fn teradata_try_fastload}`                           | Tries to use FastLoad for the SQL request
 `{fn teradata_untrusted}`                              | Marks the SQL request as untrusted; not implemented yet
@@ -1400,6 +1412,12 @@ Limitations when exporting to CSV files:
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`17.20.0.17` - March 24, 2023
+* Build DLL and shared library with Go 1.19.7
+* GOSQL-136 escape functions teradata_manage_error_tables_off and teradata_manage_error_tables_on
+* GOSQL-139 allow alternate LOCATOR(type) syntax for teradata_parameter escape function
+* GOSQL-145 connection parameters error_query_count, error_query_interval, error_table_1_suffix, error_table_2_suffix, error_table_database, manage_error_tables, sessions
 
 `17.20.0.16` - February 21, 2023
 * GOSQL-138 avoid panic for aborted session
