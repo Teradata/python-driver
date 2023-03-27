@@ -1413,6 +1413,9 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
+`17.20.0.18` - March 27, 2023
+* GOSQL-146 FastLoad and FastExport Unicode Pass Through support
+
 `17.20.0.17` - March 24, 2023
 * Build DLL and shared library with Go 1.19.7
 * GOSQL-136 escape functions teradata_manage_error_tables_off and teradata_manage_error_tables_on
