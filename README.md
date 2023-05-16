@@ -1419,6 +1419,9 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
+`17.20.0.22` - May 16, 2023
+* Build DLL and shared library with Go 1.19.9
+
 `17.20.0.21` - May 15, 2023
 * GOSQL-128 use OIDC scope from Gateway Config parcel
 
