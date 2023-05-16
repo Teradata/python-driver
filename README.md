@@ -227,7 +227,7 @@ Parameter               | Default     | Type           | Description
 `logon_sequence_number` |             | quoted integer | Associates this session with an existing Logon Sequence Number (LSN) when `connect_function` is `2`. The database only permits sessions for the same user to share an LSN. An LSN groups multiple sessions together for workload management. Using an LSN is a three-step process. First, establish a control session with `connect_function` as `1`, which allocates a new LSN. Second, obtain the LSN from the control session using the escape function `{fn teradata_logon_sequence_number}`. Third, establish an associated session with `connect_function` as `2` and the logon sequence number. Equivalent to the Teradata JDBC Driver `LOGON_SEQUENCE_NUMBER` connection parameter.
 `manage_error_tables`   | `"true"`    | quoted boolean | Controls whether the driver manages the FastLoad error tables.
 `max_message_body`      | `"2097000"` | quoted integer | Specifies the maximum Response Message size in bytes. Equivalent to the Teradata JDBC Driver `MAX_MESSAGE_BODY` connection parameter.
-`oidc_scope`            | `"openid"`  | string         | Specifies the OpenID Connect (OIDC) scope to use for Browser Authentication. Browser Authentication is supported for Windows and macOS. Equivalent to the Teradata JDBC Driver `OIDC_SCOPE` connection parameter.
+`oidc_scope`            | `"openid"`  | string         | Specifies the OpenID Connect (OIDC) scope to use for Browser Authentication. Beginning with Teradata Database 17.20.03.11, the default scope can be specified in the database's `TdgssUserConfigFile.xml` file, using the `IdPConfig` element's `Scope` attribute. Browser Authentication is supported for Windows and macOS. Equivalent to the Teradata JDBC Driver `OIDC_SCOPE` connection parameter.
 `oidc_token`            | `"access_token"` | string    | Specifies the kind of OIDC token to use for Browser Authentication. Specify `id_token` to use the id_token instead of the access_token. Browser Authentication is supported for Windows and macOS. Equivalent to the Teradata JDBC Driver `OIDC_TOKEN` connection parameter.
 `partition`             | `"DBC/SQL"` | string         | Specifies the database partition. Equivalent to the Teradata JDBC Driver `PARTITION` connection parameter.
 `password`              |             | string         | Specifies the database password. Equivalent to the Teradata JDBC Driver `PASSWORD` connection parameter.
@@ -1418,6 +1418,9 @@ Limitations when exporting to CSV files:
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`17.20.0.21` - May 15, 2023
+* GOSQL-128 use OIDC scope from Gateway Config parcel
 
 `17.20.0.20` - May 5, 2023
 * GOSQL-155 teradata_provide(gateway_config) teradata_provide(governed) teradata_provide(uses_check_workload)
