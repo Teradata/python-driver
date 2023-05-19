@@ -46,9 +46,7 @@ Copyright 2023 Teradata. All Rights Reserved.
 * [CSV Export Results](#CSVExportResults)
 * [Change Log](#ChangeLog)
 
-Table of Contents links do not work on PyPI due to a [PyPI limitation](https://github.com/pypa/warehouse/issues/4064).
-
-<a name="Features"></a>
+<a id="Features"></a>
 
 ### Features
 
@@ -77,7 +75,7 @@ At the present time, the driver offers the following features.
 * Stored Procedure Dynamic Result Sets.
 * FastLoad and FastExport.
 
-<a name="Limitations"></a>
+<a id="Limitations"></a>
 
 ### Limitations
 
@@ -85,7 +83,7 @@ At the present time, the driver offers the following features.
 * No support yet for Recoverable Network Protocol and Redrive.
 * Monitor partition support is not available yet.
 
-<a name="Installation"></a>
+<a id="Installation"></a>
 
 ### Installation
 
@@ -105,7 +103,7 @@ Platform       | Command
 macOS or Linux | `pip install --no-cache-dir -U teradatasql`
 Windows        | `py -3 -m pip install --no-cache-dir -U teradatasql`
 
-<a name="License"></a>
+<a id="License"></a>
 
 ### License
 
@@ -115,7 +113,7 @@ When the driver is installed, the `LICENSE` and `THIRDPARTYLICENSE` files are pl
 
 In addition to the license terms, the driver may contain beta/preview features ("Beta Features"). As such, by downloading and/or using the driver, in addition to the licensing terms, you acknowledge that the Beta Features are experimental in nature and that the Beta Features are provided "AS IS" and may not be functional on any machine or in any environment.
 
-<a name="Documentation"></a>
+<a id="Documentation"></a>
 
 ### Documentation
 
@@ -123,7 +121,7 @@ When the driver is installed, the `README.md` file is placed in the `teradatasql
 
 The `README.md` file is a plain text file containing the documentation for the driver. While the file can be viewed with any text file viewer or editor, your viewing experience will be best with an editor that understands Markdown format.
 
-<a name="SamplePrograms"></a>
+<a id="SamplePrograms"></a>
 
 ### Sample Programs
 
@@ -161,7 +159,7 @@ Program                                                                         
 [StoredProc.py](https://github.com/Teradata/python-driver/blob/master/samples/StoredProc.py)                        | Demonstrates how to create and call a SQL stored procedure
 [TJEncryptPassword.py](https://github.com/Teradata/python-driver/blob/master/samples/TJEncryptPassword.py)          | Creates encrypted password files
 
-<a name="Using"></a>
+<a id="Using"></a>
 
 ### Using the Driver
 
@@ -187,7 +185,7 @@ Connection parameters specified using a combination:
 
 When a combination of parameters are specified, connection parameters specified as `kwargs` take precedence over same-named connection parameters specified in the JSON string.
 
-<a name="ConnectionParameters"></a>
+<a id="ConnectionParameters"></a>
 
 ### Connection Parameters
 
@@ -204,6 +202,7 @@ Parameter               | Default     | Type           | Description
 `column_name`           | `"false"`   | quoted boolean | Controls the behavior of cursor `.description` sequence `name` items. Equivalent to the Teradata JDBC Driver `COLUMN_NAME` connection parameter. False specifies that a cursor `.description` sequence `name` item provides the AS-clause name if available, or the column name if available, or the column title. True specifies that a cursor `.description` sequence `name` item provides the column name if available, but has no effect when StatementInfo parcel support is unavailable.
 `connect_failure_ttl`   | `"0"`       | quoted integer | Specifies the time-to-live in seconds to remember the most recent connection failure for each IP address/port combination. The driver subsequently skips connection attempts to that IP address/port for the duration of the time-to-live. The default value of zero disables this feature. The recommended value is half the database restart time. Equivalent to the Teradata JDBC Driver `CONNECT_FAILURE_TTL` connection parameter.
 `connect_function`      | `"0"`       | quoted integer | Specifies whether the database should allocate a Logon Sequence Number (LSN) for this session, or associate this session with an existing LSN. Specify `0` for a session with no LSN (the default). Specify `1` to allocate a new LSN for the session. Specify `2` to associate the session with the existing LSN identified by the `logon_sequence_number` connection parameter. The database only permits sessions for the same user to share an LSN. Equivalent to the Teradata JDBC Driver `CONNECT_FUNCTION` connection parameter.
+`connect_timeout`       | `"0"`       | quoted integer | Specifies the timeout in milliseconds for establishing a TCP socket connection. Zero means no timeout.
 `cop`                   | `"true"`    | quoted boolean | Specifies whether COP Discovery is performed. Equivalent to the Teradata JDBC Driver `COP` connection parameter.
 `coplast`               | `"false"`   | quoted boolean | Specifies how COP Discovery determines the last COP hostname. Equivalent to the Teradata JDBC Driver `COPLAST` connection parameter. When `coplast` is `false` or omitted, or COP Discovery is turned off, then no DNS lookup occurs for the coplast hostname. When `coplast` is `true`, and COP Discovery is turned on, then a DNS lookup occurs for a coplast hostname.
 `database`              |             | string         | Specifies the initial database to use after logon, instead of the user's default database. Equivalent to the Teradata JDBC Driver `DATABASE` connection parameter.
@@ -225,6 +224,7 @@ Parameter               | Default     | Type           | Description
 `logdata`               |             | string         | Specifies extra data for the chosen logon authentication method. Equivalent to the Teradata JDBC Driver `LOGDATA` connection parameter.
 `logmech`               | `"TD2"`     | string         | Specifies the logon authentication method. Equivalent to the Teradata JDBC Driver `LOGMECH` connection parameter. Possible case-insensitive values are `TD2` (the default), `BROWSER`, `JWT`, `LDAP`, `KRB5` for Kerberos, or `TDNEGO`. Browser Authentication is supported for Windows and macOS.
 `logon_sequence_number` |             | quoted integer | Associates this session with an existing Logon Sequence Number (LSN) when `connect_function` is `2`. The database only permits sessions for the same user to share an LSN. An LSN groups multiple sessions together for workload management. Using an LSN is a three-step process. First, establish a control session with `connect_function` as `1`, which allocates a new LSN. Second, obtain the LSN from the control session using the escape function `{fn teradata_logon_sequence_number}`. Third, establish an associated session with `connect_function` as `2` and the logon sequence number. Equivalent to the Teradata JDBC Driver `LOGON_SEQUENCE_NUMBER` connection parameter.
+`logon_timeout`         | `"0"`       | quoted integer | Specifies the logon timeout in seconds. Zero means no timeout.
 `manage_error_tables`   | `"true"`    | quoted boolean | Controls whether the driver manages the FastLoad error tables.
 `max_message_body`      | `"2097000"` | quoted integer | Specifies the maximum Response Message size in bytes. Equivalent to the Teradata JDBC Driver `MAX_MESSAGE_BODY` connection parameter.
 `oidc_scope`            | `"openid"`  | string         | Specifies the OpenID Connect (OIDC) scope to use for Browser Authentication. Beginning with Teradata Database 17.20.03.11, the default scope can be specified in the database's `TdgssUserConfigFile.xml` file, using the `IdPConfig` element's `Scope` attribute. Browser Authentication is supported for Windows and macOS. Equivalent to the Teradata JDBC Driver `OIDC_SCOPE` connection parameter.
@@ -244,7 +244,7 @@ Parameter               | Default     | Type           | Description
 `tmode`                 | `"DEFAULT"` | string         | Specifies the transaction mode. Equivalent to the Teradata JDBC Driver `TMODE` connection parameter. Possible values are `DEFAULT` (the default), `ANSI`, or `TERA`.
 `user`                  |             | string         | Specifies the database username. Equivalent to the Teradata JDBC Driver `USER` connection parameter.
 
-<a name="COPDiscovery"></a>
+<a id="COPDiscovery"></a>
 
 ### COP Discovery
 
@@ -279,7 +279,7 @@ The driver masks connection failures to down COPs, thereby hiding most connectio
 
 If COP Discovery is turned off, or no COP hostnames are defined in DNS, the driver connects directly to the hostname specified in the `host` connection parameter. This permits load distribution schemes other than the COP Discovery approach. For example, round-robin DNS or a TCP/IP load distribution product can be used. COP Discovery takes precedence over simple database hostname lookup. To use an alternative load distribution scheme, either ensure that no COP hostnames are defined in DNS, or turn off COP Discovery with `cop` as `false`.
 
-<a name="StoredPasswordProtection"></a>
+<a id="StoredPasswordProtection"></a>
 
 ### Stored Password Protection
 
@@ -473,7 +473,7 @@ Before decryption, the driver calculates the MAC using the ciphertext, transform
 
 Finally, the driver uses the decrypted password to log on to the database.
 
-<a name="ClientAttributes"></a>
+<a id="ClientAttributes"></a>
 
 ### Client Attributes
 
@@ -526,7 +526,7 @@ Field | Source   | Description
 7     | driver   | The client program name
 8     | driver   | The string `01 LSS` to indicate the `LogonSource` string version `01`
 
-<a name="TransactionMode"></a>
+<a id="TransactionMode"></a>
 
 ### Transaction Mode
 
@@ -549,7 +549,7 @@ A drawback of using ANSI mode is that you can only call stored procedures that w
 
 Refer to the Teradata Reference / *SQL Request and Transaction Processing* for complete information regarding the differences between ANSI and TERA transaction modes.
 
-<a name="AutoCommit"></a>
+<a id="AutoCommit"></a>
 
 ### Auto-Commit
 
@@ -603,7 +603,7 @@ Please note that neither previous example shows best practices. Best practices r
     cur.execute("insert into mytable2 values(3, 4)")
     con.commit()
 
-<a name="DataTypes"></a>
+<a id="DataTypes"></a>
 
 ### Data Types
 
@@ -669,7 +669,7 @@ Transforms are used for SQL `ARRAY` data values, and they can be transferred to 
 
 Transforms are used for structured UDT data values, and they can be transferred to and from the database as `VARCHAR` values.
 
-<a name="NullValues"></a>
+<a id="NullValues"></a>
 
 ### Null Values
 
@@ -689,7 +689,7 @@ To avoid database error 3532 in this situation, your application must use the th
 
     cur.execute("{fn teradata_parameter(1, BYTE(4))}update mytable set bytecolumn = ?", [None])
 
-<a name="CharacterExportWidth"></a>
+<a id="CharacterExportWidth"></a>
 
 ### Character Export Width
 
@@ -721,7 +721,7 @@ Or wrap query in a view with `CAST` or `TRIM` to avoid trailing space padding:
 
 This technique is also demonstrated in sample program `CharPadding.py`.
 
-<a name="ModuleConstructors"></a>
+<a id="ModuleConstructors"></a>
 
 ### Module Constructors
 
@@ -769,7 +769,7 @@ Creates and returns a `datetime.datetime` value.
 
 Creates and returns a `datetime.datetime` value corresponding to the specified number of seconds after 1970-01-01 00:00:00.
 
-<a name="ModuleGlobals"></a>
+<a id="ModuleGlobals"></a>
 
 ### Module Globals
 
@@ -789,7 +789,7 @@ Integer constant `2` indicating that threads may share this module, and threads 
 
 String constant `"qmark"` indicating that prepared SQL requests use question-mark parameter markers.
 
-<a name="ModuleExceptions"></a>
+<a id="ModuleExceptions"></a>
 
 ### Module Exceptions
 
@@ -801,7 +801,7 @@ String constant `"qmark"` indicating that prepared SQL requests use question-mar
   * `teradatasql.OperationalError` is raised for errors related to the database's operation.
   * `teradatasql.ProgrammingError` is raised for SQL object existence errors and SQL syntax errors. Not supported yet.
 
-<a name="ConnectionMethods"></a>
+<a id="ConnectionMethods"></a>
 
 ### Connection Methods
 
@@ -835,7 +835,7 @@ Creates and returns a new Cursor object for the Connection.
 
 Rolls back the current transaction.
 
-<a name="CursorAttributes"></a>
+<a id="CursorAttributes"></a>
 
 ### Cursor Attributes
 
@@ -868,7 +868,7 @@ Read-only attribute consisting of a sequence of seven-item sequences that each d
 
 Read-only attribute indicating the number of rows returned from, or affected by, the current SQL statement.
 
-<a name="CursorMethods"></a>
+<a id="CursorMethods"></a>
 
 ### Cursor Methods
 
@@ -946,7 +946,7 @@ Has no effect.
 
 Has no effect.
 
-<a name="TypeObjects"></a>
+<a id="TypeObjects"></a>
 
 ### Type Objects
 
@@ -980,7 +980,7 @@ Identifies a SQL `CHAR`, `CLOB`, `INTERVAL`, `PERIOD`, or `VARCHAR` column as a 
 
 `.description[`*Column*`][1] == teradatasql.STRING`
 
-<a name="EscapeSyntax"></a>
+<a id="EscapeSyntax"></a>
 
 ### Escape Syntax
 
@@ -1246,7 +1246,7 @@ To represent a double-quote character in a string enclosed in double-quote chara
 
     {fn teradata_field_quote("""")}
 
-<a name="FastLoad"></a>
+<a id="FastLoad"></a>
 
 ### FastLoad
 
@@ -1301,7 +1301,7 @@ Your application ends FastLoad by committing or rolling back the current transac
 
 Warning and error information remains available until the next batch is inserted or until the commit or rollback. Each batch execution clears the prior warnings and errors. Each commit or rollback clears the prior warnings and errors.
 
-<a name="FastExport"></a>
+<a id="FastExport"></a>
 
 ### FastExport
 
@@ -1332,7 +1332,7 @@ Your application can prepend other optional escape functions to the query:
 After beginning a FastExport, your application can obtain the Logon Sequence Number (LSN) assigned to the FastExport by prepending the following escape functions to the query:
 * `{fn teradata_nativesql}{fn teradata_logon_sequence_number}` returns the string form of an integer representing the Logon Sequence Number (LSN) for the FastExport. Returns an empty string if the request is not a FastExport.
 
-<a name="CSVBatchInserts"></a>
+<a id="CSVBatchInserts"></a>
 
 ### CSV Batch Inserts
 
@@ -1363,7 +1363,7 @@ Limitations when using CSV batch inserts:
 * For SQL batch insert, some records may be inserted before a parsing error occurs. A list of the parser errors will be returned. Each parser error will include the line number (starting at line 1) and the column number (starting at zero).
 * Using a CSV file with FastLoad has the same limitations and is used the same way as described in the [FastLoad](#FastLoad) section.
 
-<a name="CSVExportResults"></a>
+<a id="CSVExportResults"></a>
 
 ### CSV Export Results
 
@@ -1415,9 +1415,12 @@ Limitations when exporting to CSV files:
 * Not all data types are supported. For example, `BLOB`, `BYTE`, and `VARBYTE` are not supported and if one of these column types are present in the result set, an error will be returned.
 * `CLOB`, `XML`, `JSON`, and `DATASET STORAGE FORMAT CSV` data types are supported for SQL query results and are exported as string values, but these data types are not supported by FastExport.
 
-<a name="ChangeLog"></a>
+<a id="ChangeLog"></a>
 
 ### Change Log
+
+`17.20.0.23` - May 19, 2023
+* GOSQL-157 logon_timeout connection parameter
 
 `17.20.0.22` - May 16, 2023
 * Build DLL and shared library with Go 1.19.9
