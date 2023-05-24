@@ -27,6 +27,7 @@ Copyright 2023 Teradata. All Rights Reserved.
 * [COP Discovery](#COPDiscovery)
 * [Stored Password Protection](#StoredPasswordProtection)
 * [Client Attributes](#ClientAttributes)
+* [User STARTUP SQL Request](#UserStartup)
 * [Transaction Mode](#TransactionMode)
 * [Auto-Commit](#AutoCommit)
 * [Data Types](#DataTypes)
@@ -56,7 +57,7 @@ The driver is a young product that offers a basic feature set. We are working di
 
 At the present time, the driver offers the following features.
 
-* Supported for use with Teradata Database 14.10 and later releases. Informally tested to work with Teradata Database 12.0 and later releases.
+* Supported for use with Teradata Database 16.10 and later releases.
 * COP Discovery.
 * Laddered Concurrent Connect.
 * HTTPS/TLS connections with Teradata SQL Engine 16.20.53.30 and later.
@@ -202,7 +203,7 @@ Parameter               | Default     | Type           | Description
 `column_name`           | `"false"`   | quoted boolean | Controls the behavior of cursor `.description` sequence `name` items. Equivalent to the Teradata JDBC Driver `COLUMN_NAME` connection parameter. False specifies that a cursor `.description` sequence `name` item provides the AS-clause name if available, or the column name if available, or the column title. True specifies that a cursor `.description` sequence `name` item provides the column name if available, but has no effect when StatementInfo parcel support is unavailable.
 `connect_failure_ttl`   | `"0"`       | quoted integer | Specifies the time-to-live in seconds to remember the most recent connection failure for each IP address/port combination. The driver subsequently skips connection attempts to that IP address/port for the duration of the time-to-live. The default value of zero disables this feature. The recommended value is half the database restart time. Equivalent to the Teradata JDBC Driver `CONNECT_FAILURE_TTL` connection parameter.
 `connect_function`      | `"0"`       | quoted integer | Specifies whether the database should allocate a Logon Sequence Number (LSN) for this session, or associate this session with an existing LSN. Specify `0` for a session with no LSN (the default). Specify `1` to allocate a new LSN for the session. Specify `2` to associate the session with the existing LSN identified by the `logon_sequence_number` connection parameter. The database only permits sessions for the same user to share an LSN. Equivalent to the Teradata JDBC Driver `CONNECT_FUNCTION` connection parameter.
-`connect_timeout`       | `"0"`       | quoted integer | Specifies the timeout in milliseconds for establishing a TCP socket connection. Zero means no timeout.
+`connect_timeout`       | `"10000"`   | quoted integer | Specifies the timeout in milliseconds for establishing a TCP socket connection. Specify `0` for no timeout. The default is 10 seconds (10000 milliseconds).
 `cop`                   | `"true"`    | quoted boolean | Specifies whether COP Discovery is performed. Equivalent to the Teradata JDBC Driver `COP` connection parameter.
 `coplast`               | `"false"`   | quoted boolean | Specifies how COP Discovery determines the last COP hostname. Equivalent to the Teradata JDBC Driver `COPLAST` connection parameter. When `coplast` is `false` or omitted, or COP Discovery is turned off, then no DNS lookup occurs for the coplast hostname. When `coplast` is `true`, and COP Discovery is turned on, then a DNS lookup occurs for a coplast hostname.
 `database`              |             | string         | Specifies the initial database to use after logon, instead of the user's default database. Equivalent to the Teradata JDBC Driver `DATABASE` connection parameter.
@@ -232,6 +233,7 @@ Parameter               | Default     | Type           | Description
 `partition`             | `"DBC/SQL"` | string         | Specifies the database partition. Equivalent to the Teradata JDBC Driver `PARTITION` connection parameter.
 `password`              |             | string         | Specifies the database password. Equivalent to the Teradata JDBC Driver `PASSWORD` connection parameter.
 `request_timeout`       | `"0"`       | quoted integer | Specifies the timeout for executing each SQL request. Zero means no timeout.
+`runstartup`            | `"false"`   | quoted boolean | Controls whether the user's `STARTUP` SQL request is executed after logon. For more information, refer to [User STARTUP SQL Request](#UserStartup). Equivalent to the Teradata JDBC Driver `RUNSTARTUP` connection parameter.
 `sessions`              |             | quoted integer | Specifies the number of data transfer connections for FastLoad or FastExport. The default (recommended) lets the database choose the appropriate number of connections. Equivalent to the Teradata JDBC Driver `SESSIONS` connection parameter.
 `sip_support`           | `"true"`    | quoted boolean | Controls whether StatementInfo parcel is used. Equivalent to the Teradata JDBC Driver `SIP_SUPPORT` connection parameter.
 `sslca`                 |             | string         | Specifies the file name of a PEM file that contains Certificate Authority (CA) certificates for use with `sslmode` values `VERIFY-CA` or `VERIFY-FULL`. Equivalent to the Teradata JDBC Driver `SSLCA` connection parameter.
@@ -525,6 +527,30 @@ Field | Source   | Description
 6     | driver   | The client user name
 7     | driver   | The client program name
 8     | driver   | The string `01 LSS` to indicate the `LogonSource` string version `01`
+
+<a id="UserStartup"></a>
+
+### User STARTUP SQL Request
+
+`CREATE USER` and `MODIFY USER` commands provide `STARTUP` clauses for specifying SQL commands to establish initial session settings. The following table lists several of the SQL commands that may be used to establish initial session settings.
+
+Category                 | SQL command
+------------------------ | ---
+Diagnostic settings      | `DIAGNOSTIC` ... `FOR SESSION`
+Session query band       | `SET QUERY_BAND` ... `FOR SESSION`
+Unicode Pass Through     | `SET SESSION CHARACTER SET UNICODE PASS THROUGH ON`
+Transaction isolation    | `SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL`
+Collation sequence       | `SET SESSION COLLATION`
+Temporal qualifier       | `SET SESSION CURRENT VALIDTIME AND CURRENT TRANSACTIONTIME`
+Date format              | `SET SESSION DATEFORM`
+Function tracing         | `SET SESSION FUNCTION TRACE`
+Session time zone        | `SET TIME ZONE`
+
+For example, the following command sets a `STARTUP` SQL request for user `susan` to establish read-uncommitted transaction isolation after logon.
+
+    MODIFY USER susan AS STARTUP='SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL RU'
+
+The driver's `runstartup` connection parameter must be `true` to execute the user's `STARTUP` SQL request after logon. The default for `runstartup` is `false`. If the `runstartup` connection parameter is omitted or `false`, then the user's `STARTUP` SQL request will not be executed.
 
 <a id="TransactionMode"></a>
 
@@ -1220,6 +1246,7 @@ Request-Scope Function                                 | Effect
 `{fn teradata_manage_error_tables_off}`                | Turns off FastLoad error table management for this request. Takes precedence over the `manage_error_tables` connection parameter.
 `{fn teradata_manage_error_tables_on}`                 | Turns on FastLoad error table management for this request. Takes precedence over the `manage_error_tables` connection parameter.
 `{fn teradata_parameter(`*Index*`,`*DataType*`)`       | Transmits parameter *Index* bind values as *DataType*
+`{fn teradata_provide(request_scope_column_name_off)}` | Provides the default column name behavior for this SQL request. Takes precedence over the `column_name` connection parameter.
 `{fn teradata_provide(request_scope_lob_support_off)}` | Turns off LOB support for this SQL request. Takes precedence over the `lob_support` connection parameter.
 `{fn teradata_provide(request_scope_refresh_rsmd)}`    | Executes the SQL request with the default request processing option `B` (both)
 `{fn teradata_provide(request_scope_sip_support_off)}` | Turns off StatementInfo parcel support for this SQL request. Takes precedence over the `sip_support` connection parameter.
@@ -1418,6 +1445,10 @@ Limitations when exporting to CSV files:
 <a id="ChangeLog"></a>
 
 ### Change Log
+
+`17.20.0.24` - May 23, 2023
+* GOSQL-41 escape function teradata_provide(request_scope_column_name_off)
+* GOSQL-124	runstartup connection parameter
 
 `17.20.0.23` - May 19, 2023
 * GOSQL-157 logon_timeout connection parameter
