@@ -236,6 +236,7 @@ Parameter               | Default     | Type           | Description
 `runstartup`            | `"false"`   | quoted boolean | Controls whether the user's `STARTUP` SQL request is executed after logon. For more information, refer to [User STARTUP SQL Request](#UserStartup). Equivalent to the Teradata JDBC Driver `RUNSTARTUP` connection parameter.
 `sessions`              |             | quoted integer | Specifies the number of data transfer connections for FastLoad or FastExport. The default (recommended) lets the database choose the appropriate number of connections. Equivalent to the Teradata JDBC Driver `SESSIONS` connection parameter.
 `sip_support`           | `"true"`    | quoted boolean | Controls whether StatementInfo parcel is used. Equivalent to the Teradata JDBC Driver `SIP_SUPPORT` connection parameter.
+`sp_spl`                | `"true"`    | quoted boolean | Controls whether stored procedure source code is saved in the database when a SQL stored procedure is created. Equivalent to the Teradata JDBC Driver `SP_SPL` connection parameter.
 `sslca`                 |             | string         | Specifies the file name of a PEM file that contains Certificate Authority (CA) certificates for use with `sslmode` values `VERIFY-CA` or `VERIFY-FULL`. Equivalent to the Teradata JDBC Driver `SSLCA` connection parameter.
 `sslcapath`             |             | string         | Specifies a directory of PEM files that contain Certificate Authority (CA) certificates for use with `sslmode` values `VERIFY-CA` or `VERIFY-FULL`. Only files with an extension of `.pem` are used. Other files in the specified directory are not used. Equivalent to the Teradata JDBC Driver `SSLCAPATH` connection parameter.
 `sslcipher`             |             | string         | Specifies the TLS cipher for HTTPS/TLS connections. Equivalent to the Teradata JDBC Driver `SSLCIPHER` connection parameter.
@@ -1446,9 +1447,13 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
+`17.20.0.25` - June 2, 2023
+* GOSQL-142 sp_spl connection parameter
+* fake result set columns StatementNumber and WarningCode are now INTEGER
+
 `17.20.0.24` - May 23, 2023
 * GOSQL-41 escape function teradata_provide(request_scope_column_name_off)
-* GOSQL-124	runstartup connection parameter
+* GOSQL-124 runstartup connection parameter
 
 `17.20.0.23` - May 19, 2023
 * GOSQL-157 logon_timeout connection parameter
