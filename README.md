@@ -70,6 +70,8 @@ At the present time, the driver offers the following features.
 * Most JDBC escape syntax.
 * Parameterized SQL requests with question-mark parameter markers.
 * Parameterized batch SQL requests with multiple rows of data bound to question-mark parameter markers.
+* Auto-Generated Key Retrieval (AGKR) for identity column values and more.
+* Large Object (LOB) support for the BLOB and CLOB data types.
 * Complex data types such as `XML`, `JSON`, `DATASET STORAGE FORMAT AVRO`, and `DATASET STORAGE FORMAT CSV`.
 * ElicitFile protocol support for DDL commands that create external UDFs or stored procedures and upload a file from client to database.
 * `CREATE PROCEDURE` and `REPLACE PROCEDURE` commands.
@@ -132,6 +134,8 @@ The sample programs are coded with a fake database hostname `whomooz`, username 
 
 Program                                                                                                             | Purpose
 ------------------------------------------------------------------------------------------------------------------- | ---
+[AGKRBatchInsert.py](https://github.com/Teradata/python-driver/blob/master/samples/AGKRBatchInsert.py)              | Demonstrates how to insert a batch of rows with Auto-Generated Key Retrieval (AGKR)
+[AGKRInsertSelect.py](https://github.com/Teradata/python-driver/blob/master/samples/AGKRInsertSelect.py)            | Demonstrates Insert/Select with Auto-Generated Key Retrieval (AGKR)
 [BatchInsert.py](https://github.com/Teradata/python-driver/blob/master/samples/BatchInsert.py)                      | Demonstrates how to insert a batch of rows
 [BatchInsertCSV.py](https://github.com/Teradata/python-driver/blob/master/samples/BatchInsertCSV.py)                | Demonstrates how to insert a batch of rows from a CSV file
 [BatchInsPerf.py](https://github.com/Teradata/python-driver/blob/master/samples/BatchInsPerf.py)                    | Measures time to insert one million rows
@@ -1230,6 +1234,7 @@ Request-scope function escape clauses are removed before the SQL request text is
 
 Request-Scope Function                                 | Effect
 ------------------------------------------------------ | ---
+`{fn teradata_agkr(`*Option*`)}`                       | Executes the SQL request with Auto-Generated Key Retrieval (AGKR) *Option* `C` (identity column value) or `R` (entire row)
 `{fn teradata_clobtranslate(`*Option*`)}`              | Executes the SQL request with CLOB translate *Option* `U` (unlocked) or the default `L` (locked)
 `{fn teradata_error_query_count(`*Number*`)}`          | Specifies how many times the driver will attempt to query FastLoad Error Table 1 after a FastLoad operation. Takes precedence over the `error_query_count` connection parameter.
 `{fn teradata_error_query_interval(`*Milliseconds*`)}` | Specifies how many milliseconds the driver will wait between attempts to query FastLoad Error Table 1. Takes precedence over the `error_query_interval` connection parameter.
@@ -1446,6 +1451,10 @@ Limitations when exporting to CSV files:
 <a id="ChangeLog"></a>
 
 ### Change Log
+
+`17.20.0.26` - June 15, 2023
+* GOSQL-165 Auto-Generated Key Retrieval (AGKR)
+* GOSQL-167 use loopback IP address for OIDC redirect
 
 `17.20.0.25` - June 2, 2023
 * GOSQL-142 sp_spl connection parameter
