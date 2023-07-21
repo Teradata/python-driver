@@ -552,7 +552,7 @@ if __name__ == '__main__':
     sPassword = sPassword.encode ().decode ('unicode_escape') # for backslash uXXXX escape sequences
 
     nKeySizeInBits = int (sKeySizeInBits)
-    sMatch = str (datetime.datetime.now ())
+    sMatch = str (datetime.datetime.utcnow ())
 
     abyKey, abyMacKey = createPasswordEncryptionKeyFile (sTransformation, sAlgorithm, sMode, sPadding, nKeySizeInBits, sMatch, sMac, sPassKeyFileName)
 
