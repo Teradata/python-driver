@@ -4,7 +4,7 @@ This package enables Python applications to connect to the Teradata Database.
 
 This package implements the [PEP-249 Python Database API Specification 2.0](https://www.python.org/dev/peps/pep-0249/).
 
-This package requires 64-bit Python 3.4 or later, and runs on Windows, macOS, and Linux. 32-bit Python is not supported.
+This package requires 64-bit Python 3.7 or later, and runs on Windows, macOS, and Linux. 32-bit Python is not supported.
 
 For community support, please visit [Teradata Community](https://support.teradata.com/community).
 
@@ -155,6 +155,7 @@ Program                                                                         
 [FastLoadCSV.py](https://github.com/Teradata/python-driver/blob/master/samples/FastLoadCSV.py)                      | Demonstrates how to FastLoad batches of rows from a CSV file
 [HelpSession.py](https://github.com/Teradata/python-driver/blob/master/samples/HelpSession.py)                      | Displays session information
 [IgnoreErrors.py](https://github.com/Teradata/python-driver/blob/master/samples/IgnoreErrors.py)                    | Demonstrates how to ignore errors
+[InsertLob.py](https://github.com/Teradata/python-driver/blob/master/samples/InsertLob.py)                          | Demonstrates how to insert BLOB and CLOB values
 [InsertXML.py](https://github.com/Teradata/python-driver/blob/master/samples/InsertXML.py)                          | Demonstrates how to insert and retrieve XML values
 [LoadCSVFile.py](https://github.com/Teradata/python-driver/blob/master/samples/LoadCSVFile.py)                      | Demonstrates how to load data from a CSV file into a table
 [LobLocators.py](https://github.com/Teradata/python-driver/blob/master/samples/LobLocators.py)                      | Demonstrates how to use LOB locators
@@ -1451,6 +1452,11 @@ Limitations when exporting to CSV files:
 <a id="ChangeLog"></a>
 
 ### Change Log
+
+`17.20.0.29` - September 5, 2023
+* Build DLL and shared library with Go 1.19.12
+* Requires 64-bit Python 3.7 or later and ends support for older versions of Python
+* Added sample program InsertLob.py
 
 `17.20.0.28` - July 21, 2023
 * Build DLL and shared library with Go 1.19.11
