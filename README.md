@@ -36,6 +36,7 @@ Copyright 2023 Teradata. All Rights Reserved.
 * [Module Constructors](#ModuleConstructors)
 * [Module Globals](#ModuleGlobals)
 * [Module Exceptions](#ModuleExceptions)
+* [Connection Attributes](#ConnectionAttributes)
 * [Connection Methods](#ConnectionMethods)
 * [Cursor Attributes](#CursorAttributes)
 * [Cursor Methods](#CursorMethods)
@@ -589,15 +590,15 @@ The driver provides auto-commit on and off functionality for both ANSI and TERA 
 
 When a connection is first established, it begins with the default auto-commit setting, which is on. When auto-commit is on, the driver is solely responsible for managing transactions, and the driver commits each SQL request that is successfully executed. An application should not execute any transaction management SQL commands when auto-commit is on. An application should not call the `commit` method or the `rollback` method when auto-commit is on.
 
-An application can manage transactions itself by calling the `execute` method with the `teradata_nativesql` and `teradata_autocommit_off` escape functions to turn off auto-commit.
+An application can manage transactions itself by setting the connection's `.autocommit` attribute to `False` to turn off auto-commit.
 
-    cur.execute("{fn teradata_nativesql}{fn teradata_autocommit_off}")
+    con.autocommit = False
 
 When auto-commit is off, the driver leaves the current transaction open after each SQL request is executed, and the application is responsible for committing or rolling back the transaction by calling the `commit` or the `rollback` method, respectively.
 
-Auto-commit remains turned off until the application turns it back on.
+Auto-commit remains turned off until the application turns it back on by setting the connection's `.autocommit` attribute to `True`.
 
-    cur.execute("{fn teradata_nativesql}{fn teradata_autocommit_on}")
+    con.autocommit = True
 
 Best practices recommend that an application avoid executing database-vendor-specific transaction management commands such as `BT`, `ET`, `ABORT`, `COMMIT`, or `ROLLBACK`, because such commands differ from one vendor to another. (They even differ between Teradata's two modes ANSI and TERA.) Instead, best practices recommend that an application only call the standard methods `commit` and `rollback` for transaction management.
 1. When auto-commit is on in ANSI mode, the driver automatically executes `COMMIT` after every successful SQL request.
@@ -614,7 +615,7 @@ In TERA mode, `BT` and `ET` pairs can be nested, and the database keeps track of
 In rare cases, an application may not follow best practices and may explicitly execute transaction management commands. Such an application must turn off auto-commit before executing transaction management commands such as `BT`, `ET`, `ABORT`, `COMMIT`, or `ROLLBACK`. The application is responsible for executing the appropriate commands for the transaction mode in effect. TERA mode commands are `BT`, `ET`, and `ABORT`. ANSI mode commands are `COMMIT` and `ROLLBACK`. An application must take special care when opening a transaction in TERA mode with auto-commit off. In TERA mode with auto-commit off, when the application executes a SQL request, if the session does not have a transaction in progress, then the driver automatically executes `BT` before executing the application's SQL request. Therefore, the application should not begin a transaction by executing `BT`.
 
     # TERA mode example showing undesirable BT/ET nesting
-    cur.execute("{fn teradata_nativesql}{fn teradata_autocommit_off}")
+    con.autocommit = False
     cur.execute("BT") # BT automatically executed by the driver before this, and produces a nested BT
     cur.execute("insert into mytable1 values(1, 2)")
     cur.execute("insert into mytable2 values(3, 4)")
@@ -622,7 +623,7 @@ In rare cases, an application may not follow best practices and may explicitly e
     cur.execute("ET") # complete transaction
 
     # TERA mode example showing how to avoid BT/ET nesting
-    cur.execute("{fn teradata_nativesql}{fn teradata_autocommit_off}")
+    con.autocommit = False
     cur.execute("insert into mytable1 values(1, 2)") # BT automatically executed by the driver before this
     cur.execute("insert into mytable2 values(3, 4)")
     cur.execute("ET") # complete transaction
@@ -630,7 +631,7 @@ In rare cases, an application may not follow best practices and may explicitly e
 Please note that neither previous example shows best practices. Best practices recommend that an application only call the standard methods `commit` and `rollback` for transaction management.
 
     # Example showing best practice
-    cur.execute("{fn teradata_nativesql}{fn teradata_autocommit_off}")
+    con.autocommit = False
     cur.execute("insert into mytable1 values(1, 2)")
     cur.execute("insert into mytable2 values(3, 4)")
     con.commit()
@@ -833,6 +834,14 @@ String constant `"qmark"` indicating that prepared SQL requests use question-mar
   * `teradatasql.OperationalError` is raised for errors related to the database's operation.
   * `teradatasql.ProgrammingError` is raised for SQL object existence errors and SQL syntax errors. Not supported yet.
 
+<a id="ConnectionAttributes"></a>
+
+### Connection Attributes
+
+`.autocommit`
+
+Read/write `bool` attribute for the connection's auto-commit setting. Defaults to `True` meaning auto-commit is turned on.
+
 <a id="ConnectionMethods"></a>
 
 ### Connection Methods
@@ -873,7 +882,7 @@ Rolls back the current transaction.
 
 `.arraysize`
 
-Read/write attribute specifying the number of rows to fetch at a time with the `.fetchmany()` method. Defaults to `1` meaning fetch a single row at a time.
+Read/write `int` attribute specifying the number of rows to fetch at a time with the `.fetchmany()` method. Defaults to `1` meaning fetch a single row at a time.
 
 ---
 
@@ -898,7 +907,7 @@ Read-only attribute consisting of a sequence of seven-item sequences that each d
 
 `.rowcount`
 
-Read-only attribute indicating the number of rows returned from, or affected by, the current SQL statement.
+Read-only `int` attribute indicating the number of rows returned from, or affected by, the current SQL statement.
 
 <a id="CursorMethods"></a>
 
@@ -1452,6 +1461,11 @@ Limitations when exporting to CSV files:
 <a id="ChangeLog"></a>
 
 ### Change Log
+
+`17.20.0.30` - September 19, 2023
+* GOSQL-175 avoid panic: cannot create context from nil parent
+* PYDBAPI-122 provide py.typed file
+* PYDBAPI-123 autocommit property for TeradataConnection
 
 `17.20.0.29` - September 5, 2023
 * Build DLL and shared library with Go 1.19.12

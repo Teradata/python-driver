@@ -6,7 +6,7 @@ import teradatasql
 
 with teradatasql.connect ('{"host":"whomooz","user":"guest","password":"please"}') as con:
     with con.cursor () as cur:
-        cur.execute ("{fn teradata_nativesql}{fn teradata_autocommit_off}")
+        con.autocommit = False
 
         cur.execute ("create volatile table voltab (c1 integer) on commit preserve rows")
         con.commit ()
