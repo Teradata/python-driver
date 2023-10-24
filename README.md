@@ -1462,6 +1462,10 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
+`17.20.0.32` - October 23, 2023
+* GOSQL-179 fake result sets add SPParameterDirection to ColumnMetadata and ParameterMetadata
+* GOSQL-180 fake result sets add stored procedure IN parameters to ParameterMetadata
+
 `17.20.0.31` - September 27, 2023
 * GOSQL-176 better error message for missing host connection parameter
 
