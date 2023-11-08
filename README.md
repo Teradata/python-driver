@@ -91,7 +91,7 @@ At the present time, the driver offers the following features.
 
 ### Installation
 
-The driver depends on the `pycryptodome` package which is available from PyPI.
+The `teradatasql` package depends on the `pycryptodome` package which is available from PyPI.
 
 Use `pip install` to download and install the driver and its dependencies automatically.
 
@@ -106,6 +106,16 @@ Platform       | Command
 -------------- | ---
 macOS or Linux | `pip install --no-cache-dir -U teradatasql`
 Windows        | `py -3 -m pip install --no-cache-dir -U teradatasql`
+
+The `teradatasql` package depends on the `pycryptodome` package, because one of the included sample programs (`TJEncryptPassword.py`) uses `pycryptodome`. The driver itself does not use `pycryptodome`.
+
+If you want to avoid installing `pycryptodome`, you can use the `--no-deps` option of pip install to avoid installing `pycryptodome`. Without `pycryptodome`, you will not be able to run the `TJEncryptPassword.py` sample program.
+
+Platform       | Command
+-------------- | ---
+macOS or Linux | `pip install --no-deps teradatasql`
+Windows        | `py -3 -m pip install --no-deps teradatasql`
+
 
 <a id="License"></a>
 
@@ -223,7 +233,7 @@ Parameter               | Default     | Type           | Description
 `fake_result_sets`      | `"false"`   | quoted boolean | Controls whether a fake result set containing statement metadata precedes each real result set.
 `field_quote`           | `"\""`      | string         | Specifies a single character string used to quote fields in a CSV file.
 `field_sep`             | `","`       | string         | Specifies a single character string used to separate fields in a CSV file. Equivalent to the Teradata JDBC Driver `FIELD_SEP` connection parameter.
-`govern`                | `"true"`    | quoted boolean | Controls FastLoad and FastExport throttling by Teradata workload management rules. When set to `true` (the default), workload management rules may delay a FastLoad or FastExport. When set to `false`, workload management rules wiil reject rather than delay a FastLoad or FastExport. Equivalent to the Teradata JDBC Driver `GOVERN` connection parameter.
+`govern`                | `"true"`    | quoted boolean | Controls FastLoad and FastExport throttling by Teradata workload management rules. When set to `true` (the default), workload management rules may delay a FastLoad or FastExport. When set to `false`, workload management rules will reject rather than delay a FastLoad or FastExport. Equivalent to the Teradata JDBC Driver `GOVERN` connection parameter.
 `host`                  |             | string         | Specifies the database hostname.
 `https_port`            | `"443"`     | quoted integer | Specifies the database port number for HTTPS/TLS connections. Equivalent to the Teradata JDBC Driver `HTTPS_PORT` connection parameter.
 `lob_support`           | `"true"`    | quoted boolean | Controls LOB support. Equivalent to the Teradata JDBC Driver `LOB_SUPPORT` connection parameter.
@@ -1461,6 +1471,17 @@ Limitations when exporting to CSV files:
 <a id="ChangeLog"></a>
 
 ### Change Log
+
+`20.0.0.0` - November 7, 2023
+* TDGSS-7022 Go TeraGSS Phase 1
+* TDGSS-7232 Go TeraGSS Phase 2
+* TDGSS-7233 Go TeraGSS Phase 3
+* TDGSS-8123 Integrate Go TeraGSS with the GoSQL Driver phase 1
+* TDGSS-8345 Go TeraGSS Phase 4
+* TDGSS-9050 Integrate Go TeraGSS with the GoSQL Driver phase 2
+* GOSQL-148 TDNEGO logon mechanism for Go TeraGSS
+* GOSQL-158 switch to Go TeraGSS
+* GOSQL-181 improve TDNEGO interoperability with Kerberos
 
 `17.20.0.32` - October 23, 2023
 * GOSQL-179 fake result sets add SPParameterDirection to ColumnMetadata and ParameterMetadata
