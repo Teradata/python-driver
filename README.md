@@ -1472,6 +1472,9 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
+`20.0.0.1` - November 16, 2023
+* Build DLL and shared library with Go 1.20.11
+
 `20.0.0.0` - November 7, 2023
 * TDGSS-7022 Go TeraGSS Phase 1
 * TDGSS-7232 Go TeraGSS Phase 2
