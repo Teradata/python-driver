@@ -58,15 +58,15 @@ The driver is a young product that offers a basic feature set. We are working di
 
 At the present time, the driver offers the following features.
 
-* Supported for use with Teradata Database 16.10 and later releases.
+* Supported for use with Teradata database 16.20 and later releases.
 * COP Discovery.
 * Laddered Concurrent Connect.
-* HTTPS/TLS connections with Teradata SQL Engine 16.20.53.30 and later.
+* HTTPS/TLS connections with Teradata database 16.20.53.30 and later.
 * Encrypted logon using the `TD2`, `JWT`, `LDAP`, `KRB5` (Kerberos), or `TDNEGO` logon mechanisms.
 * Data encryption governed by central administration, or enabled via the `encryptdata` connection parameter.
 * Unicode character data transferred via the UTF8 session character set.
 * Auto-commit for ANSI and TERA transaction modes.
-* 1 MB rows supported with Teradata Database 16.0 and later.
+* Result set row size up to 1 MB.
 * Multi-statement requests that return multiple result sets.
 * Most JDBC escape syntax.
 * Parameterized SQL requests with question-mark parameter markers.
@@ -1473,6 +1473,10 @@ Limitations when exporting to CSV files:
 <a id="ChangeLog"></a>
 
 ### Change Log
+
+`20.0.0.2` - December 8, 2023
+* Improved exception message for query timeout
+* New sample programs CancelSleep.py and MultiThread.py
 
 `20.0.0.1` - November 16, 2023
 * Build DLL and shared library with Go 1.20.11

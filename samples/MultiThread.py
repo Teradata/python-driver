@@ -4,7 +4,6 @@
 
 import teradatasql
 import threading
-import time
 
 def WorkerThread (con, sTableName, aaoData):
 
