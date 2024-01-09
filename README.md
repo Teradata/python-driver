@@ -12,7 +12,7 @@ For Teradata customer support, please visit [Teradata Customer Service](https://
 
 Please note, this driver may contain beta/preview features ("Beta Features"). As such, by downloading and/or using the driver, in addition to agreeing to the licensing terms below, you acknowledge that the Beta Features are experimental in nature and that the Beta Features are provided "AS IS" and may not be functional on any machine or in any environment.
 
-Copyright 2023 Teradata. All Rights Reserved.
+Copyright 2024 Teradata. All Rights Reserved.
 
 ### Table of Contents
 
@@ -1473,6 +1473,9 @@ Limitations when exporting to CSV files:
 <a id="ChangeLog"></a>
 
 ### Change Log
+
+`20.0.0.4` - January 9, 2024
+* Build DLL and shared library with Go 1.20.12
 
 `20.0.0.2` - December 8, 2023
 * Improved exception message for query timeout
