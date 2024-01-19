@@ -1481,6 +1481,9 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
+`20.0.0.6` - January 19, 2024
+* GOSQL-183 TLS certificate verification for Identity Provider endpoints
+
 `20.0.0.5` - January 17, 2024
 * GOSQL-151 proxy server support
 
