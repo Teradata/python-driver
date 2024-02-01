@@ -1481,6 +1481,10 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
+`20.0.0.7` - February 1, 2024
+* GOSQL-189 improved error messages for missing or invalid logmech value
+* GOSQL-190 Go TeraGSS accommodate DH/CI bypass flag in JWT token header
+
 `20.0.0.6` - January 19, 2024
 * GOSQL-183 TLS certificate verification for Identity Provider endpoints
 
