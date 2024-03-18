@@ -407,24 +407,12 @@ While `params` is technically optional, an initialization vector is required by 
 
 #### Transformation, Key Size, and MAC
 
-A transformation is a string that describes the set of operations to be performed on the given input, to produce transformed output. A transformation specifies the name of a cryptographic algorithm such as DES or AES, followed by a feedback mode and padding scheme.
+A transformation is a string that describes the set of operations to be performed on the given input, to produce transformed output. A transformation specifies the name of a cryptographic algorithm such AES, followed by a feedback mode and padding scheme.
 
 The driver supports the following transformations and key sizes.
 
 Transformation              | Key Size
 --------------------------- | ---
-`DES/CBC/NoPadding`         | 64
-`DES/CBC/PKCS5Padding`      | 64
-`DES/CFB/NoPadding`         | 64
-`DES/CFB/PKCS5Padding`      | 64
-`DES/OFB/NoPadding`         | 64
-`DES/OFB/PKCS5Padding`      | 64
-`DESede/CBC/NoPadding`      | 192
-`DESede/CBC/PKCS5Padding`   | 192
-`DESede/CFB/NoPadding`      | 192
-`DESede/CFB/PKCS5Padding`   | 192
-`DESede/OFB/NoPadding`      | 192
-`DESede/OFB/PKCS5Padding`   | 192
 `AES/CBC/NoPadding`         | 128
 `AES/CBC/NoPadding`         | 192
 `AES/CBC/NoPadding`         | 256
@@ -444,7 +432,7 @@ Transformation              | Key Size
 `AES/OFB/PKCS5Padding`      | 192
 `AES/OFB/PKCS5Padding`      | 256
 
-Stored Password Protection uses a symmetric encryption algorithm such as DES or AES, in which the same secret key is used for encryption and decryption of the password. Stored Password Protection does not use an asymmetric encryption algorithm such as RSA, with separate public and private keys.
+Stored Password Protection uses a symmetric encryption algorithm such as AES, in which the same secret key is used for encryption and decryption of the password. Stored Password Protection does not use an asymmetric encryption algorithm such as RSA, with separate public and private keys.
 
 CBC (Cipher Block Chaining) is a block cipher encryption mode. With CBC, each ciphertext block is dependent on all plaintext blocks processed up to that point. CBC is suitable for encrypting data whose total byte count exceeds the algorithm's block size, and is therefore suitable for use with Stored Password Protection.
 
@@ -457,8 +445,6 @@ Stored Password Protection hides the password length in the encrypted password f
 The strength of the encryption depends on your choice of cipher algorithm and key size.
 
 * AES uses a 128-bit (16 byte), 192-bit (24 byte), or 256-bit (32 byte) key.
-* DESede uses a 192-bit (24 byte) key. The driver does not support a 128-bit (16 byte) key for DESede.
-* DES uses a 64-bit (8 byte) key.
 
 #### Sharing Files with the Teradata JDBC Driver
 
@@ -1480,6 +1466,12 @@ Limitations when exporting to CSV files:
 <a id="ChangeLog"></a>
 
 ### Change Log
+
+`20.0.0.8` - March 18, 2024
+* GOSQL-121 Linux ARM support
+* GOSQL-184 remove DES and DESede
+* PYDBAPI-124 remove DES and DESede
+* PYDBAPI-131 cursor attributes activitytype and activityname
 
 `20.0.0.7` - February 1, 2024
 * GOSQL-189 improved error messages for missing or invalid logmech value
