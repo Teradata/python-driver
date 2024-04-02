@@ -885,6 +885,22 @@ Rolls back the current transaction.
 
 ### Cursor Attributes
 
+`.activityname`
+
+Read-only `str` attribute indicating the activity name of the current SQL statement, such as `Select`, `Insert`, or `Update`.
+
+The value `unknown` indicates the database provided an activity type code that the driver does not recognize.
+
+---
+
+`.activitytype`
+
+Read-only `int` attribute indicating the activity type code of the current SQL statement, such as `1` for Select, `2` for Insert, or `3` for Update.
+
+Activity type codes are documented in the [Activity Type section of the Teradata Call-Level Interface Version 2 Reference](https://docs.teradata.com/r/Enterprise_IntelliFlex_Lake_VMware/Teradata-Call-Level-Interface-Version-2-Reference-for-Workstation-Attached-Systems-17.20/Parcels/Common-Parcel-Fields/Activity-Type).
+
+---
+
 `.arraysize`
 
 Read/write `int` attribute specifying the number of rows to fetch at a time with the `.fetchmany()` method. Defaults to `1` meaning fetch a single row at a time.
@@ -1466,6 +1482,9 @@ Limitations when exporting to CSV files:
 <a id="ChangeLog"></a>
 
 ### Change Log
+
+`20.0.0.9` - April 2, 2024
+* Include teradatasql.arm.so in package
 
 `20.0.0.8` - March 18, 2024
 * GOSQL-121 Linux ARM support
