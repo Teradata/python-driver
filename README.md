@@ -1515,6 +1515,11 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
+`20.0.0.14` - July 26, 2024
+* GOSQL-203 Go module
+* Build DLL and shared library with Go 1.21.9
+* Requires macOS 10.15 Catalina or later and ends support for older versions of macOS
+
 `20.0.0.13` - June 24, 2024
 * GOSQL-198 oidc_sslmode connection parameter
 * GOSQL-199 sslcrc=ALLOW and PREFER soft fail CRC for VERIFY-CA and VERIFY-FULL
