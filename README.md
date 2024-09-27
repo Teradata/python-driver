@@ -1517,6 +1517,10 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
+`20.0.0.16` - September 27, 2024
+* GOSQL-177 asynchronous request support
+* GOSQL-178 Go TeraGSS logmech=TD2 bypass DHKE for HTTPS connections
+
 `20.0.0.15` - July 31, 2024
 * GOSQL-205 Stored Password Protection for http(s)_proxy_password connection parameters
 * GOSQL-206 CRC client attribute
