@@ -1517,6 +1517,10 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
+`20.0.0.18` - October 7, 2024
+* Omit port suffix from HTTP Host: header when using default port 80 for HTTP or 443 for HTTPS
+* Build DLL and shared library with Go 1.22.4 (downgrade) to avoid [Go 1.22.5 performance regression issue #68587](https://github.com/golang/go/issues/68587)
+
 `20.0.0.17` - October 1, 2024
 * GOSQL-196 Go TeraGSS logmech=JWT bypass DHKE for HTTPS connections
 * GOSQL-210 provide Server Name Indication (SNI) field in the TLS client hello
