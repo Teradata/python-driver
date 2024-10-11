@@ -36,6 +36,7 @@ Copyright 2024 Teradata. All Rights Reserved.
 * [Character Export Width](#CharacterExportWidth)
 * [Module Constructors](#ModuleConstructors)
 * [Module Globals](#ModuleGlobals)
+* [Module Functions](#ModuleFunctions)
 * [Module Exceptions](#ModuleExceptions)
 * [Connection Attributes](#ConnectionAttributes)
 * [Connection Methods](#ConnectionMethods)
@@ -47,6 +48,7 @@ Copyright 2024 Teradata. All Rights Reserved.
 * [FastExport](#FastExport)
 * [CSV Batch Inserts](#CSVBatchInserts)
 * [CSV Export Results](#CSVExportResults)
+* [Command Line Interface](#CommandLineInterface)
 * [Change Log](#ChangeLog)
 
 <a id="Features"></a>
@@ -540,6 +542,8 @@ Client Attribute            | Source   | Description
 `ClientTcpPortNumber`       | database | The connection's client TCP port number, as determined by the database
 `ClientIPAddrByClient`      | driver   | The client IP address, as determined by the driver
 `ClientPortByClient`        | driver   | The connection's client TCP port number, as determined by the driver
+`ClientInterfaceKind`       | driver   | The value `P` to indicate Python, available beginning with Teradata Database 17.20.03.19
+`ClientInterfaceVersion`    | driver   | The driver version, available beginning with Teradata Database 17.20.03.19
 `ClientProgramName`         | driver   | The client program name, followed by a streamlined call stack
 `ClientSystemUserId`        | driver   | The client user name
 `ClientOsName`              | driver   | The client operating system name
@@ -841,9 +845,23 @@ Creates and returns a `datetime.datetime` value.
 
 Creates and returns a `datetime.datetime` value corresponding to the specified number of seconds after 1970-01-01 00:00:00.
 
+<a id="ModuleFunctions"></a>
+
+### Module Functions
+
+`teradatasql.main(` *SequenceOfStrings* `)`
+
+Provides programmatic access to the command line interface.
+
 <a id="ModuleGlobals"></a>
 
 ### Module Globals
+
+`teradatasql.__version__`
+
+The package version number.
+
+---
 
 `teradatasql.apilevel`
 
@@ -938,6 +956,12 @@ Activity type codes are documented in the [Activity Type section of the Teradata
 `.arraysize`
 
 Read/write `int` attribute specifying the number of rows to fetch at a time with the `.fetchmany()` method. Defaults to `1` meaning fetch a single row at a time.
+
+---
+
+`.columntypename`
+
+Read-only attribute consisting of a sequence of result set column type names, available after a SQL request is executed.
 
 ---
 
@@ -1260,6 +1284,7 @@ Connection function escape clauses are replaced by the returned information befo
 Connection Function                           | Returns
 --------------------------------------------- | ---
 `{fn teradata_amp_count}`                     | Number of AMPs of the database system
+`{fn teradata_connected}`                     | `true` or `false` indicating whether this connection has logged on
 `{fn teradata_database_version}`              | Version number of the database
 `{fn teradata_driver_version}`                | Version number of the driver
 `{fn teradata_get_errors}`                    | Errors from the most recent batch operation
@@ -1513,9 +1538,56 @@ Limitations when exporting to CSV files:
 * Not all data types are supported. For example, `BLOB`, `BYTE`, and `VARBYTE` are not supported and if one of these column types are present in the result set, an error will be returned.
 * `CLOB`, `XML`, `JSON`, and `DATASET STORAGE FORMAT CSV` data types are supported for SQL query results and are exported as string values, but these data types are not supported by FastExport.
 
+<a id="CommandLineInterface"></a>
+
+### Command Line Interface
+
+The `teradatasql` module provides a command line interface via the `python -m` option.
+
+Running the `teradatasql` module without additional arguments prints a usage message.
+
+Platform       | Command
+-------------- | ---
+macOS or Linux | `python -m teradatasql`
+Windows        | `py -3 -m teradatasql`
+
+Any number of arguments can follow the `teradatasql` module name on the command line, and arguments can be repeated on the command line.
+
+The command line interface can print the `teradatasql` version number.
+
+Platform       | Command
+-------------- | ---
+macOS or Linux | `python -m teradatasql version`
+Windows        | `py -3 -m teradatasql version`
+
+Specify connection parameters to connect to a database.
+
+Connection parameters begin with `host=` and consist of comma-separated key`=`value pairs. A repeated comma `,,` in a connection parameter value is treated as a single literal comma.
+
+Platform       | Command
+-------------- | ---
+macOS or Linux | `python -m teradatasql host=whomooz,user=guest,password=please`
+Windows        | `py -3 -m teradatasql host=whomooz,user=guest,password=please`
+
+This feature serves as a database connectivity test.
+
+SQL requests can be executed after a database connection is established.
+
+Platform       | Command
+-------------- | ---
+macOS or Linux | `python -m teradatasql host=whomooz,user=guest,password=please "select * from DBC.DBCInfo"`
+Windows        | `py -3 -m teradatasql host=whomooz,user=guest,password=please "select * from DBC.DBCInfo"`
+
 <a id="ChangeLog"></a>
 
 ### Change Log
+
+`20.0.0.19` - October 11, 2024
+* GOSQL-211 enable logon to database without DHKE bypass after logon to database having DHKE bypass
+* Add escape function `{fn teradata_connected}`
+* Add teradatasql module `__version__` attribute
+* Add teradatasql module command line interface
+* Add cursor attribute `columntypename`
 
 `20.0.0.18` - October 7, 2024
 * Omit port suffix from HTTP Host: header when using default port 80 for HTTP or 443 for HTTPS
