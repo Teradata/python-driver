@@ -1,4 +1,4 @@
-## Teradata SQL Driver for Python
+## Teradata SQL Driver for Python!
 
 This package enables Python applications to connect to the Teradata Database.
 
