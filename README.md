@@ -17,7 +17,7 @@ For Teradata customer support, please visit [Teradata Customer Service](https://
 
 Please note, this driver may contain beta/preview features ("Beta Features"). As such, by downloading and/or using the driver, in addition to agreeing to the licensing terms below, you acknowledge that the Beta Features are experimental in nature and that the Beta Features are provided "AS IS" and may not be functional on any machine or in any environment.
 
-Copyright 2024 Teradata. All Rights Reserved.
+Copyright 2025 Teradata. All Rights Reserved.
 
 ### Table of Contents
 
@@ -1597,6 +1597,9 @@ Windows        | `py -3 -m teradatasql host=whomooz,user=guest,password=please "
 <a id="ChangeLog"></a>
 
 ### Change Log
+
+`20.0.0.22` - January 6, 2025
+* Debug logging for Kerberos library dynamic loading and linking
 
 `20.0.0.21` - December 12, 2024
 * Provide driver version number and session number in Teradata Security exceptions
