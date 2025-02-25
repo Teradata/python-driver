@@ -233,6 +233,8 @@ Parameter               | Default     | Type           | Description
 `browser_timeout`       | `"180"`     | quoted integer | Specifies the number of seconds that the driver will wait for Browser Authentication to complete. The default is 180 seconds (3 minutes). Browser Authentication is supported for Windows and macOS. Equivalent to the Teradata JDBC Driver `BROWSER_TIMEOUT` connection parameter.
 `code_append_file`      | `"-out"`    | string         | Specifies how to display the verification URL and code. Optional when `logmech` is `CODE` and ignored for other `logmech` values. The default `-out` prints the verification URL and code to stdout. Specify `-err` to print the verification URL and code to stderr. Specify a file name to append the verification URL and code to an existing file or create a new file if the file does not exist. Equivalent to the Teradata JDBC Driver `CODE_APPEND_FILE` connection parameter.
 `column_name`           | `"false"`   | quoted boolean | Controls the behavior of cursor `.description` sequence `name` items. Equivalent to the Teradata JDBC Driver `COLUMN_NAME` connection parameter. False specifies that a cursor `.description` sequence `name` item provides the AS-clause name if available, or the column name if available, or the column title. True specifies that a cursor `.description` sequence `name` item provides the column name if available, but has no effect when StatementInfo parcel support is unavailable.
+`concurrent_interval`   | `"1000"`    | quoted integer | Specifies the interval in milliseconds for Laddered Concurrent Connect (LCC) to wait before starting another concurrent connection attempt.
+`concurrent_limit`      | `"3"`       | quoted integer | Limits the number of concurrent connection attempts.
 `connect_failure_ttl`   | `"0"`       | quoted integer | Specifies the time-to-live in seconds to remember the most recent connection failure for each IP address/port combination. The driver subsequently skips connection attempts to that IP address/port for the duration of the time-to-live. The default value of zero disables this feature. The recommended value is half the database restart time. Equivalent to the Teradata JDBC Driver `CONNECT_FAILURE_TTL` connection parameter.
 `connect_function`      | `"0"`       | quoted integer | Specifies whether the database should allocate a Logon Sequence Number (LSN) for this session, or associate this session with an existing LSN. Specify `0` for a session with no LSN (the default). Specify `1` to allocate a new LSN for the session. Specify `2` to associate the session with the existing LSN identified by the `logon_sequence_number` connection parameter. The database only permits sessions for the same user to share an LSN. Equivalent to the Teradata JDBC Driver `CONNECT_FUNCTION` connection parameter.
 `connect_timeout`       | `"10000"`   | quoted integer | Specifies the timeout in milliseconds for establishing a TCP socket connection. Specify `0` for no timeout. The default is 10 seconds (10000 milliseconds).
@@ -270,12 +272,13 @@ Parameter               | Default     | Type           | Description
 `manage_error_tables`   | `"true"`    | quoted boolean | Controls whether the driver manages the FastLoad error tables.
 `max_message_body`      | `"2097000"` | quoted integer | Specifies the maximum Response Message size in bytes. Equivalent to the Teradata JDBC Driver `MAX_MESSAGE_BODY` connection parameter.
 `oidc_clientid`         |             | string         | Specifies the OpenID Connect (OIDC) Client ID to use for Browser Authentication and other OIDC methods. When omitted, the default Client ID comes from the database's TdgssUserConfigFile.xml file. Browser Authentication is supported for Windows and macOS. Equivalent to the Teradata JDBC Driver `OIDC_CLIENTID` connection parameter.
+`oidc_metadata`         |             | string         | Specifies the Identity Provider metadata URL for OpenID Connect (OIDC). When this connection parameter is omitted, the default metadata URL is provided by the database. This connection parameter is a troubleshooting tool only, and is not intended for normal production usage. Equivalent to the Teradata JDBC Driver `OIDC_METADATA` connection parameter.
 `oidc_scope`            | `"openid"`  | string         | Specifies the OpenID Connect (OIDC) scope to use for Browser Authentication. Beginning with Teradata Database 17.20.03.11, the default scope can be specified in the database's `TdgssUserConfigFile.xml` file, using the `IdPConfig` element's `Scope` attribute. Browser Authentication is supported for Windows and macOS. Equivalent to the Teradata JDBC Driver `OIDC_SCOPE` connection parameter.
 `oidc_sslmode`          |             | string         | Specifies the mode for HTTPS connections to the Identity Provider. Equivalent to the Teradata JDBC Driver `OIDC_SSLMODE` connection parameter. Values are case-insensitive. When this parameter is omitted, the default is the value of the `sslmode` connection parameter.<br/>&bull; `ALLOW` does not perform certificate verification for HTTPS connections to the Identity Provider.<br/>&bull; `VERIFY-CA` verifies that the server certificate is valid and trusted.<br/>&bull; `VERIFY-FULL` verifies that the server certificate is valid and trusted, and verifies that the server certificate matches the Identity Provider hostname.
 `oidc_token`            | `"access_token"` | string    | Specifies the kind of OIDC token to use for Browser Authentication. Specify `id_token` to use the id_token instead of the access_token. Browser Authentication is supported for Windows and macOS. Equivalent to the Teradata JDBC Driver `OIDC_TOKEN` connection parameter.
 `partition`             | `"DBC/SQL"` | string         | Specifies the database partition. Equivalent to the Teradata JDBC Driver `PARTITION` connection parameter.
 `password`              |             | string         | Specifies the database password. Equivalent to the Teradata JDBC Driver `PASSWORD` connection parameter.
-`proxy_bypass_hosts`    |             | string | Specifies a matching pattern for hostnames and addresses to bypass the proxy server identified by the `http_proxy` and/or `https_proxy` parameter. This parameter may only be specified in conjunction with the `http_proxy` and/or `https_proxy` parameter. Separate multiple hostnames and addresses with a vertical bar `\|` character. Specify an asterisk `*` as a wildcard character. When this parameter is omitted, the default pattern `localhost\|127.*\|[::1]` bypasses the proxy server identified by the `http_proxy` and/or `https_proxy` parameter for common variations of the loopback address. Equivalent to the Teradata JDBC Driver `PROXY_BYPASS_HOSTS` connection parameter.
+`proxy_bypass_hosts`    |             | string         | Specifies a matching pattern for hostnames and addresses to bypass the proxy server identified by the `http_proxy` and/or `https_proxy` parameter. This parameter may only be specified in conjunction with the `http_proxy` and/or `https_proxy` parameter. Separate multiple hostnames and addresses with a vertical bar `\|` character. Specify an asterisk `*` as a wildcard character. When this parameter is omitted, the default pattern `localhost\|127.*\|[::1]` bypasses the proxy server identified by the `http_proxy` and/or `https_proxy` parameter for common variations of the loopback address. Equivalent to the Teradata JDBC Driver `PROXY_BYPASS_HOSTS` connection parameter.
 `request_timeout`       | `"0"`       | quoted integer | Specifies the timeout for executing each SQL request. Zero means no timeout.
 `runstartup`            | `"false"`   | quoted boolean | Controls whether the user's `STARTUP` SQL request is executed after logon. For more information, refer to [User STARTUP SQL Request](#UserStartup). Equivalent to the Teradata JDBC Driver `RUNSTARTUP` connection parameter.
 `sessions`              |             | quoted integer | Specifies the number of data transfer connections for FastLoad or FastExport. The default (recommended) lets the database choose the appropriate number of connections. Equivalent to the Teradata JDBC Driver `SESSIONS` connection parameter.
@@ -555,15 +558,113 @@ Client Attribute            | Source   | Description
 `ClientProcThreadId`        | driver   | The client process ID
 `ClientVmName`              | driver   | Python runtime information
 `ClientSecProdGrp`          | driver   | Go crypto library version
+`ClientCoordName`           | driver   | The proxy server hostname and port number when a proxy server is used for a database connection
+`ClientTerminalId`          | driver   | The proxy server hostname and port number when a proxy server is used for an Identity Provider
+`ClientSessionDesc`         | driver   | TLS cipher information is available in this column as a list of name=value pairs, each terminated by a semicolon. Individual values can be accessed using the `NVP` system function.
+&nbsp; | `C` | Y/N indicates whether the `sslcipher` connection parameter was specified
+&nbsp; | `D` | the database TLS cipher
+&nbsp; | `I` | the Identity Provider TLS cipher
 `ClientTdHostName`          | driver   | The database hostname as specified by the application, without any COP suffix
 `ClientCOPSuffixedHostName` | driver   | The COP-suffixed database hostname chosen by the driver
 `ServerIPAddrByClient`      | driver   | The database node's IP address, as determined by the driver
 `ServerPortByClient`        | driver   | The destination port number of the TCP connection to the database node, as determined by the driver
-`ClientConfType`            | driver   | The confidentiality type, as determined by the driver<br/>`V` - TLS used for encryption, with full certificate verification<br/>`C` - TLS used for encryption, with Certificate Authority (CA) verification<br/>`R` - TLS used for encryption, with no certificate verification<br/>`E` - TLS was not attempted, and TDGSS used for encryption<br/>`U` - TLS was not attempted, and TDGSS encryption depends on central administration<br/>`F` - TLS was attempted, but the TLS handshake failed, so this is a fallback to using TDGSS for encryption<br/>`H` - SSLMODE was set to PREFER, but a non-TLS connection was made, and TDGSS encryption depends on central administration
-`ServerConfType`            | database | The confidentiality type, as determined by the database<br/>`T` - TLS used for encryption<br/>`E` - TDGSS used for encryption<br/>`U` - Data transfer is unencrypted
+`ClientConfType`            | driver   | The confidentiality type, as determined by the driver
+&nbsp;                      | `V`      | TLS used for encryption, with full certificate verification
+&nbsp;                      | `C`      | TLS used for encryption, with Certificate Authority (CA) verification
+&nbsp;                      | `R`      | TLS used for encryption, with no certificate verification
+&nbsp;                      | `E`      | TLS was not attempted, and TDGSS used for encryption
+&nbsp;                      | `U`      | TLS was not attempted, and TDGSS encryption depends on central administration
+&nbsp;                      | `F`      | TLS was attempted, but the TLS handshake failed, so this is a fallback to using TDGSS for encryption
+&nbsp;                      | `H`      | SSLMODE was set to PREFER, but a non-TLS connection was made, and TDGSS encryption depends on central administration
+`ServerConfType`            | database | The confidentiality type, as determined by the database
+&nbsp;                      | `T`      | TLS used for encryption
+&nbsp;                      | `E`      | TDGSS used for encryption
+&nbsp;                      | `U`      | Data transfer is unencrypted
 `ClientConfVersion`         | database | The TLS version as determined by the database, if this is an HTTPS/TLS connection
 `ClientConfCipherSuite`     | database | The TLS cipher as determined by the database, if this is an HTTPS/TLS connection
-`ClientAttributesEx`        | driver   | Additional Client Attributes are available in the `ClientAttributesEx` column as a list of name=value pairs, each terminated by a semicolon. Individual values can be accessed using the `NVP` system function.<br/>`BA` - Y/N indicator for Browser Authentication<br/>`CCS` - The client character set<br/>`CERT` - The database TLS certificate status<br/>`CRC` - The `sslcrc` connection parameter<br/>`CRL` - Y/N indicator for `sslcrl` connection parameter<br/>`DP` - The `dbs_port` connection parameter<br/>`ENC` - Y/N indicator for `encryptdata` connection parameter<br/>`GO` - The Go version<br/>`HP` - The `https_port` connection parameter<br/>`IDPC` - The Identity Provider TLS certificate status<br/>`JH` - JWT header parameters to identify signature key<br/>`JWS` - The JSON Web Signature (JWS) algorithm<br/>`LM` - The logon authentication method<br/>`LOB` - Y/N indicator for LOB support<br/>`OC` - OIDC token cache status O (off) M (miss) H (hit) X (expired)<br/>`OCSP` - Y/N indicator for `sslocsp` connection parameter<br/>`OSL` - Numeric level corresponding to `oidc_sslmode`<br/>`OSM` - The `oidc_sslmode` connection parameter<br/>`PYTHON` - The Python version<br/>`RT` - Y/N indicator for OIDC refresh token available<br/>`SCS` - The session character set<br/>`SIP` - Y/N indicator for StatementInfo parcel support<br/>`SSL` - Numeric level corresponding to `sslmode`<br/>`SSLM` - The `sslmode` connection parameter<br/>`TC` - OIDC token reuse count<br/>`TM` - The transaction mode indicator A (ANSI) or T (TERA)<br/>`TT` - OIDC token time-to-live in seconds<br/>`TZ` - The Python current time zone<br/><br/>The `CERT` and `IDPC` attributes indicate the TLS certificate status of an HTTPS/TLS connection. When the attribute indicates the TLS certificate is valid (`V`) or invalid (`I`), then additional TLS certificate status details are provided as a series of comma-separated two-letter codes.<br/>`U` - the TLS certificate status is unavailable<br/>`V` - the TLS certificate status is valid<br/>`I` - the TLS certificate status is invalid<br/>`PU` - sslca PEM file is unavailable for server certificate verification<br/>`PA` - server certificate was verified using sslca PEM file<br/>`PR` - server certificate was rejected using sslca PEM file<br/>`DU` - sslcapath PEM directory is unavailable for server certificate verification<br/>`DA` - server certificate was verified using sslcapath PEM directory<br/>`DR` - server certificate was rejected using sslcapath PEM directory<br/>`TA` - server certificate was verified by the system<br/>`TR` - server certificate was rejected by the system<br/>`CY` - server certificate passed VERIFY-CA check<br/>`CN` - server certificate failed VERIFY-CA check<br/>`HU` - server hostname is unavailable for server certificate matching, because database IP address was specified<br/>`HY` - server hostname matches server certificate<br/>`HN` - server hostname does not match server certificate<br/>`RU` - resolved server hostname is unavailable for server certificate matching, because database IP address was specified<br/>`RY` - resolved server hostname matches server certificate<br/>`RN` - resolved server hostname does not match server certificate<br/>`IY` - IP address matches server certificate<br/>`IN` - IP address does not match server certificate<br/>`FY` - server certificate passed VERIFY-FULL check<br/>`FN` - server certificate failed VERIFY-FULL check<br/>`SU` - certificate revocation check status is unavailable<br/>`SG` - certificate revocation check status is good<br/>`SR` - certificate revocation check status is revoked
+`ClientEnvName`             | driver   | The OIDC metadata URL for a connection using an OIDC logon authentication mechanism
+`ClientJobId`               | driver   | The OIDC client ID for a connection using an OIDC logon authentication mechanism
+`ClientJobName`             | driver   | The OIDC scope for a connection using an OIDC logon authentication mechanism
+`ClientJobData`             | driver   | The OIDC login hint for a connection using an OIDC logon authentication mechanism
+`ClientUserOperId`          | driver   | The OIDC token kind, OIDC claim name, and claim value for a connection using an OIDC logon authentication mechanism
+`ClientWorkload`            | driver   | The scopes for acquired OAuth tokens, separated by vertical bar `\|` characters
+`ClientAttributesEx`        | driver   | Additional Client Attributes are available in the `ClientAttributesEx` column as a list of name=value pairs, each terminated by a semicolon. Individual values can be accessed using the `NVP` system function.
+&nbsp;                      | `AS`     | the application connection's endpoint session number
+&nbsp;                      | `BA`     | Y/N indicator for Browser Authentication
+&nbsp;                      | `CCS`    | the client character set
+&nbsp;                      | `CERT`   | the database TLS certificate status (see [table below](#CertStatus))
+&nbsp;                      | `CF`     | the `connect_function` connection parameter
+&nbsp;                      | `CRC`    | the `sslcrc` connection parameter
+&nbsp;                      | `CRL`    | Y/N indicator for `sslcrl` connection parameter
+&nbsp;                      | `CS`     | the control session's endpoint session number
+&nbsp;                      | `DL`     | this connection's database logon sequence number
+&nbsp;                      | `DP`     | the `dbs_port` connection parameter
+&nbsp;                      | `EL`     | this connection's endpoint logon sequence number
+&nbsp;                      | `ENC`    | Y/N indicator for `encryptdata` connection parameter
+&nbsp;                      | `ES`     | endpoint session number if connected to an endpoint such as Unity, Session Manager, or Business Continuity Manager; database session number otherwise
+&nbsp;                      | `FIPS`   | Y/N indicator for FIPS mode
+&nbsp;                      | `GO`     | the Go version
+&nbsp;                      | `GOV`    | the `govern` connection parameter
+&nbsp;                      | `HP`     | the `https_port` connection parameter
+&nbsp;                      | `IDPC`   | the Identity Provider TLS certificate status (see [table below](#CertStatus))
+&nbsp;                      | `JH`     | JWT header parameters to identify signature key
+&nbsp;                      | `JWS`    | the JSON Web Signature (JWS) algorithm
+&nbsp;                      | `LM`     | the logon authentication method
+&nbsp;                      | `LOB`    | Y/N indicator for LOB support
+&nbsp;                      | `OA`     | the `oauth_level` connection parameter
+&nbsp;                      | `OAC`    | sequence of comma-separated OAuth token reuse counts
+&nbsp;                      | `OAR`    | sequence of Y/N values to indicate OAuth refresh token availability
+&nbsp;                      | `OC`     | OIDC token cache status O (off) M (miss) H (hit) X (expired)
+&nbsp;                      | `OCSP`   | Y/N indicator for `sslocsp` connection parameter
+&nbsp;                      | `OSL`    | Numeric level corresponding to `oidc_sslmode`
+&nbsp;                      | `OSM`    | the `oidc_sslmode` connection parameter
+&nbsp;                      | `PART`   | the `partition` connection parameter
+&nbsp;                      | `PYTHON` | the Python version
+&nbsp;                      | `RT`     | Y/N indicator for OIDC refresh token available
+&nbsp;                      | `SCS`    | the session character set
+&nbsp;                      | `SIP`    | Y/N indicator for StatementInfo parcel support
+&nbsp;                      | `SSL`    | Numeric level corresponding to `sslmode`
+&nbsp;                      | `SSLM`   | the `sslmode` connection parameter
+&nbsp;                      | `SSLP`   | the `sslprotocol` connection parameter
+&nbsp;                      | `TC`     | OIDC token reuse count
+&nbsp;                      | `TM`     | the transaction mode indicator A (ANSI) or T (TERA)
+&nbsp;                      | `TT`     | OIDC token time-to-live in seconds
+&nbsp;                      | `TVD`    | the database TLS protocol version
+&nbsp;                      | `TVI`    | the Identity Provider TLS protocol version
+&nbsp;                      | `TZ`     | the current time zone
+
+<a id="CertStatus"></a>
+
+The `CERT` and `IDPC` attributes indicate the TLS certificate status of an HTTPS/TLS connection. When the attribute indicates the TLS certificate is valid (`V`) or invalid (`I`), then additional TLS certificate status details are provided as a series of comma-separated two-letter codes.
+
+Code | Description
+-----|---
+`U`  | the TLS certificate status is unavailable
+`V`  | the TLS certificate status is valid
+`I`  | the TLS certificate status is invalid
+`PU` | sslca PEM file is unavailable for server certificate verification
+`PA` | server certificate was verified using sslca PEM file
+`PR` | server certificate was rejected using sslca PEM file
+`DU` | sslcapath PEM directory is unavailable for server certificate verification
+`DA` | server certificate was verified using sslcapath PEM directory
+`DR` | server certificate was rejected using sslcapath PEM directory
+`TA` | server certificate was verified by the system
+`TR` | server certificate was rejected by the system
+`CY` | server certificate passed VERIFY-CA check
+`CN` | server certificate failed VERIFY-CA check
+`HU` | server hostname is unavailable for server certificate matching, because database IP address was specified
+`HY` | server hostname matches server certificate
+`HN` | server hostname does not match server certificate
+`RU` | resolved server hostname is unavailable for server certificate matching, because database IP address was specified
+`RY` | resolved server hostname matches server certificate
+`RN` | resolved server hostname does not match server certificate
+`IY` | IP address matches server certificate
+`IN` | IP address does not match server certificate
+`FY` | server certificate passed VERIFY-FULL check
+`FN` | server certificate failed VERIFY-FULL check
+`SU` | certificate revocation check status is unavailable
+`SG` | certificate revocation check status is good
+`SR` | certificate revocation check status is revoked
 
 #### LogonSource Column
 
@@ -1330,7 +1431,7 @@ Connection Function                           | Returns
 `{fn teradata_provide(sip_support)}`          | `true` or `false` indicating this connection's StatementInfo parcel support
 `{fn teradata_provide(transaction_mode)}`     | Session's transaction mode, `ANSI` or `TERA`
 `{fn teradata_provide(uses_check_workload)}`  | `true` or `false` indicating whether this connection uses `CHECK WORKLOAD`
-`{fn teradata_session_number}`                | Session number
+`{fn teradata_session_number}`                | Database session number if connected to a database Gateway or endpoint session number if connected to an endpoint such as Unity, Session Manager, or Business Continuity Manager
 
 #### Request-Scope Functions
 
@@ -1599,6 +1700,15 @@ Windows        | `py -3 -m teradatasql host=whomooz,user=guest,password=please "
 
 ### Change Log
 
+`20.0.0.25` - February 25, 2025
+* FIPS support
+* proxy server support for FastLoad and FastExport
+* GOSQL-182 transmit additional Client Attributes
+* client attribute ClientSecProdGrp also indicates OpenSSL library on Linux
+* Build DLL and shared library with Microsoft Go 1.24 using build tag goexperiment.systemcrypto for FIPS support
+* Requires macOS 12.4 Monterey or later and ends support for older versions of macOS
+* Requires Linux kernel version 3.2 or later and ends support for older versions of Linux
+
 `20.0.0.24` - February 3, 2025
 * default Linux Kerberos libraries /usr/lib64/libgssapi_krb5.so and /usr/lib64/libgssapi_krb5.so.2
 
@@ -1606,6 +1716,7 @@ Windows        | `py -3 -m teradatasql host=whomooz,user=guest,password=please "
 * client attribute ClientSecProdGrp indicates Go crypto library version
 * Build DLL and shared library with Go 1.23.5
 * Build DLL and shared library with golang.org/x/crypto v0.32.0
+* Requires macOS 11 Big Sur or later and ends support for older versions of macOS
 
 `20.0.0.22` - January 6, 2025
 * Debug logging for Kerberos library dynamic loading and linking
