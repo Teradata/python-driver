@@ -1700,6 +1700,14 @@ Windows        | `py -3 -m teradatasql host=whomooz,user=guest,password=please "
 
 ### Change Log
 
+`20.0.0.26` - March 17, 2025
+* Vector data type support for FastLoad
+* Build DLL and shared library with standard Go 1.24.1
+* Environment variable GODEBUG=fips140=on directs the Go Cryptographic Module to operate in FIPS 140-3 mode, default is off
+* No longer uses OpenSSL on Linux, to avoid panic: opensslcrypto: FIPS mode requested (system FIPS mode) but not available in OpenSSL
+* client attribute ClientSecProdGrp no longer indicates OpenSSL library on Linux
+* Switch to golang.org/x/crypto version 0.36.0
+
 `20.0.0.25` - February 25, 2025
 * FIPS support
 * proxy server support for FastLoad and FastExport
