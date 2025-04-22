@@ -10,7 +10,7 @@ This package requires 64-bit Python 3.7 or later and runs on the following opera
 * macOS on 64-bit Intel processors
 * Linux x64 on 64-bit Intel and AMD processors
 * Linux ARM64 on 64-bit ARM processors
-* Linux ppc64le on 64-bit POWER processors
+* Linux ppc64le on 64-bit Power processors
 
 For community support, please visit [Teradata Community](https://support.teradata.com/community).
 
@@ -260,6 +260,7 @@ Parameter               | Default     | Type           | Description
 `https_proxy`           |             | string         | Specifies the proxy server URL for HTTPS/TLS connections to the database and to Identity Provider endpoints. The URL must begin with `http://` and must include a colon `:` and port number. The driver connects to the proxy server using a non-TLS HTTP connection, then uses the HTTP CONNECT method to establish an HTTPS/TLS connection to the destination. Equivalent to the Teradata JDBC Driver `HTTPS_PROXY` connection parameter.
 `https_proxy_password`  |             | string         | Specifies the proxy server password for the proxy server identified by the `https_proxy` parameter. This parameter may only be specified in conjunction with the `https_proxy` parameter. When this parameter is omitted, no proxy server password is provided to the proxy server identified by the `https_proxy` parameter. Equivalent to the Teradata JDBC Driver `HTTPS_PROXY_PASSWORD` connection parameter.
 `https_proxy_user`      |             | string         | Specifies the proxy server username for the proxy server identified by the `https_proxy` parameter. This parameter may only be specified in conjunction with the `https_proxy` parameter. When this parameter is omitted, no proxy server username is provided to the proxy server identified by the `https_proxy` parameter. Equivalent to the Teradata JDBC Driver `HTTPS_PROXY_USER` connection parameter.
+`https_retry`           | `"2"`       | quoted integer | Specifies the number of HTTPS connection retries for a single-node database. Specify `0` (zero) to turn off HTTPS connection retries. Equivalent to the Teradata JDBC Driver `HTTPS_RETRY` connection parameter.
 `jws_algorithm`         | `"RS256"`   | string         | Specifies the JSON Web Signature (JWS) algorithm to sign the JWT Bearer Token for client authentication. Optional when `logmech` is `BEARER` and ignored for other `logmech` values. The default `RS256` is RSASSA-PKCS1-v1_5 using SHA-256. Specify `RS384` for RSASSA-PKCS1-v1_5 using SHA-384. Specify `RS512` for RSASSA-PKCS1-v1_5 using SHA-512. Equivalent to the Teradata JDBC Driver `JWS_ALGORITHM` connection parameter.
 `jws_cert`              |             | string         | Specifies the file name of the X.509 certificate PEM file that contains the public key corresponding to the private key from `jws_private_key`. Optional when `logmech` is `BEARER` and ignored for other `logmech` values. When this parameter is specified, the "x5t" header thumbprint is added to the JWT Bearer Token for the Identity Provider to select the public key for JWT signature verification. Some Identity Providers, such as Microsoft Entra ID, require this. When this parameter is omitted, the "x5t" header thumbprint is not added to the JWT Bearer Token. Some Identity Providers do not require the "x5t" header thumbprint. Equivalent to the Teradata JDBC Driver `JWS_CERT` connection parameter.
 `jws_private_key`       |             | string         | Specifies the file name of the PEM or JWK file containing the private key to sign the JWT Bearer Token for client authentication. Required when `logmech` is `BEARER` and ignored for other `logmech` values. PEM and JWK file formats are supported. The private key filename must end with the `.pem` or `.jwk` extension. A PEM file must contain the BEGIN/END PRIVATE KEY header and trailer. If a JWK file contains a "kid" (key identifier) parameter, the "kid" header is added to the JWT Bearer Token for the Identity Provider to select the public key for JWT signature verification. Equivalent to the Teradata JDBC Driver `JWS_PRIVATE_KEY` connection parameter.
@@ -289,6 +290,7 @@ Parameter               | Default     | Type           | Description
 `sessions`              |             | quoted integer | Specifies the number of data transfer connections for FastLoad or FastExport. The default (recommended) lets the database choose the appropriate number of connections. Equivalent to the Teradata JDBC Driver `SESSIONS` connection parameter.
 `sip_support`           | `"true"`    | quoted boolean | Controls whether StatementInfo parcel is used. Equivalent to the Teradata JDBC Driver `SIP_SUPPORT` connection parameter.
 `sp_spl`                | `"true"`    | quoted boolean | Controls whether stored procedure source code is saved in the database when a SQL stored procedure is created. Equivalent to the Teradata JDBC Driver `SP_SPL` connection parameter.
+`sslbase64`             |             | string         | Specifies the base64url encoded contents of a PEM file that contains Certificate Authority (CA) certificates for use with `sslmode` or `oidc_sslmode` values `VERIFY-CA` or `VERIFY-FULL`. Equivalent to the Teradata JDBC Driver `SSLBASE64` connection parameter. The base64url encoded value must conform to [IETF RFC 4648 Section 5 - Base 64 Encoding with URL and Filename Safe Alphabet](https://datatracker.ietf.org/doc/html/rfc4648#section-5).<br/>Example Linux command to print the base64url encoded contents of a PEM file:<br/>`base64 -w0 < cert.pem \| tr +/ -_ \| tr -d =`
 `sslca`                 |             | string         | Specifies the file name of a PEM file that contains Certificate Authority (CA) certificates for use with `sslmode` or `oidc_sslmode` values `VERIFY-CA` or `VERIFY-FULL`. Equivalent to the Teradata JDBC Driver `SSLCA` connection parameter.
 `sslcapath`             |             | string         | Specifies a directory of PEM files that contain Certificate Authority (CA) certificates for use with `sslmode` or `oidc_sslmode` values `VERIFY-CA` or `VERIFY-FULL`. Only files with an extension of `.pem` are used. Other files in the specified directory are not used. Equivalent to the Teradata JDBC Driver `SSLCAPATH` connection parameter.
 `sslcipher`             |             | string         | Specifies the TLS cipher for HTTPS/TLS connections. Default lets database and driver choose the most appropriate TLS cipher. Equivalent to the Teradata JDBC Driver `SSLCIPHER` connection parameter.
@@ -612,6 +614,7 @@ Client Attribute            | Source   | Description
 &nbsp;                      | `GO`     | the Go version
 &nbsp;                      | `GOV`    | the `govern` connection parameter
 &nbsp;                      | `HP`     | the `https_port` connection parameter
+&nbsp;                      | `HR`     | the `https_retry` connection parameter and number of HTTPS retries
 &nbsp;                      | `IDPC`   | the Identity Provider TLS certificate status (see [table below](#CertStatus))
 &nbsp;                      | `JH`     | JWT header parameters to identify signature key
 &nbsp;                      | `JWS`    | the JSON Web Signature (JWS) algorithm
@@ -627,6 +630,7 @@ Client Attribute            | Source   | Description
 &nbsp;                      | `PART`   | the `partition` connection parameter
 &nbsp;                      | `PYTHON` | the Python version
 &nbsp;                      | `RT`     | Y/N indicator for OIDC refresh token available
+&nbsp;                      | `SC`     | socket connect attempts and failures
 &nbsp;                      | `SCS`    | the session character set
 &nbsp;                      | `SIP`    | Y/N indicator for StatementInfo parcel support
 &nbsp;                      | `SSL`    | Numeric level corresponding to `sslmode`
@@ -648,6 +652,9 @@ Code | Description
 `U`  | the TLS certificate status is unavailable
 `V`  | the TLS certificate status is valid
 `I`  | the TLS certificate status is invalid
+`BU` | sslbase64 is unavailable for server certificate verification
+`BA` | server certificate was accepted by sslbase64
+`BR` | server certificate was rejected by sslbase64
 `PU` | sslca PEM file is unavailable for server certificate verification
 `PA` | server certificate was verified using sslca PEM file
 `PR` | server certificate was rejected using sslca PEM file
@@ -1708,10 +1715,14 @@ Windows        | `py -3 -m teradatasql host=whomooz,user=guest,password=please "
 
 ### Change Log
 
+`20.0.0.29` - April 22, 2025
+* GOSQL-221 connection parameter https_retry
+* GOSQL-222 connection parameter sslbase64
+
 `20.0.0.28` - April 5, 2025
 * GOSQL-219 sslnamedgroups connection parameter
 * GOSQL-220 connection parameter oidc_prompt
-* support for Linux ppc64le on 64-bit POWER processors
+* support for Linux ppc64le on 64-bit Power processors
 * streamlined teradatasql package description to avoid Azure DevOps artifact metadata limit
 
 `20.0.0.27` - April 1, 2025
