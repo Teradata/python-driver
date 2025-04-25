@@ -297,7 +297,7 @@ Parameter               | Default     | Type           | Description
 `sslcrc`                | `"ALLOW"`   | string         | Controls TLS certificate revocation checking (CRC) for HTTPS/TLS connections. Equivalent to the Teradata JDBC Driver `SSLCRC` connection parameter. Values are case-insensitive.<br/>&bull; `ALLOW` performs CRC for `sslmode` or `oidc_sslmode` `VERIFY-CA` and `VERIFY-FULL`, and provides soft fail CRC for `VERIFY-CA` and `VERIFY-FULL` to ignore CRC communication failures.<br/>&bull; `PREFER` performs CRC for all HTTPS connections, and provides soft fail CRC for `VERIFY-CA` and `VERIFY-FULL` to ignore CRC communication failures.<br/>&bull; `REQUIRE` performs CRC for all HTTPS connections, and requires CRC for `VERIFY-CA` and `VERIFY-FULL`.
 `sslcrl`                | `"true"`    | quoted boolean | Controls the use of Certificate Revocation List (CRL) for TLS certificate revocation checking for HTTPS/TLS connections. Online Certificate Status Protocol (OCSP) is preferred over CRL, so CRL is used when OSCP is unavailable. Equivalent to the Teradata JDBC Driver `SSLCRL` connection parameter.
 `sslmode`               | `"PREFER"`  | string         | Specifies the mode for connections to the database. Equivalent to the Teradata JDBC Driver `SSLMODE` connection parameter. Values are case-insensitive.<br/>&bull; `DISABLE` disables HTTPS/TLS connections and uses only non-TLS connections.<br/>&bull; `ALLOW` uses non-TLS connections unless the database requires HTTPS/TLS connections.<br/>&bull; `PREFER` uses HTTPS/TLS connections unless the database does not offer HTTPS/TLS connections.<br/>&bull; `REQUIRE` uses only HTTPS/TLS connections.<br/>&bull; `VERIFY-CA` uses only HTTPS/TLS connections and verifies that the server certificate is valid and trusted.<br/>&bull; `VERIFY-FULL` uses only HTTPS/TLS connections, verifies that the server certificate is valid and trusted, and verifies that the server certificate matches the database hostname.
-`sslnamedgroups`        |             | string         | Specifies the TLS key exchange named groups for HTTPS/TLS connections. Multiple named groups are separated by commas. Default lets database and driver choose the most appropriate named group. Equivalent to the Teradata JDBC Driver `SSLNAMEDGROUPS` connection parameter.
+`sslnamedgroups`        |             | string         | Specifies the TLS key exchange named groups for HTTPS/TLS connections. Multiple named groups are separated by commas. Default lets database and driver choose the most appropriate named group. Omitting this parameter is recommended. Use this parameter only for troubleshooting TLS handshake issues. Equivalent to the Teradata JDBC Driver `SSLNAMEDGROUPS` connection parameter.
 `sslocsp`               | `"true"`    | quoted boolean | Controls the use of Online Certificate Status Protocol (OCSP) for TLS certificate revocation checking for HTTPS/TLS connections. Equivalent to the Teradata JDBC Driver `SSLOCSP` connection parameter.
 `sslprotocol`           | `"TLSv1.2"` | string         | Specifies the TLS protocol for HTTPS/TLS connections. Equivalent to the Teradata JDBC Driver `SSLPROTOCOL` connection parameter.
 `teradata_values`       | `"true"`    | quoted boolean | Controls whether `str` or a more specific Python data type is used for certain result set column value types. Refer to the [Data Types](#DataTypes) table below for details.
@@ -1714,6 +1714,9 @@ Windows        | `py -3 -m teradatasql host=whomooz,user=guest,password=please "
 <a id="ChangeLog"></a>
 
 ### Change Log
+
+`20.0.0.30` - April 25, 2025
+* GOSQL-32 DBCCONS partition
 
 `20.0.0.29` - April 22, 2025
 * GOSQL-221 connection parameter https_retry
