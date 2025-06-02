@@ -286,6 +286,7 @@ import binascii
 import Crypto.Cipher
 import Crypto.Cipher.AES
 import Crypto.Hash
+import Crypto.Hash.HMAC
 import Crypto.Hash.SHA1
 import Crypto.Hash.SHA256
 import Crypto.Random

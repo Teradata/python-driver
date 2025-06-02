@@ -1715,6 +1715,10 @@ Windows        | `py -3 -m teradatasql host=whomooz,user=guest,password=please "
 
 ### Change Log
 
+`20.0.0.31` - June 2, 2025
+* Build DLL and shared library with standard Go 1.24.3
+* Added import Crypto.Hash.HMAC to sample program TJEncryptPassword.py
+
 `20.0.0.30` - April 25, 2025
 * GOSQL-32 DBCCONS partition
 
