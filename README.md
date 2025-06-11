@@ -77,7 +77,7 @@ At the present time, the driver offers the following features.
 * Data encryption provided by TLS for HTTPS connections.
 * For non-HTTPS connections, data encryption governed by central administration or enabled via the `encryptdata` connection parameter.
 * Unicode character data transferred via the UTF8 session character set.
-* [Auto-commit]((#AutoCommit)) for ANSI and TERA transaction modes.
+* [Auto-commit](#AutoCommit) for ANSI and TERA transaction modes.
 * Result set row size up to 1 MB.
 * Multi-statement requests that return multiple result sets.
 * Most JDBC escape syntax.
@@ -1556,6 +1556,12 @@ Your application ends FastLoad by committing or rolling back the current transac
 
 Warning and error information remains available until the next batch is inserted or until the commit or rollback. Each batch execution clears the prior warnings and errors. Each commit or rollback clears the prior warnings and errors.
 
+#### FastLoad and Vector Columns
+
+The database can use both the `Vector_IO` and `Vector_IO_VARCHAR` transforms for the same SQL `INSERT` request. In contrast, the database has a limitation such that FastLoad can only use a single transform at a time. FastLoad can use either the `Vector_IO` or the `Vector_IO_VARCHAR` transform but cannot use both transforms for the same FastLoad job.
+* With `{fn teradata_try_fastload}` the driver will use FastLoad when your application binds either `VARBYTE` or `VARCHAR` values to Vector columns, but not both. The driver will fall back to SQL `INSERT` if your application binds both `VARBYTE` and `VARCHAR` values to Vector columns in the same request.
+* With `{fn teradata_require_fastload}` the driver returns an error when your application binds both `VARBYTE` and `VARCHAR` values to Vector columns in the same request.
+
 <a id="FastExport"></a>
 
 ### FastExport
@@ -1714,6 +1720,9 @@ Windows        | `py -3 -m teradatasql host=whomooz,user=guest,password=please "
 <a id="ChangeLog"></a>
 
 ### Change Log
+
+`20.0.0.32` - June 11, 2025
+* FastLoad to Vector column using transform Vector_IO or Vector_IO_VARCHAR
 
 `20.0.0.31` - June 2, 2025
 * Build DLL and shared library with standard Go 1.24.3
