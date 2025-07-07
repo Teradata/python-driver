@@ -35,6 +35,7 @@ Copyright 2025 Teradata. All Rights Reserved.
 * [Logon Authentication Methods](#LogonMethods)
 * [Client Attributes](#ClientAttributes)
 * [User STARTUP SQL Request](#UserStartup)
+* [Session Reconnect](#SessionReconnect)
 * [Transaction Mode](#TransactionMode)
 * [Auto-Commit](#AutoCommit)
 * [Data Types](#DataTypes)
@@ -76,6 +77,7 @@ At the present time, the driver offers the following features.
 * [OpenID Connect (OIDC)](https://en.wikipedia.org/wiki/OpenID#OpenID_Connect_(OIDC)) logon authentication methods `BEARER`, `BROWSER`, `CODE`, `CRED`, `JWT`, `ROPC`, and `SECRET`.
 * Data encryption provided by TLS for HTTPS connections.
 * For non-HTTPS connections, data encryption governed by central administration or enabled via the `encryptdata` connection parameter.
+* Recoverable Network Protocol and Redrive.
 * Unicode character data transferred via the UTF8 session character set.
 * [Auto-commit](#AutoCommit) for ANSI and TERA transaction modes.
 * Result set row size up to 1 MB.
@@ -97,7 +99,6 @@ At the present time, the driver offers the following features.
 ### Limitations
 
 * The UTF8 session character set is always used. The `charset` connection parameter is not supported.
-* No support yet for Recoverable Network Protocol and Redrive.
 
 <a id="Installation"></a>
 
@@ -721,6 +722,42 @@ For example, the following command sets a `STARTUP` SQL request for user `susan`
     MODIFY USER susan AS STARTUP='SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL RU'
 
 The driver's `runstartup` connection parameter must be `true` to execute the user's `STARTUP` SQL request after logon. The default for `runstartup` is `false`. If the `runstartup` connection parameter is omitted or `false`, then the user's `STARTUP` SQL request will not be executed.
+
+<a id="SessionReconnect"></a>
+
+### Session Reconnect
+
+Your application's connection can be disconnected from the database session in various ways outside the control of the driver, such as
+* a network cable being unplugged
+* a network communication failure
+* an administrator terminating the session with the Monitor partition command `Abort Session`
+* an administrator terminating the session with the Gateway command `Kill Session`
+* a database restart
+
+When Session Reconnect is enabled, the driver will attempt to reconnect the connection to the database session after a communication failure.
+
+Session Reconnect is enabled when one or more of the following conditions are satisfied:
+* Recoverable Network Protocol is in effect
+* and/or connection parameter `reconnect_count` is specified (if omitted, the default is 11 attempts)
+* and/or connection parameter `reconnect_interval` is specified (if omitted, the default is 30 seconds)
+
+| Maximum possible elapsed time for reconnect attempts
+| ---
+| (*ReconnectCount* - 1) &times; *ReconnectInterval*
+
+Recoverable Network Protocol (RNP) and Redrive are enabled through a combination of database and driver connection parameters; specifically, the database `dbscontrol` fields `RedriveProtection` (67), `RedriveDefaultParticipation` (68), and `DisableRecoverableNetProtocol` (77), and the driver connection parameter `redrive` with level 2 or higher.
+* When RNP and Redrive are enabled, then Session Reconnect works for a variety of failure events, including transient network failures.
+* Without Recoverable Network Protocol, Session Reconnect only supports reconnection after a database restart; it does not support reconnection after other events, such as transient network failures.
+
+Session Reconnect | RNP and Redrive | Communication failure handling
+----------------- | --------------- | ---
+Disabled          | Disabled        | The operation in progress fails, the driver closes the connection and returns an error to the application.
+Enabled           | Disabled        | The operation in progress fails, the driver attempts to reconnect and returns an error to the application.<br/>If the reconnect is unsuccessful, the driver closes the connection.<br/>If the reconnect is successful, the database discards a significant part of the session state:<br/>&bull; The current transaction is rolled back.<br/>&bull; All open result sets are discarded.<br/>&bull; All volatile tables are discarded.<br/>&bull; All materialized global temp tables are discarded.<br/>The application must be prepared to accommodate the possible loss of session state at any point in time.
+Enabled           | Enabled         | The operation in progress fails and the driver attempts to reconnect.<br/>If the reconnect is unsuccessful, the driver closes the connection.<br/>If the reconnect is successful, the operation is redriven automatically, the session's state is preserved, and no error is returned to the application.
+
+Reconnect is never attempted if a communication failure occurs while the application is closing the connection.
+
+The database enforces a limited time period for reconnecting to a session after a database restart. The amount of time is set using the database administrator program `gtwcontrol`. The standard value is 20 minutes. The database will reject all reconnect attempts after the time period expires.
 
 <a id="TransactionMode"></a>
 
@@ -1720,6 +1757,9 @@ Windows        | `py -3 -m teradatasql host=whomooz,user=guest,password=please "
 <a id="ChangeLog"></a>
 
 ### Change Log
+
+`20.0.0.33` - July 7, 2025
+* GOSQL-30 Recoverable Network Protocol and Redrive
 
 `20.0.0.32` - June 11, 2025
 * FastLoad to Vector column using transform Vector_IO or Vector_IO_VARCHAR
