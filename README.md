@@ -30,6 +30,7 @@ Copyright 2025 Teradata. All Rights Reserved.
 * [Sample Programs](#SamplePrograms)
 * [Using the Driver](#Using)
 * [Connection Parameters](#ConnectionParameters)
+* [FIPS Mode](#FIPSMode)
 * [COP Discovery](#COPDiscovery)
 * [Stored Password Protection](#StoredPasswordProtection)
 * [Logon Authentication Methods](#LogonMethods)
@@ -304,10 +305,21 @@ Parameter               | Default     | Type           | Description
 `sslmode`               | `"PREFER"`  | string         | Specifies the mode for connections to the database. Equivalent to the Teradata JDBC Driver `SSLMODE` connection parameter. Values are case-insensitive.<br/>&bull; `DISABLE` disables HTTPS/TLS connections and uses only non-TLS connections.<br/>&bull; `ALLOW` uses non-TLS connections unless the database requires HTTPS/TLS connections.<br/>&bull; `PREFER` uses HTTPS/TLS connections unless the database does not offer HTTPS/TLS connections.<br/>&bull; `REQUIRE` uses only HTTPS/TLS connections.<br/>&bull; `VERIFY-CA` uses only HTTPS/TLS connections and verifies that the server certificate is valid and trusted.<br/>&bull; `VERIFY-FULL` uses only HTTPS/TLS connections, verifies that the server certificate is valid and trusted, and verifies that the server certificate matches the database hostname.
 `sslnamedgroups`        |             | string         | Specifies the TLS key exchange named groups for HTTPS/TLS connections. Multiple named groups are separated by commas. Default lets database and driver choose the most appropriate named group. Omitting this parameter is recommended. Use this parameter only for troubleshooting TLS handshake issues. Equivalent to the Teradata JDBC Driver `SSLNAMEDGROUPS` connection parameter.
 `sslocsp`               | `"true"`    | quoted boolean | Controls the use of Online Certificate Status Protocol (OCSP) for TLS certificate revocation checking for HTTPS/TLS connections. Equivalent to the Teradata JDBC Driver `SSLOCSP` connection parameter.
-`sslprotocol`           | `"TLSv1.2"` | string         | Specifies the TLS protocol for HTTPS/TLS connections. Equivalent to the Teradata JDBC Driver `SSLPROTOCOL` connection parameter.
+`sslprotocol`           | `"TLSv1.2"` | string         | Specifies the TLS protocol for HTTPS/TLS connections. Omitting this parameter is recommended. Use this parameter only for troubleshooting TLS handshake issues. Equivalent to the Teradata JDBC Driver `SSLPROTOCOL` connection parameter.
 `teradata_values`       | `"true"`    | quoted boolean | Controls whether `str` or a more specific Python data type is used for certain result set column value types. Refer to the [Data Types](#DataTypes) table below for details.
 `tmode`                 | `"DEFAULT"` | string         | Specifies the [transaction mode](#TransactionMode). Equivalent to the Teradata JDBC Driver `TMODE` connection parameter. Possible values are `DEFAULT` (the default), `ANSI`, or `TERA`.
 `user`                  |             | string         | Specifies the database username. Equivalent to the Teradata JDBC Driver `USER` connection parameter.
+
+<a id="FIPSMode"></a>
+
+### FIPS Mode
+
+Platform             | FIPS Mode | Description
+---------------------|-----------|---
+Windows              | Automatic | Always uses [Microsoft Go](https://github.com/microsoft/go). Always uses [Windows Cryptography API: Next Generation (CNG)](https://learn.microsoft.com/en-us/windows/win32/seccng/cng-portal). Automatic FIPS mode based on Windows FIPS policy.
+macOS                | Manual    | Always uses [Microsoft Go](https://github.com/microsoft/go). Always uses macOS [CryptoKit](https://developer.apple.com/documentation/cryptokit). Enable FIPS mode with environment variable `GODEBUG=fips140=on`
+Linux x64 and ARM64  | Automatic | Uses [Microsoft Go](https://github.com/microsoft/go) and Linux `libcrypto.so` if Linux FIPS mode is enabled. Uses [standard Go](https://go.dev/dl/) if FIPS mode is disabled.
+Linux ppc64le        | Manual    | Always uses [standard Go](https://go.dev/dl/). Enable FIPS mode with environment variable `GODEBUG=fips140=on`
 
 <a id="COPDiscovery"></a>
 
@@ -570,7 +582,7 @@ Client Attribute            | Source   | Description
 `ClientOsName`              | driver   | The client operating system name
 `ClientProcThreadId`        | driver   | The client process ID
 `ClientVmName`              | driver   | Python runtime information
-`ClientSecProdGrp`          | driver   | Go crypto library version
+`ClientSecProdGrp`          | driver   | Go crypto library version and native crypto API/library if in use
 `ClientCoordName`           | driver   | The proxy server hostname and port number when a proxy server is used for a database connection
 `ClientTerminalId`          | driver   | The proxy server hostname and port number when a proxy server is used for an Identity Provider
 `ClientSessionDesc`         | driver   | TLS cipher information is available in this column as a list of name=value pairs, each terminated by a semicolon. Individual values can be accessed using the `NVP` system function.
@@ -616,6 +628,7 @@ Client Attribute            | Source   | Description
 &nbsp;                      | `ENC`    | Y/N indicator for `encryptdata` connection parameter
 &nbsp;                      | `ES`     | endpoint session number if connected to an endpoint such as Unity, Session Manager, or Business Continuity Manager; database session number otherwise
 &nbsp;                      | `FIPS`   | Y/N indicator for FIPS mode
+&nbsp;                      | `GD`     | the Go distribution M ([Microsoft Go](https://github.com/microsoft/go)) or S ([standard Go](https://go.dev/dl/))
 &nbsp;                      | `GO`     | the Go version
 &nbsp;                      | `GOV`    | the `govern` connection parameter
 &nbsp;                      | `HP`     | the `https_port` connection parameter
@@ -1762,6 +1775,12 @@ Windows        | `py -3 -m teradatasql host=whomooz,user=guest,password=please "
 <a id="ChangeLog"></a>
 
 ### Change Log
+
+`20.0.0.35` - August 19, 2025
+* GOSQL-228 Windows automatic FIPS mode
+* GOSQL-229 Linux x64 and ARM automatic FIPS mode
+* GOSQL-236 macOS FIPS mode with environment variable GODEBUG=fips140=on
+* Build DLL and shared library with Go 1.24.6
 
 `20.0.0.34` - August 5, 2025
 * GOSQL-215 oauth_scopes connection parameter for OTF catalog and storage SSO
