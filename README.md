@@ -1776,6 +1776,9 @@ Windows        | `py -3 -m teradatasql host=whomooz,user=guest,password=please "
 
 ### Change Log
 
+`20.0.0.39` - September 2, 2025
+* GOSQL-242 catch and wrap panic from deserialization
+
 `20.0.0.38` - August 25, 2025
 * GOSQL-239 Avoid database Error 3119 after cancel of CREATE PROCEDURE statement
 
