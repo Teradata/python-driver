@@ -299,7 +299,7 @@ Parameter               | Default     | Type           | Description
 `sslbase64`             |             | string         | Specifies the base64url encoded contents of a PEM file that contains Certificate Authority (CA) certificates for use with `sslmode` or `oidc_sslmode` values `VERIFY-CA` or `VERIFY-FULL`. Equivalent to the Teradata JDBC Driver `SSLBASE64` connection parameter. The base64url encoded value must conform to [IETF RFC 4648 Section 5 - Base 64 Encoding with URL and Filename Safe Alphabet](https://datatracker.ietf.org/doc/html/rfc4648#section-5).<br/>Example Linux command to print the base64url encoded contents of a PEM file:<br/>`base64 -w0 < cert.pem \| tr +/ -_ \| tr -d =`
 `sslca`                 |             | string         | Specifies the file name of a PEM file that contains Certificate Authority (CA) certificates for use with `sslmode` or `oidc_sslmode` values `VERIFY-CA` or `VERIFY-FULL`. Equivalent to the Teradata JDBC Driver `SSLCA` connection parameter.
 `sslcapath`             |             | string         | Specifies a directory of PEM files that contain Certificate Authority (CA) certificates for use with `sslmode` or `oidc_sslmode` values `VERIFY-CA` or `VERIFY-FULL`. Only files with an extension of `.pem` are used. Other files in the specified directory are not used. Equivalent to the Teradata JDBC Driver `SSLCAPATH` connection parameter.
-`sslcipher`             |             | string         | Specifies the TLS cipher for HTTPS/TLS connections. Default lets database and driver choose the most appropriate TLS cipher. Equivalent to the Teradata JDBC Driver `SSLCIPHER` connection parameter.
+`sslcipher`             |             | string         | Specifies the TLS cipher for HTTPS/TLS connections. Default lets database and driver choose the most appropriate TLS cipher. Omitting this parameter is recommended. Use this parameter only for troubleshooting TLS handshake issues. Equivalent to the Teradata JDBC Driver `SSLCIPHER` connection parameter.
 `sslcrc`                | `"ALLOW"`   | string         | Controls TLS certificate revocation checking (CRC) for HTTPS/TLS connections. Equivalent to the Teradata JDBC Driver `SSLCRC` connection parameter. Values are case-insensitive.<br/>&bull; `ALLOW` performs CRC for `sslmode` or `oidc_sslmode` `VERIFY-CA` and `VERIFY-FULL`, and provides soft fail CRC for `VERIFY-CA` and `VERIFY-FULL` to ignore CRC communication failures.<br/>&bull; `PREFER` performs CRC for all HTTPS connections, and provides soft fail CRC for `VERIFY-CA` and `VERIFY-FULL` to ignore CRC communication failures.<br/>&bull; `REQUIRE` performs CRC for all HTTPS connections, and requires CRC for `VERIFY-CA` and `VERIFY-FULL`.
 `sslcrl`                | `"true"`    | quoted boolean | Controls the use of Certificate Revocation List (CRL) for TLS certificate revocation checking for HTTPS/TLS connections. Online Certificate Status Protocol (OCSP) is preferred over CRL, so CRL is used when OSCP is unavailable. Equivalent to the Teradata JDBC Driver `SSLCRL` connection parameter.
 `sslmode`               | `"PREFER"`  | string         | Specifies the mode for connections to the database. Equivalent to the Teradata JDBC Driver `SSLMODE` connection parameter. Values are case-insensitive.<br/>&bull; `DISABLE` disables HTTPS/TLS connections and uses only non-TLS connections.<br/>&bull; `ALLOW` uses non-TLS connections unless the database requires HTTPS/TLS connections.<br/>&bull; `PREFER` uses HTTPS/TLS connections unless the database does not offer HTTPS/TLS connections.<br/>&bull; `REQUIRE` uses only HTTPS/TLS connections.<br/>&bull; `VERIFY-CA` uses only HTTPS/TLS connections and verifies that the server certificate is valid and trusted.<br/>&bull; `VERIFY-FULL` uses only HTTPS/TLS connections, verifies that the server certificate is valid and trusted, and verifies that the server certificate matches the database hostname.
@@ -781,9 +781,12 @@ The database enforces a limited time period for reconnecting to a session after 
 ### Transaction Mode
 
 The `tmode` connection parameter enables an application to specify the transaction mode for the connection.
-* `"tmode":"ANSI"` provides American National Standards Institute (ANSI) transaction semantics. This mode is recommended.
-* `"tmode":"TERA"` provides legacy Teradata transaction semantics. This mode is only recommended for legacy applications that require Teradata transaction semantics.
-* `"tmode":"DEFAULT"` provides the default transaction mode configured for the database, which may be either ANSI or TERA mode. `"tmode":"DEFAULT"` is the default when the `tmode` connection parameter is omitted.
+
+`tmode`   | Description
+--------- | ---
+`ANSI`    | Provides American National Standards Institute (ANSI) transaction semantics. This mode is recommended.
+`TERA`    | Provides legacy Teradata transaction semantics. This mode is only recommended for legacy applications that require Teradata transaction semantics.
+`DEFAULT` | Provides the default transaction mode configured for the database, which may be either ANSI or TERA mode. This is the default when the `tmode` connection parameter is omitted.
 
 While ANSI mode is generally recommended, please note that every application is different, and some applications may need to use TERA mode. The following differences between ANSI and TERA mode might affect a typical user or application:
 1. Silent truncation of inserted data occurs in TERA mode, but not ANSI mode. In ANSI mode, the database returns an error instead of truncating data.
@@ -1775,6 +1778,12 @@ Windows        | `py -3 -m teradatasql host=whomooz,user=guest,password=please "
 <a id="ChangeLog"></a>
 
 ### Change Log
+
+`20.0.0.40` - September 5, 2025
+* GOSQL-243 panic recovery with stack traces for top-level APIs
+* Build DLL and shared library with Go 1.25.1
+* Build DLL with MinGW 15.2.0
+* Switch to golang.org/x/crypto version 0.41.0
 
 `20.0.0.39` - September 2, 2025
 * GOSQL-242 catch and wrap panic from deserialization
