@@ -181,6 +181,7 @@ Program                                                                         
 [HelpSession.py](https://github.com/Teradata/python-driver/blob/master/samples/HelpSession.py)                      | Displays session information
 [IgnoreErrors.py](https://github.com/Teradata/python-driver/blob/master/samples/IgnoreErrors.py)                    | Demonstrates how to ignore errors
 [InsertLob.py](https://github.com/Teradata/python-driver/blob/master/samples/InsertLob.py)                          | Demonstrates how to insert BLOB and CLOB values
+[InsertVector.py](https://github.com/Teradata/python-driver/blob/master/samples/InsertVector.py)                    | Demonstrates how to insert Vector values
 [InsertXML.py](https://github.com/Teradata/python-driver/blob/master/samples/InsertXML.py)                          | Demonstrates how to insert and retrieve XML values
 [LoadCSVFile.py](https://github.com/Teradata/python-driver/blob/master/samples/LoadCSVFile.py)                      | Demonstrates how to load data from a CSV file into a table
 [LobLocators.py](https://github.com/Teradata/python-driver/blob/master/samples/LobLocators.py)                      | Demonstrates how to use LOB locators
@@ -917,6 +918,7 @@ Bind-value Python data type       | Database data type
 `decimal.Decimal`                 | `NUMBER`
 `float`                           | `FLOAT`
 `int`                             | `BIGINT`
+`numpy.ndarray` (one-dimensional) | `VARCHAR` format compatible with `VECTOR`
 `str`                             | `VARCHAR`
 
 Transforms are used for SQL `ARRAY` data values, and they can be transferred to and from the database as `VARCHAR` values.
@@ -1198,7 +1200,9 @@ Closes the Cursor.
 `.execute(` *SQLRequest* `,` *OptionalSequenceOfParameterValues* `, ignoreErrors=` *OptionalSequenceOfIgnoredErrorCodes* `)`
 
 Executes the SQL request.
-If a sequence of parameter values is provided as the second argument, the values will be bound to question-mark parameter markers in the SQL request. Specifying parameter values as a mapping is not supported.
+If a sequence of parameter values is provided as the second argument, the values will be bound to question-mark parameter markers in the SQL request.
+Parameter values may also be specified as a pandas DataFrame.
+Specifying parameter values as a mapping is not supported.
 
 The `ignoreErrors` parameter is optional. The ignored error codes must be specified as a sequence of integers.
 
@@ -1207,7 +1211,9 @@ The `ignoreErrors` parameter is optional. The ignored error codes must be specif
 `.executemany(` *SQLRequest* `,` *SequenceOfSequencesOfParameterValues* `, ignoreErrors=` *OptionalSequenceOfIgnoredErrorCodes* `)`
 
 Executes the SQL request as an iterated SQL request for the batch of parameter values.
-The batch of parameter values must be specified as a sequence of sequences. Specifying parameter values as a mapping is not supported.
+The batch of parameter values must be specified as a sequence of sequences.
+Parameter values may also be specified as a pandas DataFrame.
+Specifying parameter values as a mapping is not supported.
 
 The `ignoreErrors` parameter is optional. The ignored error codes must be specified as a sequence of integers.
 
@@ -1801,6 +1807,11 @@ Windows        | `py -3 -m teradatasql host=whomooz,user=guest,password=please "
 <a id="ChangeLog"></a>
 
 ### Change Log
+
+`20.0.0.44` - October 13, 2025
+* PYDBAPI-148 numpy float32 array and float64 array bind values for Vector columns
+* PYDBAPI-150 pandas DataFrame bind values for execute and executemany methods
+* Build DLL and shared library with Go 1.25.2
 
 `20.0.0.43` - October 9, 2025
 * Documentation correction for oidc_redirect_port
