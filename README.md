@@ -1808,6 +1808,10 @@ Windows        | `py -3 -m teradatasql host=whomooz,user=guest,password=please "
 
 ### Change Log
 
+`20.0.0.47` - November 17, 2025
+* GOSQL-278 connection parameter ws_endpoint
+* PYDBAPI-151 command line interface to manage compute resources
+
 `20.0.0.46` - November 12, 2025
 * GOSQL-273 allow host=-none in token mode
 * GOSQL-277 escape function teradata_web_service
