@@ -1730,6 +1730,9 @@ Considerations when using a CSV file:
 * A zero-length quoted string specifies a zero-length non-`NULL` string, not a `NULL` value (e.g. `1,"",456`).
 * Not all data types are supported. For example, `BLOB`, `BYTE`, and `VARBYTE` are not supported.
 * A field length greater than 64KB is transmitted to the database as a `DEFERRED CLOB` for a SQL batch insert. A field length greater than 64KB is not supported with FastLoad.
+* CSV file header line column names are ignored. No mapping is done from CSV file column names to destination table column names.
+* The driver reads CSV file columns left-to-right and binds them to SQL request parameter markers in order.
+* The number of CSV file columns must exactly match the number of parameter markers.
 
 Limitations when using CSV batch inserts:
 * Bound parameter values cannot be specified in the execute method when using the escape function `{fn teradata_read_csv(`*CSVFileName*`)}`.
@@ -1756,6 +1759,9 @@ Considerations when using a Parquet file:
 * A string field length greater than 64KB is transmitted to the database as a `DEFERRED CLOB` for a SQL batch insert. 
 * A binary field length greater than 64KB is transmitted to the database as a `DEFERRED BLOB` for a SQL batch insert.
 * A field length greater than 64KB is not supported with FastLoad.
+* The driver treats a Parquet input file similarly to a CSV input file. Parquet file column names are ignored. No mapping is done from Parquet file column names to destination table column names.
+* The driver reads Parquet file columns left-to-right by index and binds them to SQL request parameter markers in order.
+* The number of Parquet file columns must exactly match the number of parameter markers.
 
 Limitations when using Parquet batch inserts:
 * Bound parameter values cannot be specified in the execute method when using the escape function `{fn teradata_read_parquet(`*ParquetFileName*`)}`.
@@ -1858,6 +1864,10 @@ Windows        | `py -3 -m teradatasql host=whomooz,user=guest,password=please "
 <a id="ChangeLog"></a>
 
 ### Change Log
+
+`20.0.0.56` - April 10, 2026
+* GOSQL-355 Switch to golang.org/x/crypto v0.47.0
+* GOSQL-360 Switch to Go 1.26.2
 
 `20.0.0.55` - April 3, 2026
 * GOSQL-225 escape function teradata_read_parquet
