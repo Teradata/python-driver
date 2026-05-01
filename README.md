@@ -1865,6 +1865,11 @@ Windows        | `py -3 -m teradatasql host=whomooz,user=guest,password=please "
 
 ### Change Log
 
+`20.0.0.57` - May 1, 2026
+* GOSQL-370 error message internationalization
+* GOSQL-372 error message Japanese translation
+* GOSQL-373 error message SQLState
+
 `20.0.0.56` - April 10, 2026
 * GOSQL-355 Switch to golang.org/x/crypto v0.47.0
 * GOSQL-360 Switch to Go 1.26.2

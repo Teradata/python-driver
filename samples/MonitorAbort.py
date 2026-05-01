@@ -3,6 +3,7 @@
 # This sample program demonstrates how to use the Monitor partition to abort a session.
 # The database user must have the MONITOR privilege: GRANT MONITOR TO guest
 
+import re
 import teradatasql
 
 def abortSession (nHostNumber, nSessionNumber):
@@ -33,6 +34,10 @@ def conciseError (ex):
             sOutput += " " + sLine
     return sOutput
 
+def getErrorCode (s):
+    mat = re.compile ("\\[Error (\\d+)\\]").search (s)
+    return int (mat.group (1)) if mat and mat.lastindex == 1 else 0
+
 con = teradatasql.connect (host="whomooz", user="guest", password="please")
 with con.cursor () as cur:
     sQuery = "SELECT HostNo, SessionNo FROM DBC.SessionInfoV WHERE SessionNo = SESSION"
@@ -47,7 +52,7 @@ try:
     con.close ()
 except Exception as ex:
     s = conciseError (ex)
-    if "[Error 503]" in s or "[Error 3000]" in s:
+    if getErrorCode (s) in [ 301, 503, 3000 ]:
         print ("Ignoring", s)
     else:
         raise # rethrow
