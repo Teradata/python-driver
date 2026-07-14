@@ -247,6 +247,7 @@ Parameter               | Default     | Type           | Description
 `browser_timeout`       | `"180"`     | quoted integer | <a id="cp_browser_timeout"></a>       Specifies the number of seconds that the driver will wait for Browser Authentication to complete. The default is 180 seconds (3 minutes). Browser Authentication is supported for Windows and macOS. Equivalent to the Teradata JDBC Driver `BROWSER_TIMEOUT` connection parameter.
 `code_append_file`      | `"-out"`    | string         | <a id="cp_code_append_file"></a>      Specifies how to display the verification URL and code. Optional when `logmech` is `CODE` and ignored for other `logmech` values. The default `-out` prints the verification URL and code to stdout. Specify `-err` to print the verification URL and code to stderr. Specify a file name to append the verification URL and code to an existing file or create a new file if the file does not exist. Equivalent to the Teradata JDBC Driver `CODE_APPEND_FILE` connection parameter.
 `column_name`           | `"false"`   | quoted boolean | <a id="cp_column_name"></a>           Controls the behavior of cursor `.description` sequence `name` items. Equivalent to the Teradata JDBC Driver `COLUMN_NAME` connection parameter. False specifies that a cursor `.description` sequence `name` item provides the AS-clause name if available, or the column name if available, or the column title. True specifies that a cursor `.description` sequence `name` item provides the column name if available, but has no effect when StatementInfo parcel support is unavailable.
+`column_type`           | `"false"`   | quoted boolean | <a id="cp_column_type"></a>           Controls the behavior of cursor `.description` sequence `name` items. False specifies that each name does not include the column type. True adds a tab character and column type suffix to each name, but has no effect when StatementInfo parcel support is unavailable.
 `concurrent_interval`   | `"1000"`    | quoted integer | <a id="cp_concurrent_interval"></a>   Specifies the interval in milliseconds for Laddered Concurrent Connect (LCC) to wait before starting another concurrent connection attempt.
 `concurrent_limit`      | `"3"`       | quoted integer | <a id="cp_concurrent_limit"></a>      Limits the number of concurrent connection attempts.
 `connect_failure_ttl`   | `"0"`       | quoted integer | <a id="cp_connect_failure_ttl"></a>   Specifies the time-to-live in seconds to remember the most recent connection failure for each IP address/port combination. The driver subsequently skips connection attempts to that IP address/port for the duration of the time-to-live. The default value of zero disables this feature. The recommended value is half the database restart time. Equivalent to the Teradata JDBC Driver `CONNECT_FAILURE_TTL` connection parameter.
@@ -1457,8 +1458,8 @@ Conversion Function                                             | Returns
 `{fn CONVERT(`*value*`, SQL_DOUBLE)}`                           | *value* converted to SQL `DOUBLE PRECISION`, a synonym for `FLOAT`
 `{fn CONVERT(`*value*`, SQL_FLOAT)}`                            | *value* converted to SQL `FLOAT`
 `{fn CONVERT(`*value*`, SQL_INTEGER)}`                          | *value* converted to SQL `INTEGER`
-`{fn CONVERT(`*value*`, SQL_LONGVARBINARY)}`                    | *value* converted to SQL `VARBYTE(64000)`
-`{fn CONVERT(`*value*`, SQL_LONGVARCHAR)}`                      | *value* converted to SQL `LONG VARCHAR`
+`{fn CONVERT(`*value*`, SQL_LONGVARBINARY)}`                    | *value* converted to SQL `BLOB`
+`{fn CONVERT(`*value*`, SQL_LONGVARCHAR)}`                      | *value* converted to SQL `CLOB`
 `{fn CONVERT(`*value*`, SQL_NUMERIC)}`                          | *value* converted to SQL `NUMBER`
 `{fn CONVERT(`*value*`, SQL_SMALLINT)}`                         | *value* converted to SQL `SMALLINT`
 `{fn CONVERT(`*value*`, SQL_TIME(`*scale*`))}`                  | *value* converted to SQL `TIME(`*scale*`)`
@@ -1591,6 +1592,7 @@ Request-Scope Function                                 | Effect
 `{fn teradata_manage_error_tables_on}`                 | Turns on FastLoad error table management for this request. Takes precedence over the `manage_error_tables` connection parameter.
 `{fn teradata_parameter(`*Index*`,`*DataType*`)`       | Transmits parameter *Index* bind values as *DataType*
 `{fn teradata_provide(request_scope_column_name_off)}` | Provides the default column name behavior for this SQL request. Takes precedence over the `column_name` connection parameter.
+`{fn teradata_provide(request_scope_column_type_off)}` | Provides the default column type suffix behavior for this SQL request. Takes precedence over the `column_type` connection parameter.
 `{fn teradata_provide(request_scope_lob_support_off)}` | Turns off LOB support for this SQL request. Takes precedence over the `lob_support` connection parameter.
 `{fn teradata_provide(request_scope_refresh_rsmd)}`    | Executes the SQL request with the default request processing option `B` (both)
 `{fn teradata_provide(request_scope_sip_support_off)}` | Turns off StatementInfo parcel support for this SQL request. Takes precedence over the `sip_support` connection parameter.
@@ -1935,6 +1937,12 @@ Windows        | `py -3 -m teradatasql host=whomooz,user=guest,password=please "
 <a id="ChangeLog"></a>
 
 ### Change Log
+
+`20.0.0.63` - July 14, 2026
+* GOSQL-415 connection parameter column_type
+* GOSQL-416 escape syntax support for char_length and character_length
+* GOSQL-417 escape function CONVERT behavior change SQL_LONGVARBINARY is BLOB and SQL_LONGVARCHAR is CLOB
+* GOSQL-424 Switch to Go 1.26.5
 
 `20.0.0.62` - June 24, 2026
 * GOSQL-337 escape function teradata_read_jsonl
