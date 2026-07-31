@@ -32,6 +32,7 @@ Copyright 2026 Teradata. All Rights Reserved.
 * [Connection Parameters](#ConnectionParameters)
 * [FIPS Mode](#FIPSMode)
 * [COP Discovery](#COPDiscovery)
+* [Proxy Server Support](#ProxyServer)
 * [Stored Password Protection](#StoredPasswordProtection)
 * [Logon Authentication Methods](#LogonMethods)
 * [Client Attributes](#ClientAttributes)
@@ -374,6 +375,23 @@ For the first connection to a particular database system, the driver generates a
 The driver masks connection failures to down COPs, thereby hiding most connection failures from the client application. An exception is thrown to the application only when all the COPs are down for that database. If a COP is down, the next COP in the sequence (including a wrap-around to the first COP) receives extra connections that were originally destined for the down COP. When multiple IP addresses are defined in DNS for a COP, the driver will attempt to connect to each of the COP's IP addresses, and the COP is considered down only when connection attempts fail to all of the COP's IP addresses.
 
 If COP Discovery is turned off, or no COP hostnames are defined in DNS, the driver connects directly to the hostname specified in the `host` connection parameter. This permits load distribution schemes other than the COP Discovery approach. For example, round-robin DNS or a TCP/IP load distribution product can be used. COP Discovery takes precedence over simple database hostname lookup. To use an alternative load distribution scheme, either ensure that no COP hostnames are defined in DNS, or turn off COP Discovery with `cop` as `false`.
+
+<a id="ProxyServer"></a>
+
+### Proxy Server Support
+
+The driver offers support for HTTP proxy servers.
+
+HTTP proxy servers can only handle HTTP or HTTPS connections and cannot handle non-HTTP connections, such as Teradata port 1025 connections.
+
+The following table lists each kind of network connection made by the driver, and indicates the available options for specifying a proxy server.
+
+Connection type                                                   | Proxy server support | Connection parameter
+------------------------------------------------------------------|----------------------|---
+HTTPS connections to database                                     | Available            | `https_proxy`
+Non-HTTPS connections to database                                 | Not available        |
+HTTPS connections to Identity Provider endpoints                  | Available            | `https_proxy`
+HTTP connections for CRL and OCSP certificate revocation checking | Available            | `http_proxy`
 
 <a id="StoredPasswordProtection"></a>
 
@@ -1937,6 +1955,13 @@ Windows        | `py -3 -m teradatasql host=whomooz,user=guest,password=please "
 <a id="ChangeLog"></a>
 
 ### Change Log
+
+`20.0.0.64` - July 31, 2026
+* GOSQL-426 add NullableKnown field to fake result set column and parameter metadata JSON
+* GOSQL-427 add Proxy Server Support section to README
+* GOSQL-428 teradata_provide(config_response) JSON field QueryableViewColumnInfoSupport
+* GOSQL-433 Switch to golang.org/x/crypto v0.54.0
+* GOSQL-434 Switch to github.com/klauspost/compress v1.19.1
 
 `20.0.0.63` - July 14, 2026
 * GOSQL-415 connection parameter column_type
