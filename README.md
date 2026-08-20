@@ -1552,6 +1552,7 @@ Connection Function                           | Returns
 `{fn teradata_getloglevel}`                   | Current log level
 `{fn teradata_go_distribution}`               | Go distribution `M` ([Microsoft Go](https://github.com/microsoft/go)) or `S` ([standard Go](https://go.dev/dl/)) for the Teradata GoSQL Driver
 `{fn teradata_go_runtime}`                    | Go runtime version for the Teradata GoSQL Driver
+`{fn teradata_go_runtime_stats}`              | Go runtime statistics in JSON format
 `{fn teradata_logon_sequence_number}`         | Session's Logon Sequence Number, if available
 `{fn teradata_program_name}`                  | Executable program name
 `{fn teradata_provide(config_response)}`      | Config Response parcel contents in JSON format
@@ -1955,6 +1956,11 @@ Windows        | `py -3 -m teradatasql host=whomooz,user=guest,password=please "
 <a id="ChangeLog"></a>
 
 ### Change Log
+
+`20.0.0.66` - August 19, 2026
+* GOSQL-441 avoid goroutine leak after connection failure
+* GOSQL-453 Switch to Go 1.26.6
+* GOSQL-454 Switch to golang.org/x/crypto v0.55.0
 
 `20.0.0.65` - August 12, 2026
 * GOSQL-440 validate browser= connection parameter against TERADATA_BROWSER environment variable
