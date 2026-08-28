@@ -60,6 +60,7 @@ Copyright 2026 Teradata. All Rights Reserved.
 * [JSON Batch Inserts](#JSONBatchInserts)
 * [JSONL Batch Inserts](#JSONLBatchInserts)
 * [CSV Export Results](#CSVExportResults)
+* [Parquet Export Results](#ParquetExportResults)
 * [Command Line Interface](#CommandLineInterface)
 * [Change Log](#ChangeLog)
 
@@ -92,7 +93,7 @@ At the present time, the driver offers the following features.
 * Parameterized batch SQL requests with multiple rows of data bound to question-mark parameter markers.
 * Auto-Generated Key Retrieval (AGKR) for identity column values and more.
 * Large Object (LOB) support for the BLOB and CLOB data types.
-* Complex data types such as `XML`, `JSON`, `DATASET STORAGE FORMAT AVRO`, `DATASET STORAGE FORMAT CSV`, and `DATASET STORAGE FORMAT PARQUET`.
+* Complex data types such as `XML`, `JSON`, `DATASET STORAGE FORMAT AVRO`, and `DATASET STORAGE FORMAT CSV`.
 * ElicitFile protocol support for DDL commands that create external UDFs or stored procedures and upload a file from client to database.
 * `CREATE PROCEDURE` and `REPLACE PROCEDURE` commands.
 * Stored Procedure Dynamic Result Sets.
@@ -179,10 +180,14 @@ Program                                                                         
 [ElicitFile.py](https://github.com/Teradata/python-driver/blob/master/samples/ElicitFile.py)                        | Demonstrates C source file upload to create a User-Defined Function (UDF)
 [ExportCSVResult.py](https://github.com/Teradata/python-driver/blob/master/samples/ExportCSVResult.py)              | Demonstrates how to export a query result set to a CSV file
 [ExportCSVResults.py](https://github.com/Teradata/python-driver/blob/master/samples/ExportCSVResults.py)            | Demonstrates how to export multiple query result sets to CSV files
+[ExportParquetResult.py](https://github.com/Teradata/python-driver/blob/master/samples/ExportParquetResult.py)      | Demonstrates how to export a query result set to a Parquet file
+[ExportParquetResults.py](https://github.com/Teradata/python-driver/blob/master/samples/ExportParquetResults.py)    | Demonstrates how to export multiple query result sets to Parquet files
 [FakeExportCSVResults.py](https://github.com/Teradata/python-driver/blob/master/samples/FakeExportCSVResults.py)    | Demonstrates how to export multiple query result sets with the metadata to CSV files
+[FakeExportParquetResults.py](https://github.com/Teradata/python-driver/blob/master/samples/FakeExportParquetResults.py) | Demonstrates how to export multiple query result sets with the metadata to Parquet files
 [FakeResultSetCon.py](https://github.com/Teradata/python-driver/blob/master/samples/FakeResultSetCon.py)            | Demonstrates connection parameter for fake result sets
 [FakeResultSetEsc.py](https://github.com/Teradata/python-driver/blob/master/samples/FakeResultSetEsc.py)            | Demonstrates escape function for fake result sets
 [FastExportCSV.py](https://github.com/Teradata/python-driver/blob/master/samples/FastExportCSV.py)                  | Demonstrates how to FastExport rows from a table to a CSV file
+[FastExportParquet.py](https://github.com/Teradata/python-driver/blob/master/samples/FastExportParquet.py)          | Demonstrates how to FastExport rows from a table to a Parquet file
 [FastExportTable.py](https://github.com/Teradata/python-driver/blob/master/samples/FastExportTable.py)              | Demonstrates how to FastExport rows from a table
 [FastLoadBatch.py](https://github.com/Teradata/python-driver/blob/master/samples/FastLoadBatch.py)                  | Demonstrates how to FastLoad batches of rows
 [FastLoadCSV.py](https://github.com/Teradata/python-driver/blob/master/samples/FastLoadCSV.py)                      | Demonstrates how to FastLoad batches of rows from a CSV file
@@ -320,7 +325,7 @@ Parameter               | Default     | Type           | Description
 `sslca`                 |             | string         | <a id="cp_sslca"></a>                 Specifies the file name of a PEM file that contains Certificate Authority (CA) certificates for use with `sslmode` or `oidc_sslmode` values `VERIFY-CA` or `VERIFY-FULL`. Equivalent to the Teradata JDBC Driver `SSLCA` connection parameter.
 `sslcapath`             |             | string         | <a id="cp_sslcapath"></a>             Specifies a directory of PEM files that contain Certificate Authority (CA) certificates for use with `sslmode` or `oidc_sslmode` values `VERIFY-CA` or `VERIFY-FULL`. Only files with an extension of `.pem` are used. Other files in the specified directory are not used. Equivalent to the Teradata JDBC Driver `SSLCAPATH` connection parameter.
 `sslcipher`             |             | string         | <a id="cp_sslcipher"></a>             Specifies the TLS cipher for HTTPS/TLS connections. Default lets database and driver choose the most appropriate TLS cipher. Omitting this parameter is recommended. Use this parameter only for troubleshooting TLS handshake issues. Equivalent to the Teradata JDBC Driver `SSLCIPHER` connection parameter.
-`sslcrc`                | `"ALLOW"`   | string         | <a id="cp_sslcrc"></a>                Controls TLS certificate revocation checking (CRC) for HTTPS/TLS connections. Equivalent to the Teradata JDBC Driver `SSLCRC` connection parameter. Values are case-insensitive.<br/>&bull; `ALLOW` performs CRC for `sslmode` or `oidc_sslmode` `VERIFY-CA` and `VERIFY-FULL`, and provides soft fail CRC for `VERIFY-CA` and `VERIFY-FULL` to ignore CRC communication failures.<br/>&bull; `PREFER` performs CRC for all HTTPS connections, and provides soft fail CRC for `VERIFY-CA` and `VERIFY-FULL` to ignore CRC communication failures.<br/>&bull; `REQUIRE` performs CRC for all HTTPS connections, and requires CRC for `VERIFY-CA` and `VERIFY-FULL`.
+`sslcrc`                | `"ALLOW"`   | string         | <a id="cp_sslcrc"></a>                Controls TLS certificate revocation checking (CRC) for HTTPS/TLS connections. Equivalent to the Teradata JDBC Driver `SSLCRC` connection parameter. Values are case-insensitive.<br/>&bull; `DISABLE` never performs CRC, regardless of the `sslmode` or `oidc_sslmode` setting, including `VERIFY-CA` and `VERIFY-FULL`.<br/>&bull; `ALLOW` performs CRC for `sslmode` or `oidc_sslmode` `VERIFY-CA` and `VERIFY-FULL`, and provides soft fail CRC for `VERIFY-CA` and `VERIFY-FULL` to ignore CRC communication failures.<br/>&bull; `PREFER` performs CRC for all HTTPS connections, and provides soft fail CRC for `VERIFY-CA` and `VERIFY-FULL` to ignore CRC communication failures.<br/>&bull; `REQUIRE` performs CRC for all HTTPS connections, and requires CRC for `VERIFY-CA` and `VERIFY-FULL`.
 `sslcrl`                | `"true"`    | quoted boolean | <a id="cp_sslcrl"></a>                Controls the use of Certificate Revocation List (CRL) for TLS certificate revocation checking for HTTPS/TLS connections. Online Certificate Status Protocol (OCSP) is preferred over CRL, so CRL is used when OSCP is unavailable. Equivalent to the Teradata JDBC Driver `SSLCRL` connection parameter.
 `sslmode`               | `"PREFER"`  | string         | <a id="cp_sslmode"></a>               Specifies the mode for connections to the database. Equivalent to the Teradata JDBC Driver `SSLMODE` connection parameter. Values are case-insensitive.<br/>&bull; `DISABLE` disables HTTPS/TLS connections and uses only non-TLS connections.<br/>&bull; `ALLOW` uses non-TLS connections unless the database requires HTTPS/TLS connections.<br/>&bull; `PREFER` uses HTTPS/TLS connections unless the database does not offer HTTPS/TLS connections.<br/>&bull; `REQUIRE` uses only HTTPS/TLS connections.<br/>&bull; `VERIFY-CA` uses only HTTPS/TLS connections and verifies that the server certificate is valid and trusted.<br/>&bull; `VERIFY-FULL` uses only HTTPS/TLS connections, verifies that the server certificate is valid and trusted, and verifies that the server certificate matches the database hostname.
 `sslnamedgroups`        |             | string         | <a id="cp_sslnamedgroups"></a>        Specifies the TLS key exchange named groups for HTTPS/TLS connections. Multiple named groups are separated by commas. Default lets database and driver choose the most appropriate named group. Omitting this parameter is recommended. Use this parameter only for troubleshooting TLS handshake issues. Equivalent to the Teradata JDBC Driver `SSLNAMEDGROUPS` connection parameter.
@@ -1632,6 +1637,7 @@ Request-Scope Function                                 | Effect
 `{fn teradata_values_off}`                             | Turns off `teradata_values` for this SQL request. Takes precedence over the `teradata_values` connection parameter. Refer to the [Data Types](#DataTypes) table for details.
 `{fn teradata_values_on}`                              | Turns on `teradata_values` for this SQL request. Takes precedence over the `teradata_values` connection parameter. Refer to the [Data Types](#DataTypes) table for details.
 `{fn teradata_write_csv(`*CSVFileName*`)}`             | Exports one or more result sets from a SQL request or a FastExport to the specified CSV file or files
+`{fn teradata_write_parquet(`*ParquetFileName*`[,`*Compression*`])}` | Exports one or more result sets from a SQL request or a FastExport to the specified Parquet file or files. Optional compression values are `snappy`, `gzip`, `zstd`, `uncompressed`, or `none`.
 
 The `teradata_field_sep` and `teradata_field_quote` escape functions have a single-character string argument. The string argument must follow SQL literal syntax. The string argument may be enclosed in single-quote (`'`) characters or double-quote (`"`) characters.
 
@@ -1913,6 +1919,63 @@ Limitations when exporting to CSV files:
 * Not all data types are supported. For example, `BLOB`, `BYTE`, and `VARBYTE` are not supported and if one of these column types are present in the result set, an error will be returned.
 * `CLOB`, `XML`, `JSON`, and `DATASET STORAGE FORMAT CSV` data types are supported for SQL query results and are exported as string values, but these data types are not supported by FastExport.
 
+<a id="ParquetExportResults"></a>
+
+### Parquet Export Results
+
+The driver can export query results to Parquet files. This feature can be used with SQL query results, with calls to stored procedures, and with FastExport.
+
+To export a result set to a Parquet file, the application prepends one of the following escape functions to the SQL request text.
+
+* `{fn teradata_write_parquet(`*ParquetFileName*`)}`
+* `{fn teradata_write_parquet(`*ParquetFileName*`,`*Compression*`)}`
+
+The optional *Compression* argument is case-insensitive. Valid values are `snappy`, `gzip`, `zstd`, `uncompressed`, and `none`. When the compression argument is omitted, the default is `snappy`. The values `uncompressed` and `none` both produce an uncompressed Parquet file.
+
+If the query returns multiple result sets, each result set will be written to a separate file. The file name is varied by inserting the string "_N" between the specified file name and file type extension (e.g. `fileName.parquet`, `fileName_1.parquet`, `fileName_2.parquet`). If no file type extension is specified, then the suffix "_N" is appended to the end of the file name (e.g. `fileName`, `fileName_1`, `fileName_2`).
+
+A stored procedure call that produces multiple dynamic result sets behaves like other SQL requests that return multiple result sets. The stored procedure's output parameter values are exported as the first Parquet file.
+
+Example of a SQL request that returns multiple results:
+
+`{fn teradata_write_parquet(myFile.parquet)}select 'abc' ; select 123`
+
+Parquet File Name | Content
+----------------- | ---
+myFile.parquet    | First result set
+myFile_1.parquet  | Second result set
+
+To obtain the metadata for each result set, use the escape function `{fn teradata_fake_result_sets}`. A fake result set containing the metadata will be written to a file preceding each real result set.
+
+Example of a query that returns multiple result sets with metadata:
+
+`{fn teradata_fake_result_sets}{fn teradata_write_parquet(myFile.parquet)}select 'abc' ; select 123`
+
+Parquet File Name | Content
+----------------- | ---
+myFile.parquet    | Fake result set containing the metadata for the first result set
+myFile_1.parquet  | First result set
+myFile_2.parquet  | Fake result set containing the metadata for the second result set
+myFile_3.parquet  | Second result set
+
+Exported Parquet files have the following characteristics:
+* Each file conforms to the Apache Parquet specification.
+* The result set column order is preserved in the Parquet schema.
+* Result set column names are used for the Parquet schema. If an AS-clause alias is available, then the alias is used. Otherwise the column name is used, or the column title if no column name is available.
+* Each result set column name must be unique within the result set. Use column aliases when needed to make duplicate names unique.
+* A `NULL` value is exported as a Parquet `NULL` value.
+* Binary data types such as `BYTE`, `VARBYTE`, and `BLOB` are exported as Parquet binary values.
+* Character data types such as `CHAR`, `VARCHAR`, `CLOB`, `XML`, and `JSON` are exported as Parquet UTF-8 string values.
+* Date, time, timestamp, and decimal data are exported using appropriate Parquet logical types.
+* The `TIME WITH TIME ZONE` and `TIMESTAMP WITH TIME ZONE` data types are exported as Parquet UTF-8 string values, in the same format returned by an in-memory fetch, such as `09:15:00-08:00`. The Parquet time and timestamp logical types cannot represent a per-value time zone offset.
+* The `NUMBER` data type is exported as Parquet UTF-8 string values containing the exact decimal text, because a `NUMBER` value can have greater precision and a more variable scale than any Parquet numeric type can represent.
+
+Limitations when exporting to Parquet files:
+* When the application chooses to export results to a Parquet file, the results are not available for the application to fetch in memory.
+* If `{fn teradata_fake_result_sets}` is specified and a SQL statement does not produce a result set, a warning is returned that no result set can be exported for that statement.
+* Exporting a Parquet file with FastExport has the same limitations and is used the same way as described in the [FastExport](#FastExport) section.
+* Not all database data types are supported by FastExport to Parquet. With `{fn teradata_try_fastexport}`, unsupported types cause fallback to a regular SQL query. With `{fn teradata_require_fastexport}`, unsupported types cause an error.
+
 <a id="CommandLineInterface"></a>
 
 ### Command Line Interface
@@ -1956,6 +2019,11 @@ Windows        | `py -3 -m teradatasql host=whomooz,user=guest,password=please "
 <a id="ChangeLog"></a>
 
 ### Change Log
+
+`20.0.0.67` - August 28, 2026
+* GOSQL-385 escape function teradata_write_parquet
+* GOSQL-413 new connection parameter value sslcrc=DISABLE
+* GOSQL-439 Align Parquet FastExport Data Type Support with Protocol Capabilities
 
 `20.0.0.66` - August 19, 2026
 * GOSQL-441 avoid goroutine leak after connection failure
