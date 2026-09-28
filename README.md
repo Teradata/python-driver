@@ -61,6 +61,8 @@ Copyright 2026 Teradata. All Rights Reserved.
 * [JSONL Batch Inserts](#JSONLBatchInserts)
 * [CSV Export Results](#CSVExportResults)
 * [Parquet Export Results](#ParquetExportResults)
+* [JSON Export Results](#JSONExportResults)
+* [JSONL Export Results](#JSONLExportResults)
 * [Command Line Interface](#CommandLineInterface)
 * [Change Log](#ChangeLog)
 
@@ -180,13 +182,21 @@ Program                                                                         
 [ElicitFile.py](https://github.com/Teradata/python-driver/blob/master/samples/ElicitFile.py)                        | Demonstrates C source file upload to create a User-Defined Function (UDF)
 [ExportCSVResult.py](https://github.com/Teradata/python-driver/blob/master/samples/ExportCSVResult.py)              | Demonstrates how to export a query result set to a CSV file
 [ExportCSVResults.py](https://github.com/Teradata/python-driver/blob/master/samples/ExportCSVResults.py)            | Demonstrates how to export multiple query result sets to CSV files
+[ExportJSONLResult.py](https://github.com/Teradata/python-driver/blob/master/samples/ExportJSONLResult.py)          | Demonstrates how to export a query result set to a JSONL file
+[ExportJSONLResults.py](https://github.com/Teradata/python-driver/blob/master/samples/ExportJSONLResults.py)        | Demonstrates how to export multiple query result sets to JSONL files
+[ExportJSONResult.py](https://github.com/Teradata/python-driver/blob/master/samples/ExportJSONResult.py)            | Demonstrates how to export a query result set to a JSON file
+[ExportJSONResults.py](https://github.com/Teradata/python-driver/blob/master/samples/ExportJSONResults.py)          | Demonstrates how to export multiple query result sets to JSON files
 [ExportParquetResult.py](https://github.com/Teradata/python-driver/blob/master/samples/ExportParquetResult.py)      | Demonstrates how to export a query result set to a Parquet file
 [ExportParquetResults.py](https://github.com/Teradata/python-driver/blob/master/samples/ExportParquetResults.py)    | Demonstrates how to export multiple query result sets to Parquet files
 [FakeExportCSVResults.py](https://github.com/Teradata/python-driver/blob/master/samples/FakeExportCSVResults.py)    | Demonstrates how to export multiple query result sets with the metadata to CSV files
+[FakeExportJSONLResults.py](https://github.com/Teradata/python-driver/blob/master/samples/FakeExportJSONLResults.py) | Demonstrates how to export multiple query result sets with the metadata to JSONL files
+[FakeExportJSONResults.py](https://github.com/Teradata/python-driver/blob/master/samples/FakeExportJSONResults.py)  | Demonstrates how to export multiple query result sets with the metadata to JSON files
 [FakeExportParquetResults.py](https://github.com/Teradata/python-driver/blob/master/samples/FakeExportParquetResults.py) | Demonstrates how to export multiple query result sets with the metadata to Parquet files
 [FakeResultSetCon.py](https://github.com/Teradata/python-driver/blob/master/samples/FakeResultSetCon.py)            | Demonstrates connection parameter for fake result sets
 [FakeResultSetEsc.py](https://github.com/Teradata/python-driver/blob/master/samples/FakeResultSetEsc.py)            | Demonstrates escape function for fake result sets
 [FastExportCSV.py](https://github.com/Teradata/python-driver/blob/master/samples/FastExportCSV.py)                  | Demonstrates how to FastExport rows from a table to a CSV file
+[FastExportJSON.py](https://github.com/Teradata/python-driver/blob/master/samples/FastExportJSON.py)                | Demonstrates how to FastExport rows from a table to a JSON file
+[FastExportJSONL.py](https://github.com/Teradata/python-driver/blob/master/samples/FastExportJSONL.py)              | Demonstrates how to FastExport rows from a table to a JSONL file
 [FastExportParquet.py](https://github.com/Teradata/python-driver/blob/master/samples/FastExportParquet.py)          | Demonstrates how to FastExport rows from a table to a Parquet file
 [FastExportTable.py](https://github.com/Teradata/python-driver/blob/master/samples/FastExportTable.py)              | Demonstrates how to FastExport rows from a table
 [FastLoadBatch.py](https://github.com/Teradata/python-driver/blob/master/samples/FastLoadBatch.py)                  | Demonstrates how to FastLoad batches of rows
@@ -1599,6 +1609,7 @@ Request-Scope Function                                 | Effect
 `{fn teradata_array_transform_off}`                    | Turns off the From-SQL transform for SQL Array values for this SQL request with Request Processing Option `S` (prepare)
 `{fn teradata_array_transform_on}`                     | Turns on the From-SQL transform for SQL Array values for this SQL request (the default)
 `{fn teradata_clobtranslate(`*Option*`)}`              | Executes the SQL request with CLOB translate *Option* `U` (unlocked) or the default `L` (locked)
+`{fn teradata_create_procedure}`                       | Specifies that this SQL request should use `CREATE PROCEDURE` / `REPLACE PROCEDURE` request handling
 `{fn teradata_error_query_count(`*Number*`)}`          | Specifies how many times the driver will attempt to query FastLoad Error Table 1 after a FastLoad operation. Takes precedence over the `error_query_count` connection parameter.
 `{fn teradata_error_query_interval(`*Milliseconds*`)}` | Specifies how many milliseconds the driver will wait between attempts to query FastLoad Error Table 1. Takes precedence over the `error_query_interval` connection parameter.
 `{fn teradata_error_table_1_suffix(`*Suffix*`)}`       | Specifies the suffix to append to the name of FastLoad error table 1. Takes precedence over the `error_table_1_suffix` connection parameter.
@@ -1637,6 +1648,8 @@ Request-Scope Function                                 | Effect
 `{fn teradata_values_off}`                             | Turns off `teradata_values` for this SQL request. Takes precedence over the `teradata_values` connection parameter. Refer to the [Data Types](#DataTypes) table for details.
 `{fn teradata_values_on}`                              | Turns on `teradata_values` for this SQL request. Takes precedence over the `teradata_values` connection parameter. Refer to the [Data Types](#DataTypes) table for details.
 `{fn teradata_write_csv(`*CSVFileName*`)}`             | Exports one or more result sets from a SQL request or a FastExport to the specified CSV file or files
+`{fn teradata_write_json(`*JSONFileName*`)}`           | Exports one or more result sets from a SQL request or a FastExport to the specified JSON file or files
+`{fn teradata_write_jsonl(`*JSONLFileName*`)}`         | Exports one or more result sets from a SQL request or a FastExport to the specified JSONL file or files
 `{fn teradata_write_parquet(`*ParquetFileName*`[,`*Compression*`])}` | Exports one or more result sets from a SQL request or a FastExport to the specified Parquet file or files. Optional compression values are `snappy`, `gzip`, `zstd`, `uncompressed`, or `none`.
 
 The `teradata_field_sep` and `teradata_field_quote` escape functions have a single-character string argument. The string argument must follow SQL literal syntax. The string argument may be enclosed in single-quote (`'`) characters or double-quote (`"`) characters.
@@ -1976,6 +1989,113 @@ Limitations when exporting to Parquet files:
 * Exporting a Parquet file with FastExport has the same limitations and is used the same way as described in the [FastExport](#FastExport) section.
 * Not all database data types are supported by FastExport to Parquet. With `{fn teradata_try_fastexport}`, unsupported types cause fallback to a regular SQL query. With `{fn teradata_require_fastexport}`, unsupported types cause an error.
 
+<a id="JSONExportResults"></a>
+
+### JSON Export Results
+
+The driver can export query results to JSON files. This feature can be used with SQL query results, with calls to stored procedures, and with FastExport.
+
+To export a result set to a JSON file, the application prepends the escape function `{fn teradata_write_json(`*JSONFileName*`)}` to the SQL request text.
+
+If the query returns multiple result sets, each result set will be written to a separate file. The file name is varied by inserting the string "_N" between the specified file name and file type extension (e.g. `fileName.json`, `fileName_1.json`, `fileName_2.json`). If no file type extension is specified, then the suffix "_N" is appended to the end of the file name (e.g. `fileName`, `fileName_1`, `fileName_2`).
+
+A stored procedure call that produces multiple dynamic result sets behaves like other SQL requests that return multiple result sets. The stored procedure's output parameter values are exported as the first JSON file.
+
+Example of a SQL request that returns multiple results:
+
+`{fn teradata_write_json(myFile.json)}select 'abc' ; select 123`
+
+JSON File Name | Content
+-------------- | ---
+myFile.json    | First result set
+myFile_1.json  | Second result set
+
+To obtain the metadata for each result set, use the escape function `{fn teradata_fake_result_sets}`. A fake result set containing the metadata will be written to a file preceding each real result set.
+
+Example of a query that returns multiple result sets with metadata:
+
+`{fn teradata_fake_result_sets}{fn teradata_write_json(myFile.json)}select 'abc' ; select 123`
+
+JSON File Name | Content
+-------------- | ---
+myFile.json    | Fake result set containing the metadata for the first result set
+myFile_1.json  | First result set
+myFile_2.json  | Fake result set containing the metadata for the second result set
+myFile_3.json  | Second result set
+
+Exported JSON files have the following characteristics:
+* Each file is a JSON array of objects, with one object per result set row (e.g. `[{"col1":1,"col2":"abc"},{"col1":2,"col2":"def"}]`).
+* Each object's keys are the result set column names. If an AS-clause alias is available, then the alias is used. Otherwise the column name is used, or the column title if no column name is available.
+* Each result set column name must be unique within the result set. Use column aliases when needed to make duplicate names unique; the driver returns an error for duplicate names.
+* A `NULL` value is exported as a JSON `null` value.
+* `BIGINT`, `BYTEINT`, `INTEGER`, and `SMALLINT` values are exported as JSON number values.
+* `FLOAT` values are exported as JSON number values. A `FLOAT` value of `NaN` or `Infinity` cannot be represented in JSON, and causes the driver to return an error rather than writing an invalid value.
+* `DECIMAL` and `NUMBER` values are exported as unquoted JSON number tokens containing the exact decimal text returned by the database, rather than as quoted strings. Because Python's `json` module parses JSON numbers containing a decimal point as `float` by default, an application that requires exact precision should use a precision-preserving parser option such as `json.load(`*File*`, parse_float=decimal.Decimal)`.
+* `BYTE` and `VARBYTE` values, and `BLOB` values for non-FastExport exports, are exported as lowercase hexadecimal JSON string values.
+* `VECTOR` values are exported as JSON arrays of numbers (e.g. `[0.123,0.456,0.789]`).
+* `CHAR`, `VARCHAR`, `CLOB`, `XML`, and the database `JSON` data type are exported as JSON string values.
+* Date, time, timestamp, `INTERVAL`, and `PERIOD` values are exported as JSON string values, in the same format returned by an in-memory fetch.
+
+Limitations when exporting to JSON files:
+* When the application chooses to export results to a JSON file, the results are not available for the application to fetch in memory.
+* A warning is returned if the application specifies an export JSON file for a SQL statement that does not produce a result set.
+* Exporting a JSON file with FastExport has the same limitations and is used the same way as described in the [FastExport](#FastExport) section.
+* FastExport to JSON does not support `BLOB`, `CLOB`, `XML`, the database `JSON` data type, or `DATASET` data types. With `{fn teradata_try_fastexport}`, unsupported types cause fallback to a regular SQL query. With `{fn teradata_require_fastexport}`, unsupported types cause an error.
+
+<a id="JSONLExportResults"></a>
+
+### JSONL Export Results
+
+The driver can export query results to JSONL (JSON Lines) files. This feature can be used with SQL query results, with calls to stored procedures, and with FastExport.
+
+To export a result set to a JSONL file, the application prepends the escape function `{fn teradata_write_jsonl(`*JSONLFileName*`)}` to the SQL request text.
+
+If the query returns multiple result sets, each result set will be written to a separate file. The file name is varied by inserting the string "_N" between the specified file name and file type extension (e.g. `fileName.jsonl`, `fileName_1.jsonl`, `fileName_2.jsonl`). If no file type extension is specified, then the suffix "_N" is appended to the end of the file name (e.g. `fileName`, `fileName_1`, `fileName_2`).
+
+A stored procedure call that produces multiple dynamic result sets behaves like other SQL requests that return multiple result sets. The stored procedure's output parameter values are exported as the first JSONL file.
+
+Example of a SQL request that returns multiple results:
+
+`{fn teradata_write_jsonl(myFile.jsonl)}select 'abc' ; select 123`
+
+JSONL File Name | Content
+--------------- | ---
+myFile.jsonl    | First result set
+myFile_1.jsonl  | Second result set
+
+To obtain the metadata for each result set, use the escape function `{fn teradata_fake_result_sets}`. A fake result set containing the metadata will be written to a file preceding each real result set.
+
+Example of a query that returns multiple result sets with metadata:
+
+`{fn teradata_fake_result_sets}{fn teradata_write_jsonl(myFile.jsonl)}select 'abc' ; select 123`
+
+JSONL File Name | Content
+--------------- | ---
+myFile.jsonl    | Fake result set containing the metadata for the first result set
+myFile_1.jsonl  | First result set
+myFile_2.jsonl  | Fake result set containing the metadata for the second result set
+myFile_3.jsonl  | Second result set
+
+Exported JSONL files have the following characteristics:
+* Each file contains one JSON object per line, with one object per result set row (e.g. `{"col1":1,"col2":"abc"}` on one line and `{"col1":2,"col2":"def"}` on the next line).
+* Each object's keys are the result set column names. If an AS-clause alias is available, then the alias is used. Otherwise the column name is used, or the column title if no column name is available.
+* Each result set column name must be unique within the result set. Use column aliases when needed to make duplicate names unique; the driver returns an error for duplicate names.
+* A `NULL` value is exported as a JSON `null` value.
+* `BIGINT`, `BYTEINT`, `INTEGER`, and `SMALLINT` values are exported as JSON number values.
+* `FLOAT` values are exported as JSON number values. A `FLOAT` value of `NaN` or `Infinity` cannot be represented in JSON, and causes the driver to return an error rather than writing an invalid value.
+* `DECIMAL` and `NUMBER` values are exported as unquoted JSON number tokens containing the exact decimal text returned by the database. The `json` module parses these as `float` by default. Use `json.load(`*File*`, parse_float=decimal.Decimal)` to obtain exact-precision `Decimal` numbers.
+* `BYTE` and `VARBYTE` values, and `BLOB` values for non-FastExport exports, are exported as lowercase hexadecimal JSON string values.
+* `VECTOR` values are exported as JSON arrays of numbers (e.g. `[0.123,0.456,0.789]`).
+* `CHAR`, `VARCHAR`, `CLOB`, `XML`, and the database `JSON` data type are exported as JSON string values.
+* Date, time, timestamp, `INTERVAL`, and `PERIOD` values are exported as JSON string values, in the same format returned by an in-memory fetch.
+* A line terminator is written after each row, so the file is newline-delimited JSON (JSONL).
+
+Limitations when exporting to JSONL files:
+* When the application chooses to export results to a JSONL file, the results are not available for the application to fetch in memory.
+* A warning is returned if the application specifies an export JSONL file for a SQL statement that does not produce a result set.
+* Exporting a JSONL file with FastExport has the same limitations and is used the same way as described in the [FastExport](#FastExport) section.
+* FastExport to JSONL does not support `BLOB`, `CLOB`, `XML`, the database `JSON` data type, or `DATASET` data types. With `{fn teradata_try_fastexport}`, unsupported types cause fallback to a regular SQL query. With `{fn teradata_require_fastexport}`, unsupported types cause an error.
+
 <a id="CommandLineInterface"></a>
 
 ### Command Line Interface
@@ -2019,6 +2139,11 @@ Windows        | `py -3 -m teradatasql host=whomooz,user=guest,password=please "
 <a id="ChangeLog"></a>
 
 ### Change Log
+
+`20.0.0.69` - September 28, 2026
+* GOSQL-343 escape function teradata_write_jsonl
+* GOSQL-358 escape function teradata_write_json
+* GOSQL-430 escape function teradata_create_procedure to force CREATE/REPLACE PROCEDURE protocol
 
 `20.0.0.68` - September 1, 2026
 * GOSQL-465 accommodate missing issuers in certificate revocation checking
