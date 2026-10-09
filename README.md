@@ -344,6 +344,7 @@ Parameter               | Default     | Type           | Description
 `sslprotocol`           | `"TLSv1.2"` | string         | <a id="cp_sslprotocol"></a>           Specifies the TLS protocol for HTTPS/TLS connections. Omitting this parameter is recommended. Use this parameter only for troubleshooting TLS handshake issues. Equivalent to the Teradata JDBC Driver `SSLPROTOCOL` connection parameter.
 `teradata_values`       | `"true"`    | quoted boolean | <a id="cp_teradata_values"></a>       Controls whether `str` or a more specific Python data type is used for certain result set column value types. Refer to the [Data Types](#DataTypes) table below for details.
 `tmode`                 | `"DEFAULT"` | string         | <a id="cp_tmode"></a>                 Specifies the [transaction mode](#TransactionMode). Equivalent to the Teradata JDBC Driver `TMODE` connection parameter. Possible values are `DEFAULT` (the default), `ANSI`, or `TERA`.
+`type`                  | `"DEFAULT"` | string         | <a id="cp_type"></a>                  Specifies whether the driver automatically tries FastLoad or FastExport for SQL requests executed by the application. Values are case-insensitive. Equivalent to the Teradata JDBC Driver `TYPE` connection parameter.<br/>&bull; `DEFAULT` does not automatically try FastLoad or FastExport for SQL requests. This is the default.<br/>&bull; `FASTLOAD` automatically tries FastLoad for SQL requests and falls back to SQL execution if the request is not eligible for FastLoad.<br/>&bull; `FASTEXPORT` automatically tries FastExport for SQL requests and falls back to SQL execution if the request is not eligible for FastExport.<br/>This connection parameter is ignored for:<br/>&bull; Requests that specify a FastLoad or FastExport try/require escape function.<br/>&bull; Requests that specify the `teradata_agkr` escape function.<br/>&bull; Prepare-only requests.<br/>&bull; Requests executed by the driver itself.
 `use_system_proxy`      | `"false"`   | quoted boolean | <a id="cp_use_system_proxy"></a>      Controls whether the driver uses the operating system proxy settings, supported for Windows. Somewhat equivalent to the Java system property `java.net.useSystemProxies`.<br/>&bull; `false` (the default) prevents the driver from using the operating system proxy settings, which is the behavior of earlier driver versions.<br/>&bull; `true` directs the driver to use the operating system proxy settings for HTTPS and HTTP connections, subject to the `no_system_proxy` connection parameter. The `http_proxy` and `https_proxy` connection parameters take precedence over the operating system proxy settings.
 `user`                  |             | string         | <a id="cp_user"></a>                  Specifies the database username. Equivalent to the Teradata JDBC Driver `USER` connection parameter.
 
@@ -670,9 +671,13 @@ Client Attribute            | Source   | Description
 `ClientCoordName`           | driver   | The proxy server hostname and port number when a proxy server is used for a database connection
 `ClientTerminalId`          | driver   | The proxy server hostname and port number when a proxy server is used for an Identity Provider
 `ClientSessionDesc`         | driver   | TLS cipher information is available in this column as a list of name=value pairs, each terminated by a semicolon. Individual values can be accessed using the `NVP` system function.
-&nbsp; | `C` | Y/N indicates whether the `sslcipher` connection parameter was specified
-&nbsp; | `D` | the database TLS cipher
-&nbsp; | `I` | the Identity Provider TLS cipher
+&nbsp;                      | `C`      | Y/N indicates whether the `sslcipher` connection parameter was specified
+&nbsp;                      | `D`      | the database TLS cipher
+&nbsp;                      | `I`      | the Identity Provider TLS cipher
+`ClientSecProdUserId`       | driver   | TLS named group information is available in this column as a list of name=value pairs, each terminated by a semicolon. Individual values can be accessed using the `NVP` system function.
+&nbsp;                      | `C`      | Y/N indicates whether the `sslnamedgroup` connection parameter was specified
+&nbsp;                      | `D`      | the database TLS named group
+&nbsp;                      | `I`      | the Identity Provider TLS named group
 `ClientTdHostName`          | driver   | The database hostname as specified by the application, without any COP suffix
 `ClientCOPSuffixedHostName` | driver   | The COP-suffixed database hostname chosen by the driver
 `ServerIPAddrByClient`      | driver   | The database node's IP address, as determined by the driver
@@ -1670,6 +1675,7 @@ Request-Scope Function                                 | Effect
 `{fn teradata_request_timeout(`*Seconds*`)}`           | Specifies the timeout for executing the SQL request. Zero means no timeout. Takes precedence over the `request_timeout` connection parameter.
 `{fn teradata_require_fastexport}`                     | Specifies that FastExport is required for the SQL request
 `{fn teradata_require_fastload}`                       | Specifies that FastLoad is required for the SQL request
+`{fn teradata_require_sql}`                            | Executes the SQL request as SQL. Takes precedence over the `type` connection parameter.
 `{fn teradata_rpo(`*RequestProcessingOption*`)}`       | Executes the SQL request with *RequestProcessingOption* `S` (prepare), `E` (execute), or the default `B` (both)
 `{fn teradata_sessions(`*Number*`)}`                   | Specifies the *Number* of data transfer connections for FastLoad or FastExport. Takes precedence over the `sessions` connection parameter.
 `{fn teradata_try_fastexport}`                         | Tries to use FastExport for the SQL request
@@ -2171,6 +2177,10 @@ Windows        | `py -3 -m teradatasql host=whomooz,user=guest,password=please "
 <a id="ChangeLog"></a>
 
 ### Change Log
+
+`20.0.0.71` - October 9, 2026
+* GOSQL-144 type=fastload/fastexport connection parameter
+* GOSQL-474 Client Attribute ClientSecProdUserId for database and identity provider TLS named group
 
 `20.0.0.70` - October 7, 2026
 * GOSQL-341 use Windows proxy settings including PAC file support
