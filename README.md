@@ -23,7 +23,6 @@ Copyright 2026 Teradata. All Rights Reserved.
 ### Table of Contents
 
 * [Features](#Features)
-* [Limitations](#Limitations)
 * [Installation](#Installation)
 * [License](#License)
 * [Documentation](#Documentation)
@@ -72,8 +71,6 @@ Copyright 2026 Teradata. All Rights Reserved.
 
 The *Teradata SQL Driver for Python* is a DBAPI Driver that enables Python applications to connect to the Teradata Database. The driver implements the [PEP-249 Python Database API Specification 2.0](https://www.python.org/dev/peps/pep-0249/).
 
-The driver is a young product that offers a basic feature set. We are working diligently to add features to the driver, and our goal is feature parity with the Teradata JDBC Driver.
-
 At the present time, the driver offers the following features.
 
 * Supported for use with Teradata database 16.20 and later releases.
@@ -86,7 +83,7 @@ At the present time, the driver offers the following features.
 * Data encryption provided by TLS for HTTPS connections.
 * For non-HTTPS connections, data encryption governed by central administration or enabled via the `encryptdata` connection parameter.
 * Recoverable Network Protocol and Redrive.
-* Unicode character data transferred via the UTF8 session character set.
+* Unicode character data transferred via the UTF8 or UTF16 session character set.
 * [Auto-commit](#AutoCommit) for ANSI and TERA transaction modes.
 * Result set row size up to 1 MB.
 * Multi-statement requests that return multiple result sets.
@@ -101,12 +98,6 @@ At the present time, the driver offers the following features.
 * Stored Procedure Dynamic Result Sets.
 * FastLoad and FastExport.
 * Monitor partition.
-
-<a id="Limitations"></a>
-
-### Limitations
-
-* The UTF8 session character set is always used. The `charset` connection parameter is not supported.
 
 <a id="Installation"></a>
 
@@ -261,6 +252,8 @@ Parameter               | Default     | Type           | Description
 `browser`               |             | string         | <a id="cp_browser"></a>               Specifies the command to open the browser for Browser Authentication when `logmech` is `BROWSER`. Browser Authentication is supported for Windows and macOS. Equivalent to the Teradata JDBC Driver `BROWSER` connection parameter.<br/>The specified command must match the value of the `TERADATA_BROWSER` environment variable.<br/>The specified command must include a placeholder token, literally specified as `PLACEHOLDER`, which the driver will replace with the Identity Provider authorization endpoint URL. The `PLACEHOLDER` token is case-sensitive and must be specified in uppercase.<br/>&bull; On Windows, the default command is `cmd /c start "title" "PLACEHOLDER"`. Windows command syntax requires the quoted title to precede the quoted URL.<br/>&bull; On macOS, the default command is `open PLACEHOLDER`. macOS command syntax does not allow the URL to be quoted.<br/>The `TERADATA_BROWSER` environment variable is not required when this connection parameter is omitted on Windows or macOS.
 `browser_tab_timeout`   | `"5"`       | quoted integer | <a id="cp_browser_tab_timeout"></a>   Specifies the number of seconds to wait before closing the browser tab after Browser Authentication is completed. The default is 5 seconds. The behavior is under the browser's control, and not all browsers support automatic closing of browser tabs. Typically, the tab used to log on will remain open indefinitely, but the second and subsequent tabs will be automatically closed. Specify `0` (zero) to close the tab immediately. Specify `-1` to turn off automatic closing of browser tabs. Browser Authentication is supported for Windows and macOS. Equivalent to the Teradata JDBC Driver `BROWSER_TAB_TIMEOUT` connection parameter.
 `browser_timeout`       | `"180"`     | quoted integer | <a id="cp_browser_timeout"></a>       Specifies the number of seconds that the driver will wait for Browser Authentication to complete. The default is 180 seconds (3 minutes). Browser Authentication is supported for Windows and macOS. Equivalent to the Teradata JDBC Driver `BROWSER_TIMEOUT` connection parameter.
+`charset`               | `"UTF8"`    | string         | <a id="cp_charset"></a>               Specifies the session character set. Possible values are `UTF8` (the default), `UTF16`, or `ASCII`. Values are case-insensitive. Equivalent to the Teradata JDBC Driver `CHARSET` connection parameter.
+`client_charset`        |             | string         | <a id="cp_client_charset"></a>        Specifies the client character set. Required with session character set `ASCII` and possible values are `CP1252` or `CP1255`. Optional with session character set `UTF8` or `UTF16` and must match the session character set. Values are case-insensitive. Equivalent to the Teradata JDBC Driver `CLIENT_CHARSET` connection parameter.
 `code_append_file`      | `"-out"`    | string         | <a id="cp_code_append_file"></a>      Specifies how to display the verification URL and code. Optional when `logmech` is `CODE` and ignored for other `logmech` values. The default `-out` prints the verification URL and code to stdout. Specify `-err` to print the verification URL and code to stderr. Specify a file name to append the verification URL and code to an existing file or create a new file if the file does not exist. Equivalent to the Teradata JDBC Driver `CODE_APPEND_FILE` connection parameter.
 `column_name`           | `"false"`   | quoted boolean | <a id="cp_column_name"></a>           Controls the behavior of cursor `.description` sequence `name` items. Equivalent to the Teradata JDBC Driver `COLUMN_NAME` connection parameter. False specifies that a cursor `.description` sequence `name` item provides the AS-clause name if available, or the column name if available, or the column title. True specifies that a cursor `.description` sequence `name` item provides the column name if available, but has no effect when StatementInfo parcel support is unavailable.
 `column_type`           | `"false"`   | quoted boolean | <a id="cp_column_type"></a>           Controls the behavior of cursor `.description` sequence `name` items. False specifies that each name does not include the column type. True adds a tab character and column type suffix to each name, but has no effect when StatementInfo parcel support is unavailable.
@@ -416,7 +409,7 @@ On Windows, the driver can use the operating system proxy settings, including bo
 * The `use_system_proxy` connection parameter is `false` by default, so the operating system proxy settings are not used unless `use_system_proxy` is `true`.
 * The `no_system_proxy` connection parameter prevents the driver from considering the operating system proxy settings for database and/or Identity Provider connections.
 
-The following table lists the expected behavior for an HTTPS database connection, for every combination of the `use_system_proxy`, `no_system_proxy`, `http_proxy`, and `https_proxy` connection parameters.
+The following table lists the expected behavior for every combination of the `use_system_proxy`, `no_system_proxy`, `http_proxy`, and `https_proxy` connection parameters.
 
 use_system_proxy | no_system_proxy | http_proxy | https_proxy | Behavior
 ---------------- | --------------- | ---------- | ----------- | ---
@@ -1037,7 +1030,7 @@ To avoid database error 3532 in this situation, your application must use the th
 
 ### Character Export Width
 
-The driver always uses the UTF8 session character set, and the `charset` connection parameter is not supported. Be aware of the database's *Character Export Width* behavior that adds trailing space padding to fixed-width `CHAR` data type result set column values when using the UTF8 session character set.
+Be aware of the database's *Character Export Width* behavior that adds trailing space padding to fixed-width `CHAR` data type result set column values when using the UTF8 session character set.
 
 The database `CHAR(`_n_`)` data type is a fixed-width data type (holding _n_ characters), and the database reserves a fixed number of bytes for the `CHAR(`_n_`)` data type in response spools and in network message traffic.
 
@@ -1045,11 +1038,13 @@ UTF8 is a variable-width character encoding scheme that requires a varying numbe
 
 Work around this drawback by using `CAST` or `TRIM` in SQL `SELECT` statements, or in views, to convert fixed-width `CHAR` data types to `VARCHAR`.
 
+Alternatively, the UTF16 session character set can be used by applications that require fixed-width CHAR data values without trailing space padding.
+
 Given a table with fixed-width `CHAR` columns:
 
 `CREATE TABLE MyTable (c1 CHAR(10), c2 CHAR(10))`
 
-Original query that produces trailing space padding:
+Original query that produces trailing space padding with the UTF8 session character set:
 
 `SELECT c1, c2 FROM MyTable`
 
@@ -1614,7 +1609,7 @@ Connection Function                           | Returns
 `{fn teradata_provide(gateway_config)}`       | Gateway Config parcel contents in JSON format
 `{fn teradata_provide(governed)}`             | `true` or `false` indicating the `govern` connection parameter setting
 `{fn teradata_provide(host_id)}`              | Session's host ID
-`{fn teradata_provide(java_charset_name)}`    | `UTF8`
+`{fn teradata_provide(java_charset_name)}`    | Client character set
 `{fn teradata_provide(lob_support)}`          | `true` or `false` indicating this connection's LOB support
 `{fn teradata_provide(local_address)}`        | Local address of the connection's TCP socket
 `{fn teradata_provide(local_port)}`           | Local port of the connection's TCP socket
@@ -1623,8 +1618,8 @@ Connection Function                           | Returns
 `{fn teradata_provide(remote_address)}`       | Hostname (if available) and IP address of the connected database node
 `{fn teradata_provide(remote_port)}`          | TCP port number of the database
 `{fn teradata_provide(rnp_active)}`           | `true` or `false` indicating whether this connection has Recoverable Network Protocol active
-`{fn teradata_provide(session_charset_code)}` | Session character set code `191`
-`{fn teradata_provide(session_charset_name)}` | Session character set name `UTF8`
+`{fn teradata_provide(session_charset_code)}` | Session character set code
+`{fn teradata_provide(session_charset_name)}` | Session character set name
 `{fn teradata_provide(sip_support)}`          | `true` or `false` indicating this connection's StatementInfo parcel support
 `{fn teradata_provide(transaction_mode)}`     | Session's transaction mode, `ANSI` or `TERA`
 `{fn teradata_provide(uses_check_workload)}`  | `true` or `false` indicating whether this connection uses `CHECK WORKLOAD`
@@ -2177,6 +2172,9 @@ Windows        | `py -3 -m teradatasql host=whomooz,user=guest,password=please "
 <a id="ChangeLog"></a>
 
 ### Change Log
+
+`20.0.0.74` - October 30, 2026
+* GOSQL-320 charset and client_charset connection parameters
 
 `20.0.0.73` - October 28, 2026
 * GOSQL-485 Switch to Go 1.27.3
