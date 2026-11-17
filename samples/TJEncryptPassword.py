@@ -497,7 +497,7 @@ if __name__ == '__main__':
 
     if len (sys.argv) != 9:
         print ("Parameters: Transformation KeySizeInBits MAC PasswordEncryptionKeyFileName EncryptedPasswordFileName Hostname Username Password")
-        exit (1)
+        sys.exit (1)
 
     sTransformation  = sys.argv [1]
     sKeySizeInBits   = sys.argv [2]

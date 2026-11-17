@@ -39,6 +39,7 @@ Copyright 2026 Teradata. All Rights Reserved.
 * [Session Reconnect](#SessionReconnect)
 * [Transaction Mode](#TransactionMode)
 * [Auto-Commit](#AutoCommit)
+* [Trusted SQL and Query Band Impersonation](#TrustedSQL)
 * [Data Types](#DataTypes)
 * [Null Values](#NullValues)
 * [Character Export Width](#CharacterExportWidth)
@@ -339,6 +340,7 @@ Parameter               | Default     | Type           | Description
 `sslprotocol`           | `"TLSv1.2"` | string         | <a id="cp_sslprotocol"></a>           Specifies the TLS protocol for HTTPS/TLS connections. Omitting this parameter is recommended. Use this parameter only for troubleshooting TLS handshake issues. Equivalent to the Teradata JDBC Driver `SSLPROTOCOL` connection parameter.
 `teradata_values`       | `"true"`    | quoted boolean | <a id="cp_teradata_values"></a>       Controls whether `str` or a more specific Python data type is used for certain result set column value types. Refer to the [Data Types](#DataTypes) table below for details.
 `tmode`                 | `"DEFAULT"` | string         | <a id="cp_tmode"></a>                 Specifies the [transaction mode](#TransactionMode). Equivalent to the Teradata JDBC Driver `TMODE` connection parameter. Possible values are `DEFAULT` (the default), `ANSI`, or `TERA`.
+`trusted_sql`           | `"false"`   | quoted boolean | <a id="cp_trusted_sql"></a>           Controls whether the driver distinguishes between trusted and untrusted SQL requests.<br/>&bull; `false` (the default) directs the database to reject any attempt to use the `SET QUERY_BAND` command to set or remove the current proxy user if the database user making the request was given `GRANT CONNECT THROUGH` rights `WITH TRUST_ONLY`.<br/>&bull; `true` directs the database to allow the `SET QUERY_BAND` command to set or remove the current proxy user. This capability can be disabled on a per-request basis by specifying the `{fn teradata_untrusted}` escape function in the SQL request.<br/>This parameter is only effective for a database user having the `GRANT CONNECT THROUGH` privilege `WITH TRUST_ONLY`. Refer to [Trusted SQL and Query Band Impersonation](#TrustedSQL) for details. Equivalent to the Teradata JDBC Driver `TRUSTED_SQL` connection parameter.
 `type`                  | `"DEFAULT"` | string         | <a id="cp_type"></a>                  Specifies whether the driver automatically tries FastLoad or FastExport for SQL requests executed by the application. Values are case-insensitive. Equivalent to the Teradata JDBC Driver `TYPE` connection parameter.<br/>&bull; `DEFAULT` does not automatically try FastLoad or FastExport for SQL requests. This is the default.<br/>&bull; `FASTLOAD` automatically tries FastLoad for SQL requests and falls back to SQL execution if the request is not eligible for FastLoad.<br/>&bull; `FASTEXPORT` automatically tries FastExport for SQL requests and falls back to SQL execution if the request is not eligible for FastExport.<br/>This connection parameter is ignored for:<br/>&bull; Requests that specify a FastLoad or FastExport try/require escape function.<br/>&bull; Requests that specify the `teradata_agkr` escape function.<br/>&bull; Prepare-only requests.<br/>&bull; Requests executed by the driver itself.
 `use_system_proxy`      | `"false"`   | quoted boolean | <a id="cp_use_system_proxy"></a>      Controls whether the driver uses the operating system proxy settings, supported for Windows. Somewhat equivalent to the Java system property `java.net.useSystemProxies`.<br/>&bull; `false` (the default) does not use the operating system proxy settings.<br/>&bull; `true` directs the driver to use the operating system proxy settings for HTTPS and HTTP connections, subject to the `no_system_proxy` connection parameter. The `http_proxy` and `https_proxy` connection parameters take precedence over the operating system proxy settings.
 `user`                  |             | string         | <a id="cp_user"></a>                  Specifies the database username. Equivalent to the Teradata JDBC Driver `USER` connection parameter.
@@ -941,6 +943,41 @@ Please note that neither previous example shows best practices. Best practices r
     cur.execute("insert into mytable1 values(1, 2)")
     cur.execute("insert into mytable2 values(3, 4)")
     con.commit()
+
+<a id="TrustedSQL"></a>
+
+### Trusted SQL and Query Band Impersonation
+
+Trusted Sessions Enhanced Security prevents using `SET QUERY_BAND` to set or remove the current proxy user. This is accomplished by categorizing all SQL requests as trusted or untrusted.
+* An untrusted SQL request is a SQL request from a user that might contain a [SQL injection](https://en.wikipedia.org/wiki/SQL_injection) attempt.
+* A trusted SQL request is a SQL request composed by the application itself and known to be free of any SQL injection.
+
+This feature is intended for use by applications working with both trusted and untrusted SQL requests. This feature is not intended for applications that compose and trust all their own SQL requests.
+
+Consider an application server, such as a Model Context Protocol (MCP) server, that logs on with a service account that represents the application. Because every connection specifies the same service account, the connections benefit from connection pooling.
+
+The application server executes SQL requests on behalf of end users, and those SQL requests must be restricted to the access rights of the end user, not the access rights of the service account. Before executing a SQL request on behalf of a user, the application server executes `SET QUERY_BAND='PROXYUSER=enduser;' FOR SESSION`. This limits the access rights of the SQL requests that follow to the access rights of the end user.
+
+An end user's SQL request must not change the proxy user. To ensure this:
+1. All `GRANT CONNECT THROUGH` grants for the application use the `WITH TRUST_ONLY` option.
+2. The application specifies the `trusted_sql=true` connection parameter and logs on to the database with a service account.
+3. Before executing SQL requests on behalf of a user, the application impersonates the user by executing `SET QUERY_BAND` to set a proxy user. The application does not execute the SQL request if the impersonation fails.
+4. The application prepends the `{fn teradata_untrusted}` escape function to all user input SQL text before the application passes the SQL request to the driver.
+5. After executing SQL requests on behalf of a user, the application stops impersonating the user by executing `SET QUERY_BAND` to remove the proxy user.
+
+This `{fn teradata_untrusted}` escape function downgrades a SQL request from trusted to untrusted. No mechanism is provided to upgrade a SQL request from untrusted to trusted because it might be exploited by a SQL injection attack.
+
+If the service account has `GRANT CONNECT THROUGH` privilege `WITH TRUST_ONLY`, the database allows a `SET QUERY_BAND` request to set or remove a proxy user only if the request is trusted. The application composes `SET QUERY_BAND` requests to impersonate and stop impersonating users, and does not specify `{fn teradata_untrusted}` for those SQL requests.
+* A SQL request is trusted when the `trusted_sql` connection parameter is `true` and the request does not include the `{fn teradata_untrusted}` escape function.
+* Otherwise, the database rejects the request with Error 9264 "SET QUERY_BAND not permitted".
+
+For example:
+
+    con = teradatasql.connect(host="whomooz", user="mcpservice", password="please", trusted_sql="true")
+    cur = con.cursor()
+    cur.execute("SET QUERY_BAND='PROXYUSER=susan;' FOR SESSION") # trusted request begins impersonating the proxy user
+    cur.execute("{fn teradata_untrusted}SELECT * FROM mytable") # untrusted request runs as the proxy user
+    cur.execute("SET QUERY_BAND=NONE FOR SESSION") # trusted request stops impersonating the proxy user
 
 <a id="DataTypes"></a>
 
@@ -1643,6 +1680,7 @@ Request-Scope Function                                 | Effect
 `{fn teradata_agkr(`*Option*`)}`                       | Executes the SQL request with Auto-Generated Key Retrieval (AGKR) *Option* `C` (identity column value) or `R` (entire row)
 `{fn teradata_array_transform_off}`                    | Turns off the From-SQL transform for SQL Array values for this SQL request with Request Processing Option `S` (prepare)
 `{fn teradata_array_transform_on}`                     | Turns on the From-SQL transform for SQL Array values for this SQL request (the default)
+`{fn teradata_auto_rename_columns}`                    | Renames duplicate result set column names when exporting to a Parquet, JSON, or JSONL file with `teradata_write_parquet`, `teradata_write_json`, or `teradata_write_jsonl`, instead of returning an error. Refer to [Parquet Export Results](#ParquetExportResults).
 `{fn teradata_clobtranslate(`*Option*`)}`              | Executes the SQL request with CLOB translate *Option* `U` (unlocked) or the default `L` (locked)
 `{fn teradata_create_procedure}`                       | Specifies that this SQL request should use `CREATE PROCEDURE` / `REPLACE PROCEDURE` request handling
 `{fn teradata_error_query_count(`*Number*`)}`          | Specifies how many times the driver will attempt to query FastLoad Error Table 1 after a FastLoad operation. Takes precedence over the `error_query_count` connection parameter.
@@ -1680,7 +1718,7 @@ Request-Scope Function                                 | Effect
 `{fn teradata_try_fastload}`                           | Tries to use FastLoad for the SQL request
 `{fn teradata_udt_transforms_off}`                     | Turns off From-SQL transforms for User Defined Type (UDT) values for this SQL request with Request Processing Option `S` (prepare)
 `{fn teradata_udt_transforms_on}`                      | Turns on From-SQL transforms for User Defined Type (UDT) values for this SQL request (the default)
-`{fn teradata_untrusted}`                              | Marks the SQL request as untrusted; not implemented yet
+`{fn teradata_untrusted}`                              | Marks the SQL request as untrusted. Effective only when the `trusted_sql` connection parameter is `true`. Refer to [Trusted SQL and Query Band Impersonation](#TrustedSQL) for details.
 `{fn teradata_values_off}`                             | Turns off `teradata_values` for this SQL request. Takes precedence over the `teradata_values` connection parameter. Refer to the [Data Types](#DataTypes) table for details.
 `{fn teradata_values_on}`                              | Turns on `teradata_values` for this SQL request. Takes precedence over the `teradata_values` connection parameter. Refer to the [Data Types](#DataTypes) table for details.
 `{fn teradata_write_csv(`*CSVFileName*`)}`             | Exports one or more result sets from a SQL request or a FastExport to the specified CSV file or files
@@ -2011,7 +2049,7 @@ Exported Parquet files have the following characteristics:
 * Each file conforms to the Apache Parquet specification.
 * The result set column order is preserved in the Parquet schema.
 * Result set column names are used for the Parquet schema. If an AS-clause alias is available, then the alias is used. Otherwise the column name is used, or the column title if no column name is available.
-* Each result set column name must be unique within the result set. Use column aliases when needed to make duplicate names unique.
+* Each result set column name must be unique. By default, the driver returns an error if names are duplicated; use column aliases to make them unique. Alternatively, specify `{fn teradata_auto_rename_columns}` to have the driver rename duplicates automatically. The first occurrence keeps its original name. Each subsequent occurrence receives the lowest available suffix (`_1`, `_2`, and so on) that does not conflict with another column name.
 * A `NULL` value is exported as a Parquet `NULL` value.
 * Binary data types such as `BYTE`, `VARBYTE`, and `BLOB` are exported as Parquet binary values.
 * Character data types such as `CHAR`, `VARCHAR`, `CLOB`, `XML`, and `JSON` are exported as Parquet UTF-8 string values.
@@ -2062,7 +2100,7 @@ myFile_3.json  | Second result set
 Exported JSON files have the following characteristics:
 * Each file is a JSON array of objects, with one object per result set row (e.g. `[{"col1":1,"col2":"abc"},{"col1":2,"col2":"def"}]`).
 * Each object's keys are the result set column names. If an AS-clause alias is available, then the alias is used. Otherwise the column name is used, or the column title if no column name is available.
-* Each result set column name must be unique within the result set. Use column aliases when needed to make duplicate names unique; the driver returns an error for duplicate names.
+* Each result set column name must be unique. By default, the driver returns an error if names are duplicated; use column aliases to make them unique. Alternatively, specify `{fn teradata_auto_rename_columns}` to have the driver rename duplicates automatically. The first occurrence keeps its original name. Each subsequent occurrence receives the lowest available suffix (`_1`, `_2`, and so on) that does not conflict with another column name.
 * A `NULL` value is exported as a JSON `null` value.
 * `BIGINT`, `BYTEINT`, `INTEGER`, and `SMALLINT` values are exported as JSON number values.
 * `FLOAT` values are exported as JSON number values. A `FLOAT` value of `NaN` or `Infinity` cannot be represented in JSON, and causes the driver to return an error rather than writing an invalid value.
@@ -2115,7 +2153,7 @@ myFile_3.jsonl  | Second result set
 Exported JSONL files have the following characteristics:
 * Each file contains one JSON object per line, with one object per result set row (e.g. `{"col1":1,"col2":"abc"}` on one line and `{"col1":2,"col2":"def"}` on the next line).
 * Each object's keys are the result set column names. If an AS-clause alias is available, then the alias is used. Otherwise the column name is used, or the column title if no column name is available.
-* Each result set column name must be unique within the result set. Use column aliases when needed to make duplicate names unique; the driver returns an error for duplicate names.
+* Each result set column name must be unique. By default, the driver returns an error if names are duplicated; use column aliases to make them unique. Alternatively, specify `{fn teradata_auto_rename_columns}` to have the driver rename duplicates automatically. The first occurrence keeps its original name. Each subsequent occurrence receives the lowest available suffix (`_1`, `_2`, and so on) that does not conflict with another column name.
 * A `NULL` value is exported as a JSON `null` value.
 * `BIGINT`, `BYTEINT`, `INTEGER`, and `SMALLINT` values are exported as JSON number values.
 * `FLOAT` values are exported as JSON number values. A `FLOAT` value of `NaN` or `Infinity` cannot be represented in JSON, and causes the driver to return an error rather than writing an invalid value.
@@ -2175,6 +2213,15 @@ Windows        | `py -3 -m teradatasql host=whomooz,user=guest,password=please "
 <a id="ChangeLog"></a>
 
 ### Change Log
+
+`20.0.0.76` - November 16, 2026
+* GOSQL-143 trusted_sql connection parameter
+* GOSQL-383 Localize messages in FileImporterCSV and FileImporterParquet
+* GOSQL-455 Add Teradata Wallet support for credential resolution on Windows
+* GOSQL-471 escape function teradata_auto_rename_columns
+* Switch to golang.org/x/crypto v0.59.0
+* Switch to Go 1.27.4
+* Requires macOS 13 Ventura or later and ends support for older versions of macOS
 
 `20.0.0.75` - November 6, 2026
 * GOSQL-339 connection parameter jws_private_key_password
